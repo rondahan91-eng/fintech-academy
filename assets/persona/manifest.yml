@@ -94,6 +94,32 @@ states:
       זהו האווטאר של ההוראה. הוא אמור להופיע יותר מכולם אחרי neutral —
       אם בפועל הוא כמעט לא מופיע, סימן שהמנהל עונה במקום לשאול.
 
+  - id: presenting
+    file: elad-presenting.png
+    description: >
+      יושב, יד אחת מושטת הצידה בכף פתוחה כלפי מעלה במחווה של הגשה.
+      היד השנייה מונחת על השולחן. חיוך סגור קל, גבות ישרות.
+    reads_as: "זה שלך"
+
+    use_for:
+      - "הצגת פניית לקוח"
+      - "מסירת המשימה השבועית"
+      - "הפניית תשומת לב לנתון או לטבלה במשימה"
+
+    never_for:
+      - "הסבר. שם explaining — שם המחווה מעצבת רעיון, כאן היא מוסרת משהו"
+
+    # שיקול פריסה ב-RTL
+    mirroring: >
+      המחווה מופנית שמאלה (מנקודת מבט הצופה). בממשק עברי שבו האווטאר
+      יושב **מימין**, זה מצביע פנימה אל אזור התוכן — נכון.
+      **אם האווטאר יונח משמאל, לשקף את התמונה אופקית**, אחרת הוא
+      מגיש החוצה מהמסך.
+
+    note: >
+      נחת בניסיון ראשון. הידיים נשארו ריקות כמתוכנן — זה מה שמנע
+      מסמך מומצא עם טקסט מגובב.
+
   - id: approve
     file: elad-approve.png
     description: >
@@ -188,45 +214,6 @@ states:
 # ====================================================================
 missing:
 
-  - id: presenting
-    needed_for: "הצגת פניית לקוח — משבוע 11 והלאה, כ-20 שבועות"
-    priority: high
-
-    distinguish_from: >
-      זהו המצב היחיד שבו תשומת הלב מופנית **החוצה** ולא אליו או
-      אל התלמיד. הוא מוסר עבודה, לא מלמד.
-
-    prompt_en: >
-      Professional portrait of a 30-year-old Israeli man, modern-Orthodox
-      (national-religious). Medium build, oval face, light olive skin,
-      brown eyes. Short dark-brown hair, neatly trimmed short beard along
-      the jawline. Thin dark-rimmed eyeglasses. Wearing a medium-sized
-      knitted kippah in blue-grey with a subtle geometric border, set back
-      on the crown of his head. Light blue button-down shirt, sleeves
-      rolled to mid-forearm, no tie. Simple watch with a brown leather
-      strap, employee badge on a grey lanyard.
-      Seated, torso turned slightly to one side while his face stays
-      toward the camera. One arm extended to his side, palm open and
-      upturned in a clear offering gesture, as if handing something over
-      or directing attention to it. Other hand resting naturally. Light
-      closed-lip smile, eyebrows level, relaxed and matter-of-fact. He
-      looks like a colleague passing you a file and saying "this one's
-      yours".
-      Isolated on a plain white background, cut out, no scenery.
-      Photorealistic, soft even lighting, shallow depth of field, shot at
-      eye level, upper-body framing.
-
-    negative_prompt_en: >
-      pointing finger, accusatory, both hands forward, praying hands,
-      shrugging, palms up in confusion, worried, stern, wide smile,
-      standing, full-body, holding a visible object, holding papers,
-      black hat, black suit, long beard, payot, synagogue, elderly,
-      cartoon, illustration, 3D render.
-
-    note: >
-      **ידיים ריקות בכוונה.** אם מחזיקים חפץ, המחולל ימציא מסמך או
-      טאבלט עם טקסט מגובב — בדיוק הבעיה שהייתה בתג העובד.
-
   - id: impressed
     needed_for: >
       התלמיד עשה משהו מעבר לצפוי — פתרון אלגנטי, שאלה שאלעד לא צפה,
@@ -287,6 +274,13 @@ deliberately_excluded:
 
   - state: "לא זמין / שבת"
     why: "אינדיקציה בממשק — אווטאר מוחלש או נקודה אפורה. לא תמונה חדשה"
+
+  - state: "עמידה / hero"
+    why: >
+      אין לה רגע מוגדר במערכת. כל שבעת המצבים יושבים אל אותו שולחן,
+      ודמות שקמה בלי סיבה שוברת את השפה. מסך פתיחת שבוע צריך **קנבס
+      גדול יותר, לא פוזה אחרת** — explaining או neutral בגודל hero.
+      הגרסה בעמידה שהופקה בטעות כ-waiting אינה בשימוש.
 
 ceiling: >
   תשעה מצבים הם התקרה. מעבר לזה התלמידים מפסיקים לקרוא את הפנים
