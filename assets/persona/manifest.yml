@@ -134,13 +134,38 @@ missing:
       דואג), לא מכווצות. פה סגור ורפוי, אולי רמז קל של חיוך.
       **ידיים פתוחות או מונחות — לעולם לא על המותן ולא שלובות.**
 
-    prompt_delta_en: >
-      Same character, same lighting and framing as the neutral shot.
-      Seated, leaning slightly toward camera, head tilted gently to one
-      side. Eyebrows raised in the middle in a soft worried expression,
-      NOT furrowed. Mouth closed and relaxed, trace of a kind smile.
-      Hands open and resting, not on hips, not crossed. Reads as
-      concern for someone, not impatience with them.
+    # הסימן האנטומי שמפריד דאגה מביקורת — אם רק דבר אחד נשמר, זה הוא
+    critical_detail: >
+      **גבות מורמות במרכז (inner brow raise), לא מכווצות.** זה ההבדל
+      היחיד בין "אכפת לי ממך" ל"אני מבקר אותך". מחוללי תמונות נוטים
+      לכווץ גבות כשמבקשים מהם "מודאג", ואז מתקבל בדיוק הפרצוף הלא נכון.
+
+    prompt_en: >
+      Professional portrait of a 30-year-old Israeli man, modern-Orthodox
+      (national-religious). Medium build, oval face, light olive skin,
+      brown eyes. Short dark-brown hair, neatly trimmed short beard along
+      the jawline. Thin dark-rimmed eyeglasses. Wearing a medium-sized
+      knitted kippah in blue-grey with a subtle geometric border, set back
+      on the crown of his head. Light blue button-down shirt, sleeves
+      rolled to mid-forearm, no tie. Simple watch with a brown leather
+      strap, employee badge on a grey lanyard.
+      Seated and leaning slightly forward toward the camera, head tilted
+      gently to one side. Gentle, caring expression of mild concern for
+      another person: inner eyebrows raised in a soft worried arch, brow
+      smooth and NOT furrowed, eyes soft and attentive, mouth closed and
+      relaxed with the faintest trace of a kind smile. Hands open and
+      resting naturally, arms uncrossed, nothing on his hips.
+      He looks like someone quietly checking whether a colleague is okay.
+      Isolated on a plain white background, cut out, no scenery.
+      Photorealistic, soft even lighting, shallow depth of field, shot at
+      eye level, upper-body framing.
+
+    negative_prompt_en: >
+      furrowed brow, frowning, scowling, angry, stern, disapproving,
+      impatient, hands on hips, crossed arms, pointing, standing,
+      full-body, wide smile, teeth showing, sad, crying, pity,
+      exaggerated expression, black hat, black suit, long beard, payot,
+      tallit, synagogue, elderly, cartoon, illustration, 3D render.
 
     why_it_matters: >
       אחרי הוספת waiting יש שלושה מצבים לא-חיוביים — waiting,
