@@ -13,28 +13,6 @@ source: "מחולל תמונות, סט אחד, seed זהה"
 states:
 # ====================================================================
 
-  - id: concerned
-    file: elad-concerned.png
-    description: >
-      יושב, נוטה קדימה, ראש מוטה קלות. גבות מורמות במרכז, מצח חלק,
-      מבט רך. ידיים פתוחות באמצע מחווה מזמינה.
-    reads_as: "אני רואה שאתה תקוע — דבר איתי"
-
-    use_for:
-      - "on_stuck — פנייה יזומה אחרי 10 דקות בלי התקדמות"
-      - "התלמיד הגיע לשלב 4–5 בסולם הרמזים"
-      - "התלמיד כותב שהוא מתוסכל או שהוא לא מבין כלום"
-      - "חזרה אחרי היעדרות"
-
-    never_for:
-      - "טעות בקוד. באג הוא לא סיבה לדאגה"
-      - "אחרי כישלון בהערכה. שם צריך neutral ועובדות, לא רחמים"
-
-    note: >
-      הידיים יצאו באמצע מחווה ולא במנוחה, בניגוד לפרומפט — וזה יצא
-      לטובה. תנוחת מנוחה נקראת פסיבית; המחווה הפתוחה מזמינה תשובה,
-      וזה בדיוק מה ש-on_stuck צריך.
-
   - id: neutral
     file: elad-neutral.png
     description: >
@@ -180,6 +158,66 @@ states:
 # ====================================================================
 missing:
 
+  - id: concerned
+    needed_for: "on_stuck — פנייה יזומה אחרי 10 דקות בלי התקדמות"
+    priority: high
+
+    # ניסיון ראשון נפסל
+    rejected_attempt: >
+      הגרסה הראשונה יצאה נכונה מבחינת ההבעה — גבות מורמות במרכז,
+      מצח חלק — **אבל היא התנגשה עם explaining.** שתיהן בישיבה,
+      נטייה קדימה, שתי ידיים מורמות בכפות פתוחות. במבט חטוף אותה
+      תמונה, ושני המצבים איבדו הבחנה.
+
+    design_fix: >
+      **קומפוזיציה הפוכה: דמות דוממת, ידיים למטה.**
+      explaining הוא אנימציה — ידיים באוויר, פה פתוח, אנרגיה.
+      concerned צריך להיות **שקט** — אמות מונחות על השולחן, ידיים
+      רפויות, פה סגור. השקט הוא שקורא כדאגה; אדם שדואג למישהו
+      מפסיק לנפנף בידיים ומקשיב.
+
+    critical_details:
+      - "**ידיים למטה ומונחות.** זה מה שנכשל בפעם הקודמת — לחזק בפרומפט ובנגטיב"
+      - "**פה סגור.** ב-explaining הוא פתוח באמצע מילה. כאן דומם"
+      - "**גבות מורמות במרכז, מצח חלק.** מכווצות = ביקורת. זה עבד ולשמר"
+      - "**בלי חיוך אסימטרי.** הסמרק בגרסה הקודמת נטה לקרוא כמתנשא"
+
+    prompt_en: >
+      Professional portrait of a 30-year-old Israeli man, modern-Orthodox
+      (national-religious). Medium build, oval face, light olive skin,
+      brown eyes. Short dark-brown hair, neatly trimmed short beard along
+      the jawline. Thin dark-rimmed eyeglasses. Wearing a medium-sized
+      knitted kippah in blue-grey with a subtle geometric border, set back
+      on the crown of his head. Light blue button-down shirt, sleeves
+      rolled to mid-forearm, no tie. Simple watch with a brown leather
+      strap, employee badge on a grey lanyard.
+      Seated at a desk, both forearms resting flat on the desk surface in
+      front of him, hands relaxed and loosely together, low and still.
+      Body leaning in slightly, head tilted gently to one side. Completely
+      still and quiet, listening rather than speaking. Mouth closed and
+      soft with no smile and no smirk. Inner eyebrows raised in a small
+      sympathetic arch, forehead smooth and unwrinkled, eyes soft, warm
+      and steady, looking directly at the viewer. He looks like a
+      colleague who has stopped what he was doing to give you his full
+      attention because something seems wrong.
+      Isolated on a plain white background, cut out, no scenery.
+      Photorealistic, soft even lighting, shallow depth of field, shot at
+      eye level, upper-body framing.
+
+    negative_prompt_en: >
+      hands raised, hands up, gesturing, both hands in the air, open
+      palms facing camera, illustrative gesture, animated, mid-speech,
+      talking, open mouth, smiling, smirk, asymmetric smile, teeth
+      showing, furrowed brow, frowning, stern, pity, sadness, crying,
+      hands on hips, crossed arms, pointing, standing, full-body,
+      black hat, black suit, long beard, payot, tallit, synagogue,
+      elderly, cartoon, illustration, 3D render.
+
+    acceptance_check: >
+      להעמיד את התוצאה ליד elad-explaining.png. **אם במבט של שנייה
+      הן נראות כמו אותה תמונה — נפסל.** הידיים חייבות להיות במקום
+      אחר לגמרי בפריים.
+
   - id: presenting
     needed_for: "הצגת פניית לקוח — משבוע 11 והלאה, כ-20 שבועות"
     priority: high
@@ -286,23 +324,84 @@ ceiling: >
   ו-approve — מאבדים את הכוח שנובע מהנדירות שלהם.
 
 # ====================================================================
-# מסגורים נדרשים לכל מצב
+# מודל התצוגה
 # ====================================================================
-crops:
-  avatar:
-    size: "256×256"
-    framing: "ריבועי, ראש וכתפיים, הפנים במרכז"
-    used_in: "בועות צ'אט"
+display:
+  model: "figure-on-white"
+  decision: >
+    האווטאר **אינו** נחתך למסגרת ריבועית או עגולה. הוא מונח כדמות
+    חתוכה ישירות על הרקע הלבן של השיחה, בלי מסגרת ובלי גבול נראה,
+    למעט חיתוך בתחתית.
 
-  portrait:
-    size: "512×640"
-    framing: "חצי גוף"
-    used_in: "מסך פתיחת שבוע, כרטיס הצוות"
+  why: >
+    ב-explaining וב-presenting המחווה היא כל התוכן של המצב, והיא
+    מתחת לכתפיים. מסכה ריבועית או עגולה חותכת אותה, ושני המצבים
+    הופכים לזהים ל-neutral. מודל הדמות-על-לבן פותר את זה לגמרי
+    ומייתר כל לוגיקת נסיגה בין מסגורים.
 
-  full:
-    size: "מקור"
-    framing: "כפי שהופק"
-    used_in: "מסך פתיחה, ארכיון"
+  placement: persistent
+  placement_note: >
+    **אווטאר אחד קבוע, לא אחד לכל הודעה.** הוא יושב בפאנל צדדי או
+    עליון ומחליף מצב תוך כדי השיחה. זה מה שנותן ערך למצבים הרגשיים:
+    הם נקראים כאלעד שמגיב בזמן אמת, ולא כתמונה שמוצמדת לכל בועה.
+    אווטאר שחוזר בכל הודעה גם יאכל את כל שטח המסך בגובה הזה.
+
+  bottom_edge:
+    style: "fade"
+    spec: "מעבר הדרגתי לשקיפות לאורך 48–64 פיקסלים בתחתית"
+    why: >
+      חיתוך חד נראה כקטיעה, והוא גם חושף כל חוסר עקביות בגובה בין
+      המצבים. דעיכה רכה סלחנית לשניהם ונקראת כ"עולה מהדף".
+
+# --------------------------------------------------------------------
+# תנאים שחייבים להתקיים כדי שהמודל הזה יעבוד
+# --------------------------------------------------------------------
+display_requirements:
+
+  - id: white_surface_only
+    requirement: >
+      משטח השיחה חייב להיות לבן או קרוב ללבן. ה-PNG שקוף — על רקע
+      כהה או צבעוני יופיע הגבול ותיראה הילה סביב הדמות.
+    implication: >
+      **אין מצב כהה לפאנל הזה**, או שנדרש סט אווטארים שני עם הילה
+      מותאמת. עדיף פשוט להחליט שהפאנל לבן תמיד.
+
+  - id: normalized_baseline
+    requirement: >
+      בכל המצבים הראש חייב להיות באותו גובה ובאותו קנה מידה, והחיתוך
+      התחתון באותה נקודה אנטומית.
+    problem: >
+      ⚠️ **waiting הופק בעמידה ובגוף מלא, בעוד השאר יושבים.** במודל
+      הזה הוא יקפוץ בגודל ובמיקום כשיחליף מצב.
+    fix: >
+      נרמול ידני בעריכה: ליישר את כל השבעה לפי גובה העיניים ורוחב
+      הכתפיים, ואז לחתוך את כולם באותו קו. לבצע **לפני** שהפלטפורמה
+      מתחילה להשתמש בהם.
+
+  - id: fixed_canvas
+    requirement: >
+      כל הקבצים באותם מידות קנבס אחרי הנרמול, עם הדמות באותו מיקום.
+    why: "מאפשר החלפת מצב בלי שהפריסה תזוז"
+
+# --------------------------------------------------------------------
+# גדלים
+# --------------------------------------------------------------------
+sizes:
+  panel:
+    canvas: "420×520"
+    used_in: "פאנל השיחה — התצוגה הראשית"
+
+  hero:
+    canvas: "מקור, מנורמל"
+    used_in: "מסך פתיחת שבוע"
+
+  # נשמר רק למקומות שבהם באמת אין מקום לדמות מלאה
+  micro:
+    canvas: "64×64 עגול, פנים בלבד"
+    used_in: "רשימת הודעות, התראות"
+    note: >
+      במסגור הזה **רק neutral**. לא לנסות לדחוס מצבים אחרים לעיגול
+      של 64 פיקסלים — ההבדל ביניהם לא ייקרא.
 
 # ====================================================================
 # תיקונים שצריך לבצע על הקבצים
