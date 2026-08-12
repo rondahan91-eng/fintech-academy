@@ -9,17 +9,28 @@
 
 ```
 assets/persona/
+  elad-concerned.png     ✅ הופק — אמות על השולחן, גבות מורמות במרכז
   elad-neutral.png       ✅ הופק — נשען קדימה, חיוך סגור
   elad-thinking.png      ✅ הופק — יד על הסנטר, מבט הצידה
   elad-explaining.png    ✅ הופק — ידיים מעצבות רעיון, פה פתוח
   elad-approve.png       ✅ הופק — אגודל למעלה
-  elad-waiting.png       ✅ הופק — יד על המותן, "נו?"
   elad-disapprove.png    ✅ הופק — ידיים שלובות, מצח מכווץ
 
-  elad-concerned.png     ⬜ ניסיון ראשון נפסל — התנגש עם explaining
+  elad-waiting.png       ⚠️ להחלפה — בעמידה, יקפוץ בפאנל הקבוע
   elad-presenting.png    ⬜ חסר — הצגת פניית לקוח
   elad-impressed.png     ⬜ חסר — התלמיד הפתיע
 ```
+
+## שלושת המצבים היושבים אל השולחן
+
+`concerned`, `waiting_seated` ו-`disapprove` חולקים אותה קומפוזיציה,
+ולכן ההבדל ביניהם חייב להיקרא במבט אחד:
+
+| | גוף | גבות | ידיים |
+|---|---|---|---|
+| `concerned` | נוטה **פנימה** | מורמות **במרכז** | אמות על השולחן |
+| `waiting_seated` | נשען **אחורה** | **ישרות** | יד אחת על השולחן |
+| `disapprove` | זקוף | **מכווצות** | שלובות על החזה |
 
 ## תצוגה
 

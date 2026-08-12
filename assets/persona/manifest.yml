@@ -13,6 +13,31 @@ source: "מחולל תמונות, סט אחד, seed זהה"
 states:
 # ====================================================================
 
+  - id: concerned
+    file: elad-concerned.png
+    description: >
+      יושב אל השולחן, אמות מונחות עליו, ידיים נמוכות ורפויות. נוטה
+      פנימה, ראש מוטה קלות. גבות מורמות במרכז, מצח חלק, פה סגור ורך.
+    reads_as: "עצרתי את מה שעשיתי כי משהו נראה לי לא בסדר"
+
+    use_for:
+      - "on_stuck — פנייה יזומה אחרי 10 דקות בלי התקדמות"
+      - "התלמיד הגיע לשלב 4–5 בסולם הרמזים"
+      - "התלמיד כותב שהוא מתוסכל או שהוא לא מבין כלום"
+      - "חזרה אחרי היעדרות"
+
+    never_for:
+      - "טעות בקוד. באג הוא לא סיבה לדאגה"
+      - "אחרי כישלון בהערכה. שם neutral ועובדות, לא רחמים"
+
+    note: >
+      הופק בניסיון שני. הראשון נפסל כי התנגש ויזואלית עם explaining.
+      **מה שפתר: ידיים למטה על השולחן במקום מחווה באוויר, ופה סגור
+      במקום פתוח.** השקט הוא שקורא כדאגה.
+      השולחן נכנס לפריים אף שהפרומפט ביקש רקע נקי — וזה יצא לטובה,
+      הוא נותן קו חיתוך תחתון טבעי. **כל המצבים היושבים צריכים
+      מעכשיו את אותו שולחן ובאותו גובה.**
+
   - id: neutral
     file: elad-neutral.png
     description: >
@@ -120,6 +145,7 @@ states:
 
   - id: waiting
     file: elad-waiting.png
+    status: "⚠️ להחלפה — הגרסה הקיימת בעמידה. ראה missing → waiting_seated"
     description: >
       עומד, יד אחת על המותן, נשען קדימה. הבעה שטוחה, מבט ישיר.
     reads_as: "נו? אני מחכה"
@@ -158,29 +184,24 @@ states:
 # ====================================================================
 missing:
 
-  - id: concerned
-    needed_for: "on_stuck — פנייה יזומה אחרי 10 דקות בלי התקדמות"
+  - id: waiting_seated
+    replaces: waiting
+    needed_for: "אותם שימושים כמו waiting — רק בישיבה"
     priority: high
 
-    # ניסיון ראשון נפסל
-    rejected_attempt: >
-      הגרסה הראשונה יצאה נכונה מבחינת ההבעה — גבות מורמות במרכז,
-      מצח חלק — **אבל היא התנגשה עם explaining.** שתיהן בישיבה,
-      נטייה קדימה, שתי ידיים מורמות בכפות פתוחות. במבט חטוף אותה
-      תמונה, ושני המצבים איבדו הבחנה.
+    why_reshoot: >
+      waiting הוא המצב היחיד שהופק בעמידה ובגוף מלא. במודל הדמות-על-לבן
+      עם פאנל קבוע הוא **יקפוץ בגודל ובמיקום** בכל החלפת מצב, ולא ניתן
+      לנרמל אותו לאותו קו בסיס כמו השאר. הפקה מחדש בישיבה פותרת את
+      display_requirements → normalized_baseline.
 
-    design_fix: >
-      **קומפוזיציה הפוכה: דמות דוממת, ידיים למטה.**
-      explaining הוא אנימציה — ידיים באוויר, פה פתוח, אנרגיה.
-      concerned צריך להיות **שקט** — אמות מונחות על השולחן, ידיים
-      רפויות, פה סגור. השקט הוא שקורא כדאגה; אדם שדואג למישהו
-      מפסיק לנפנף בידיים ומקשיב.
-
-    critical_details:
-      - "**ידיים למטה ומונחות.** זה מה שנכשל בפעם הקודמת — לחזק בפרומפט ובנגטיב"
-      - "**פה סגור.** ב-explaining הוא פתוח באמצע מילה. כאן דומם"
-      - "**גבות מורמות במרכז, מצח חלק.** מכווצות = ביקורת. זה עבד ולשמר"
-      - "**בלי חיוך אסימטרי.** הסמרק בגרסה הקודמת נטה לקרוא כמתנשא"
+    # שלושה מצבים יושבים אל אותו שולחן — ההפרדה ביניהם חייבת להיות חדה
+    distinguish_from: >
+      **מול concerned:** שם הוא נוטה **פנימה** עם גבות מורמות במרכז
+      ומבט רך. כאן הוא נשען **אחורה** עם גבות ישרות ומבט קר.
+      נטייה פנימה = אכפתיות. נטייה אחורה = ריחוק והמתנה.
+      **מול disapprove:** שם ידיים שלובות על החזה ומצח מכווץ. כאן
+      הידיים על השולחן והמצח חלק — הוא מחכה, לא שופט.
 
     prompt_en: >
       Professional portrait of a 30-year-old Israeli man, modern-Orthodox
@@ -191,32 +212,35 @@ missing:
       on the crown of his head. Light blue button-down shirt, sleeves
       rolled to mid-forearm, no tie. Simple watch with a brown leather
       strap, employee badge on a grey lanyard.
-      Seated at a desk, both forearms resting flat on the desk surface in
-      front of him, hands relaxed and loosely together, low and still.
-      Body leaning in slightly, head tilted gently to one side. Completely
-      still and quiet, listening rather than speaking. Mouth closed and
-      soft with no smile and no smirk. Inner eyebrows raised in a small
-      sympathetic arch, forehead smooth and unwrinkled, eyes soft, warm
-      and steady, looking directly at the viewer. He looks like a
-      colleague who has stopped what he was doing to give you his full
-      attention because something seems wrong.
-      Isolated on a plain white background, cut out, no scenery.
-      Photorealistic, soft even lighting, shallow depth of field, shot at
-      eye level, upper-body framing.
+      Seated at the same plain white desk, leaning back away from the
+      desk rather than toward it, shoulders squared, chin level. One
+      hand rests flat on the desk surface, the other arm relaxed at his
+      side. Expectant, mildly impatient expression: both eyebrows level
+      or very slightly raised evenly, forehead smooth, lips closed and
+      pressed in a flat line with no smile, steady unblinking gaze
+      directly at the viewer. He looks like someone who asked a question
+      a moment ago and is still waiting for the answer.
+      Isolated on a plain white background, cut out, no scenery beyond
+      the desk edge. Photorealistic, soft even lighting, shallow depth of
+      field, shot at eye level, upper-body framing.
 
     negative_prompt_en: >
-      hands raised, hands up, gesturing, both hands in the air, open
-      palms facing camera, illustrative gesture, animated, mid-speech,
-      talking, open mouth, smiling, smirk, asymmetric smile, teeth
-      showing, furrowed brow, frowning, stern, pity, sadness, crying,
-      hands on hips, crossed arms, pointing, standing, full-body,
-      black hat, black suit, long beard, payot, tallit, synagogue,
-      elderly, cartoon, illustration, 3D render.
+      standing, full-body, hands on hips, crossed arms, leaning forward,
+      head tilted, inner eyebrows raised, worried, concerned, sympathetic,
+      furrowed brow, angry, scowling, smiling, smirk, teeth showing,
+      gesturing, hands raised, open palms, black hat, black suit,
+      long beard, payot, tallit, synagogue, elderly, cartoon,
+      illustration, 3D render.
 
     acceptance_check: >
-      להעמיד את התוצאה ליד elad-explaining.png. **אם במבט של שנייה
-      הן נראות כמו אותה תמונה — נפסל.** הידיים חייבות להיות במקום
-      אחר לגמרי בפריים.
+      להעמיד ליד elad-concerned.png. **שתיהן בישיבה אל אותו שולחן,
+      ולכן ההבדל חייב להיקרא מיד:** נטייה אחורה מול פנימה, גבות
+      ישרות מול מורמות במרכז, מבט קר מול רך. אם שתיהן נראות אדיבות
+      באותה מידה — נפסל.
+
+    desk_continuity: >
+      אותו שולחן, אותו גובה, אותו קנה מידה כמו concerned. אם אפשר —
+      להפיק באותה הרצה כדי שקו השולחן יתלכד.
 
   - id: presenting
     needed_for: "הצגת פניית לקוח — משבוע 11 והלאה, כ-20 שבועות"
