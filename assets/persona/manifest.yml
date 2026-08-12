@@ -203,6 +203,20 @@ missing:
       **מול disapprove:** שם ידיים שלובות על החזה ומצח מכווץ. כאן
       הידיים על השולחן והמצח חלק — הוא מחכה, לא שופט.
 
+    # ניסיון ראשון בישיבה — נפסל
+    rejected_attempt_1: >
+      יצא איכותי ועקבי ופתר את בעיית העמידה, **אבל התנגש עם neutral
+      ולא עם concerned.** הנטייה אחורה לא נחתה — הוא ישב זקוף — ומה
+      שנשאר להבדיל אותו מ-neutral היה רק היעדר החיוך. התוצאה נקראה
+      "רגוע וקשוב", לא "נו?".
+      **המסקנה: זווית גוף היא ציר הבחנה חלש. המחולל מיישר את הגב.**
+
+    design_fix: >
+      **גבה אחת מורמת.** זהו הסימן היחיד בסט שאי אפשר לבלבל אותו עם
+      כלום — לא concerned (שתיהן מורמות במרכז), לא disapprove (שתיהן
+      מכווצות), ולא neutral (ישרות). מוסיפים אצבעות מתופפות על השולחן
+      וסנטר מורם קלות, ומפסיקים להסתמך על נטיית הגוף.
+
     prompt_en: >
       Professional portrait of a 30-year-old Israeli man, modern-Orthodox
       (national-religious). Medium build, oval face, light olive skin,
@@ -212,31 +226,32 @@ missing:
       on the crown of his head. Light blue button-down shirt, sleeves
       rolled to mid-forearm, no tie. Simple watch with a brown leather
       strap, employee badge on a grey lanyard.
-      Seated at the same plain white desk, leaning back away from the
-      desk rather than toward it, shoulders squared, chin level. One
-      hand rests flat on the desk surface, the other arm relaxed at his
-      side. Expectant, mildly impatient expression: both eyebrows level
-      or very slightly raised evenly, forehead smooth, lips closed and
-      pressed in a flat line with no smile, steady unblinking gaze
-      directly at the viewer. He looks like someone who asked a question
-      a moment ago and is still waiting for the answer.
+      Seated at the same plain white desk. Clearly impatient and waiting:
+      ONE eyebrow raised high in a distinctly quizzical arch while the
+      other stays level — a strong asymmetric "well?" expression. Chin
+      lifted slightly, head drawn back a little, forehead smooth. Lips
+      closed and pressed into a flat line, no smile whatsoever. Steady,
+      unamused, direct stare at the viewer. One hand on the desk with
+      fingers mid-drum, the other forearm resting. He looks like someone
+      who asked a question a while ago and is still waiting for the
+      answer.
       Isolated on a plain white background, cut out, no scenery beyond
       the desk edge. Photorealistic, soft even lighting, shallow depth of
       field, shot at eye level, upper-body framing.
 
     negative_prompt_en: >
-      standing, full-body, hands on hips, crossed arms, leaning forward,
-      head tilted, inner eyebrows raised, worried, concerned, sympathetic,
-      furrowed brow, angry, scowling, smiling, smirk, teeth showing,
-      gesturing, hands raised, open palms, black hat, black suit,
-      long beard, payot, tallit, synagogue, elderly, cartoon,
-      illustration, 3D render.
+      both eyebrows level, both eyebrows raised evenly, symmetric
+      expression, inner eyebrows raised, worried, concerned,
+      sympathetic, warm, kind, friendly, smiling, smirk, teeth showing,
+      head tilted to the side, leaning forward, furrowed brow, angry,
+      scowling, standing, full-body, hands on hips, crossed arms,
+      gesturing, hands raised, black hat, long beard, payot, elderly,
+      cartoon, illustration, 3D render.
 
     acceptance_check: >
-      להעמיד ליד elad-concerned.png. **שתיהן בישיבה אל אותו שולחן,
-      ולכן ההבדל חייב להיקרא מיד:** נטייה אחורה מול פנימה, גבות
-      ישרות מול מורמות במרכז, מבט קר מול רך. אם שתיהן נראות אדיבות
-      באותה מידה — נפסל.
+      **להעמיד ליד neutral, לא ליד concerned** — שם ההתנגשות בפועל.
+      אם ההבדל היחיד הוא שכאן הוא לא מחייך — נפסל. הגבה המורמת
+      חייבת להיות מיידית וברורה.
 
     desk_continuity: >
       אותו שולחן, אותו גובה, אותו קנה מידה כמו concerned. אם אפשר —
