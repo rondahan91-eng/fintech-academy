@@ -48,6 +48,33 @@ states:
       - "מענה לשאלה של התלמיד"
       - "בדיקת הבנה — check_question"
 
+  - id: explaining
+    file: elad-explaining.png
+    description: >
+      יושב זקוף, פונה למצלמה, פה פתוח באמצע מילה. גבות ישרות, מבט
+      ישיר. שתי ידיים מורמות מול החזה במחווה שמעצבת רעיון באוויר.
+    reads_as: "מסביר משהו שמעניין אותו"
+
+    use_for:
+      - "מסירת המושג הפיננסי — הבלוק teaches"
+      - "תיקון תפיסה שגויה"
+      - "הסבר למה סעיף בסילבוס רלוונטי למשימה"
+
+    never_for:
+      - "רמזים. שם thinking — הוא אמור לשאול, לא להסביר"
+
+    # ⚠️ אילוץ מסגור — לא לפספס
+    crop_constraint: >
+      **המחווה היא כל התוכן של המצב הזה, והיא מתחת לכתפיים.**
+      בחיתוך avatar ריבועי הידיים נחתכות והתמונה נראית זהה ל-neutral.
+      להשתמש רק בחיתוך portrait, או להרחיב את חיתוך האווטאר כך
+      שיכלול את הידיים.
+
+    note: >
+      האצבעות פרושות ומכופפות מעט — נראה קצת מתוח מקרוב. בחיתוך
+      קטן זה נעלם לגמרי. אם יופק שוב, כדאי להוסיף `relaxed fingers,
+      soft hands` לפרומפט.
+
   - id: thinking
     file: elad-thinking.png
     description: >
@@ -152,44 +179,6 @@ states:
 # הפנים. לשנות רק את פסקת התנוחה וההבעה.
 # ====================================================================
 missing:
-
-  - id: explaining
-    needed_for: "מסירת המושג הפיננסי — הבלוק teaches בכל שבוע"
-    priority: high
-    frequency: "הכי גבוה מכל המצבים החסרים. כל שבוע, כמה פעמים"
-
-    distinguish_from: >
-      **מול concerned:** שם הפה סגור, הגבות מורמות במרכז והראש מוטה.
-      כאן הפה פתוח באמצע מילה, הגבות ישרות והראש זקוף.
-      **מול thinking:** שם הוא מסתכל הצידה ושותק. כאן הוא מסתכל עליך
-      ומדבר.
-
-    prompt_en: >
-      Professional portrait of a 30-year-old Israeli man, modern-Orthodox
-      (national-religious). Medium build, oval face, light olive skin,
-      brown eyes. Short dark-brown hair, neatly trimmed short beard along
-      the jawline. Thin dark-rimmed eyeglasses. Wearing a medium-sized
-      knitted kippah in blue-grey with a subtle geometric border, set back
-      on the crown of his head. Light blue button-down shirt, sleeves
-      rolled to mid-forearm, no tie. Simple watch with a brown leather
-      strap, employee badge on a grey lanyard.
-      Seated upright facing the camera, head straight and level, engaged
-      and animated mid-explanation. Mouth slightly open as if speaking a
-      word, eyebrows level and relaxed, direct friendly eye contact. Both
-      hands raised in front of his chest in a natural illustrative
-      gesture, palms angled toward each other as if measuring or shaping
-      an idea in the air. He looks like someone in the middle of
-      explaining something he finds genuinely interesting.
-      Isolated on a plain white background, cut out, no scenery.
-      Photorealistic, soft even lighting, shallow depth of field, shot at
-      eye level, upper-body framing.
-
-    negative_prompt_en: >
-      head tilted, worried, concerned, raised inner eyebrows, furrowed
-      brow, hands on hips, crossed arms, looking away, silent, closed
-      mouth, wide smile, teeth bared, lecturing, finger wagging,
-      standing, full-body, black hat, black suit, long beard, payot,
-      synagogue, elderly, cartoon, illustration, 3D render.
 
   - id: presenting
     needed_for: "הצגת פניית לקוח — משבוע 11 והלאה, כ-20 שבועות"
