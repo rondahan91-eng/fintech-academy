@@ -12,8 +12,20 @@ assets/persona/
   elad-neutral.png       ✅ הופק — נשען קדימה, חיוך סגור
   elad-thinking.png      ✅ הופק — יד על הסנטר, מבט הצידה
   elad-approve.png       ✅ הופק — אגודל למעלה
+  elad-waiting.png       ✅ הופק — יד על המותן, "נו?"
   elad-disapprove.png    ✅ הופק — ידיים שלובות, מצח מכווץ
   elad-concerned.png     ⬜ חסר — ראה manifest.yml → missing
+```
+
+## סולם הלחץ
+
+חמשת המצבים מסודרים מהרך לחריף. **המרחק ביניהם מכוון** — אל תדלג
+שלב, ובעיקר אל תשתמש ב-`disapprove` במקום `waiting`:
+
+```
+concerned  →  neutral  →  thinking  →  waiting  →  disapprove
+ (חסר)         דיפולט      מלמד      "נו?"       "חצית קו"
+  תומך                                 לוחץ         אתי בלבד
 ```
 
 רקע שקוף, PNG. המקור נשמר; החיתוכים נגזרים ממנו.
