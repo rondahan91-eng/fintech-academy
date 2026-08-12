@@ -143,6 +143,36 @@ states:
       מהמיעוט — תלמיד שרואה אותו פעם בחודשיים יודע שקרה משהו.
       אם הוא מופיע כל שבוע, הוא הופך לרעש והמצב הזה מת.
 
+  - id: impressed
+    file: elad-impressed.png
+    description: >
+      יושב, סנטר מורם קלות, ראש מעט אחורה. שתי גבות מורמות בשוויון,
+      עיניים מורחבות קלות, חיוך סגור מלוכסן. יד אחת מורמת מול החזה.
+    reads_as: "לא חשבתי על זה"
+
+    use_for:
+      - "פתרון אלגנטי מעבר לנדרש"
+      - "שאלה שאלעד לא צפה"
+      - "מציאת פרצה בכלכלת המשחק — SPEC פרק 10"
+      - "התלמיד תיקן טעות של אלעד"
+
+    never_for:
+      - "השלמת משימה. זו העבודה"
+      - "מעבר הערכה או עלייה בדרגה. שם approve"
+
+    rarity: >
+      **הנדיר בסט, יחד עם disapprove.** impressed מחמיא הרבה יותר
+      מ-approve — approve אומר "עברת", impressed אומר "הפתעת אותי".
+      שימוש תכוף הופך אותו לחנפנות והורס את שניהם.
+
+    caveat: >
+      ⚠️ כף יד פתוחה כלפי מעלה + גבות מורמות היא גם מחוות **משיכת
+      כתפיים**. השכמות ישרות והחיוך מעריך, ולכן הקריאה העיקרית
+      נכונה — אבל יש קריאה משנית של "מה אני יודע".
+      `shrugging` נשמט מהנגטיב. אם בבדיקה זה נקרא לא נכון: **הפנים
+      לבדן נושאות את המצב** — חיתוך הדוק יותר, או הפקה חוזרת עם יד
+      מונחת ו-`shrugging, palms up in confusion` בנגטיב.
+
   - id: disapprove
     file: elad-disapprove.png
     description: >
@@ -183,7 +213,7 @@ states:
       - "תזכורת על משימה שעברה את הדדליין"
 
     never_for:
-      - "on_stuck. יד על המותן קוראת כחוסר סבלנות, לא כדאגה"
+      - "on_stuck. זה קורא כחוסר סבלנות, לא כדאגה. שם concerned"
       - "תלמיד ששואל שאלות. זו התנהגות רצויה"
 
     note: >
@@ -212,51 +242,10 @@ states:
 # בלוק הדמות בכל פרומפט זהה מילה במילה בכוונה — זה מה ששומר על
 # הפנים. לשנות רק את פסקת התנוחה וההבעה.
 # ====================================================================
-missing:
-
-  - id: impressed
-    needed_for: >
-      התלמיד עשה משהו מעבר לצפוי — פתרון אלגנטי, שאלה שאלעד לא צפה,
-      או מציאת פרצה בכלכלה (SPEC פרק 10: "כשמישהו מוצא ארביטראז' —
-      עשה מזה שיעור")
-    priority: medium
-
-    distinguish_from: >
-      **מול approve:** שם חגיגה על אבן דרך — דרגה, הערכה. כאן הפתעה
-      אמיתית מתובנה. approve הוא "עברת"; impressed הוא "לא חשבתי על
-      זה". השני מחמיא הרבה יותר, ולכן חייב להישאר נדיר.
-
-    prompt_en: >
-      Professional portrait of a 30-year-old Israeli man, modern-Orthodox
-      (national-religious). Medium build, oval face, light olive skin,
-      brown eyes. Short dark-brown hair, neatly trimmed short beard along
-      the jawline. Thin dark-rimmed eyeglasses. Wearing a medium-sized
-      knitted kippah in blue-grey with a subtle geometric border, set back
-      on the crown of his head. Light blue button-down shirt, sleeves
-      rolled to mid-forearm, no tie. Simple watch with a brown leather
-      strap, employee badge on a grey lanyard.
-      Seated facing the camera, chin lifted very slightly, head drawn a
-      little back in mild genuine surprise. Both eyebrows raised evenly
-      and high, eyes widened slightly behind the glasses, closed-lip
-      smile pulled to one side in an appreciative half-smirk. One hand
-      raised near his chest, palm open, in a small spontaneous
-      acknowledgement. He looks like someone who just heard an answer
-      better than the one he expected.
-      Isolated on a plain white background, cut out, no scenery.
-      Photorealistic, soft even lighting, shallow depth of field, shot at
-      eye level, upper-body framing.
-
-    negative_prompt_en: >
-      shocked, gasping, mouth wide open, exaggerated, comic, thumbs up,
-      applause, wide toothy grin, inner eyebrows raised, worried,
-      skeptical, doubtful, standing, full-body, black hat, black suit,
-      long beard, payot, synagogue, elderly, cartoon, illustration,
-      3D render.
-
-    note: >
-      גבות מורמות **בשוויון** — הפתעה. גבות מורמות **במרכז** — דאגה.
-      אותו שריר, משמעות הפוכה. אם התוצאה נראית מודאגת, זו הסיבה.
-
+# ====================================================================
+# חסר בסט
+# ====================================================================
+missing: []   # ✅ כל תשעת המצבים הופקו
 # ====================================================================
 # מה בכוונה לא נוסיף
 # ====================================================================
