@@ -13,6 +13,28 @@ source: "מחולל תמונות, סט אחד, seed זהה"
 states:
 # ====================================================================
 
+  - id: concerned
+    file: elad-concerned.png
+    description: >
+      יושב, נוטה קדימה, ראש מוטה קלות. גבות מורמות במרכז, מצח חלק,
+      מבט רך. ידיים פתוחות באמצע מחווה מזמינה.
+    reads_as: "אני רואה שאתה תקוע — דבר איתי"
+
+    use_for:
+      - "on_stuck — פנייה יזומה אחרי 10 דקות בלי התקדמות"
+      - "התלמיד הגיע לשלב 4–5 בסולם הרמזים"
+      - "התלמיד כותב שהוא מתוסכל או שהוא לא מבין כלום"
+      - "חזרה אחרי היעדרות"
+
+    never_for:
+      - "טעות בקוד. באג הוא לא סיבה לדאגה"
+      - "אחרי כישלון בהערכה. שם צריך neutral ועובדות, לא רחמים"
+
+    note: >
+      הידיים יצאו באמצע מחווה ולא במנוחה, בניגוד לפרומפט — וזה יצא
+      לטובה. תנוחת מנוחה נקראת פסיבית; המחווה הפתוחה מזמינה תשובה,
+      וזה בדיוק מה ש-on_stuck צריך.
+
   - id: neutral
     file: elad-neutral.png
     description: >
@@ -122,23 +144,25 @@ states:
 
 # ====================================================================
 # חסר בסט
+#
+# כלל: מצב חדש נוסף רק אם יש לו **רגע מוגדר במערכת**. מצב בלי מיפוי
+# לאירוע הוא קישוט, והוא מדלל את המשמעות של המצבים הקיימים.
+#
+# בלוק הדמות בכל פרומפט זהה מילה במילה בכוונה — זה מה ששומר על
+# הפנים. לשנות רק את פסקת התנוחה וההבעה.
 # ====================================================================
 missing:
-  - id: concerned
-    needed_for: "on_stuck — פנייה יזומה אחרי 10 דקות בלי התקדמות"
+
+  - id: explaining
+    needed_for: "מסירת המושג הפיננסי — הבלוק teaches בכל שבוע"
     priority: high
+    frequency: "הכי גבוה מכל המצבים החסרים. כל שבוע, כמה פעמים"
 
-    description_for_generation: >
-      **יושב או נשען כמו ב-neutral — לא עומד.** ראש מוטה קלות הצידה,
-      גוף נוטה מעט קדימה לעבר המצלמה. גבות מורמות **במרכז** (מבט
-      דואג), לא מכווצות. פה סגור ורפוי, אולי רמז קל של חיוך.
-      **ידיים פתוחות או מונחות — לעולם לא על המותן ולא שלובות.**
-
-    # הסימן האנטומי שמפריד דאגה מביקורת — אם רק דבר אחד נשמר, זה הוא
-    critical_detail: >
-      **גבות מורמות במרכז (inner brow raise), לא מכווצות.** זה ההבדל
-      היחיד בין "אכפת לי ממך" ל"אני מבקר אותך". מחוללי תמונות נוטים
-      לכווץ גבות כשמבקשים מהם "מודאג", ואז מתקבל בדיוק הפרצוף הלא נכון.
+    distinguish_from: >
+      **מול concerned:** שם הפה סגור, הגבות מורמות במרכז והראש מוטה.
+      כאן הפה פתוח באמצע מילה, הגבות ישרות והראש זקוף.
+      **מול thinking:** שם הוא מסתכל הצידה ושותק. כאן הוא מסתכל עליך
+      ומדבר.
 
     prompt_en: >
       Professional portrait of a 30-year-old Israeli man, modern-Orthodox
@@ -149,30 +173,128 @@ missing:
       on the crown of his head. Light blue button-down shirt, sleeves
       rolled to mid-forearm, no tie. Simple watch with a brown leather
       strap, employee badge on a grey lanyard.
-      Seated and leaning slightly forward toward the camera, head tilted
-      gently to one side. Gentle, caring expression of mild concern for
-      another person: inner eyebrows raised in a soft worried arch, brow
-      smooth and NOT furrowed, eyes soft and attentive, mouth closed and
-      relaxed with the faintest trace of a kind smile. Hands open and
-      resting naturally, arms uncrossed, nothing on his hips.
-      He looks like someone quietly checking whether a colleague is okay.
+      Seated upright facing the camera, head straight and level, engaged
+      and animated mid-explanation. Mouth slightly open as if speaking a
+      word, eyebrows level and relaxed, direct friendly eye contact. Both
+      hands raised in front of his chest in a natural illustrative
+      gesture, palms angled toward each other as if measuring or shaping
+      an idea in the air. He looks like someone in the middle of
+      explaining something he finds genuinely interesting.
       Isolated on a plain white background, cut out, no scenery.
       Photorealistic, soft even lighting, shallow depth of field, shot at
       eye level, upper-body framing.
 
     negative_prompt_en: >
-      furrowed brow, frowning, scowling, angry, stern, disapproving,
-      impatient, hands on hips, crossed arms, pointing, standing,
-      full-body, wide smile, teeth showing, sad, crying, pity,
-      exaggerated expression, black hat, black suit, long beard, payot,
-      tallit, synagogue, elderly, cartoon, illustration, 3D render.
+      head tilted, worried, concerned, raised inner eyebrows, furrowed
+      brow, hands on hips, crossed arms, looking away, silent, closed
+      mouth, wide smile, teeth bared, lecturing, finger wagging,
+      standing, full-body, black hat, black suit, long beard, payot,
+      synagogue, elderly, cartoon, illustration, 3D render.
 
-    why_it_matters: >
-      אחרי הוספת waiting יש שלושה מצבים לא-חיוביים — waiting,
-      disapprove, ואין אף אחד **חם**. כל השלושה מפעילים לחץ.
-      on_stuck הוא הרגע היחיד שבו אלעד פונה מיוזמתו לתלמיד שמתקשה,
-      וזה חייב להיקרא כתמיכה. **עד שהתמונה תופק — neutral, בשום
-      אופן לא waiting.**
+  - id: presenting
+    needed_for: "הצגת פניית לקוח — משבוע 11 והלאה, כ-20 שבועות"
+    priority: high
+
+    distinguish_from: >
+      זהו המצב היחיד שבו תשומת הלב מופנית **החוצה** ולא אליו או
+      אל התלמיד. הוא מוסר עבודה, לא מלמד.
+
+    prompt_en: >
+      Professional portrait of a 30-year-old Israeli man, modern-Orthodox
+      (national-religious). Medium build, oval face, light olive skin,
+      brown eyes. Short dark-brown hair, neatly trimmed short beard along
+      the jawline. Thin dark-rimmed eyeglasses. Wearing a medium-sized
+      knitted kippah in blue-grey with a subtle geometric border, set back
+      on the crown of his head. Light blue button-down shirt, sleeves
+      rolled to mid-forearm, no tie. Simple watch with a brown leather
+      strap, employee badge on a grey lanyard.
+      Seated, torso turned slightly to one side while his face stays
+      toward the camera. One arm extended to his side, palm open and
+      upturned in a clear offering gesture, as if handing something over
+      or directing attention to it. Other hand resting naturally. Light
+      closed-lip smile, eyebrows level, relaxed and matter-of-fact. He
+      looks like a colleague passing you a file and saying "this one's
+      yours".
+      Isolated on a plain white background, cut out, no scenery.
+      Photorealistic, soft even lighting, shallow depth of field, shot at
+      eye level, upper-body framing.
+
+    negative_prompt_en: >
+      pointing finger, accusatory, both hands forward, praying hands,
+      shrugging, palms up in confusion, worried, stern, wide smile,
+      standing, full-body, holding a visible object, holding papers,
+      black hat, black suit, long beard, payot, synagogue, elderly,
+      cartoon, illustration, 3D render.
+
+    note: >
+      **ידיים ריקות בכוונה.** אם מחזיקים חפץ, המחולל ימציא מסמך או
+      טאבלט עם טקסט מגובב — בדיוק הבעיה שהייתה בתג העובד.
+
+  - id: impressed
+    needed_for: >
+      התלמיד עשה משהו מעבר לצפוי — פתרון אלגנטי, שאלה שאלעד לא צפה,
+      או מציאת פרצה בכלכלה (SPEC פרק 10: "כשמישהו מוצא ארביטראז' —
+      עשה מזה שיעור")
+    priority: medium
+
+    distinguish_from: >
+      **מול approve:** שם חגיגה על אבן דרך — דרגה, הערכה. כאן הפתעה
+      אמיתית מתובנה. approve הוא "עברת"; impressed הוא "לא חשבתי על
+      זה". השני מחמיא הרבה יותר, ולכן חייב להישאר נדיר.
+
+    prompt_en: >
+      Professional portrait of a 30-year-old Israeli man, modern-Orthodox
+      (national-religious). Medium build, oval face, light olive skin,
+      brown eyes. Short dark-brown hair, neatly trimmed short beard along
+      the jawline. Thin dark-rimmed eyeglasses. Wearing a medium-sized
+      knitted kippah in blue-grey with a subtle geometric border, set back
+      on the crown of his head. Light blue button-down shirt, sleeves
+      rolled to mid-forearm, no tie. Simple watch with a brown leather
+      strap, employee badge on a grey lanyard.
+      Seated facing the camera, chin lifted very slightly, head drawn a
+      little back in mild genuine surprise. Both eyebrows raised evenly
+      and high, eyes widened slightly behind the glasses, closed-lip
+      smile pulled to one side in an appreciative half-smirk. One hand
+      raised near his chest, palm open, in a small spontaneous
+      acknowledgement. He looks like someone who just heard an answer
+      better than the one he expected.
+      Isolated on a plain white background, cut out, no scenery.
+      Photorealistic, soft even lighting, shallow depth of field, shot at
+      eye level, upper-body framing.
+
+    negative_prompt_en: >
+      shocked, gasping, mouth wide open, exaggerated, comic, thumbs up,
+      applause, wide toothy grin, inner eyebrows raised, worried,
+      skeptical, doubtful, standing, full-body, black hat, black suit,
+      long beard, payot, synagogue, elderly, cartoon, illustration,
+      3D render.
+
+    note: >
+      גבות מורמות **בשוויון** — הפתעה. גבות מורמות **במרכז** — דאגה.
+      אותו שריר, משמעות הפוכה. אם התוצאה נראית מודאגת, זו הסיבה.
+
+# ====================================================================
+# מה בכוונה לא נוסיף
+# ====================================================================
+deliberately_excluded:
+  - state: "עצוב / מאוכזב מעצמו"
+    why: "אלעד לא מטיל אשמה ולא מבקש רחמים. disapprove מכסה את הקצה"
+
+  - state: "כועס"
+    why: >
+      אין רגע במערכת שמצדיק כעס. גם שירוט — ההפרה החמורה ביותר —
+      מקבל disapprove ולא יותר
+
+  - state: "חוגג / מריע"
+    why: "approve מכסה. חגיגה גדולה מזה תיראה מזויפת"
+
+  - state: "לא זמין / שבת"
+    why: "אינדיקציה בממשק — אווטאר מוחלש או נקודה אפורה. לא תמונה חדשה"
+
+ceiling: >
+  תשעה מצבים הם התקרה. מעבר לזה התלמידים מפסיקים לקרוא את הפנים
+  כאינפורמציה ומתחילים לראות בהן רעש, והמצבים החשובים — disapprove
+  ו-approve — מאבדים את הכוח שנובע מהנדירות שלהם.
 
 # ====================================================================
 # מסגורים נדרשים לכל מצב
