@@ -145,9 +145,9 @@ states:
 
   - id: waiting
     file: elad-waiting.png
-    status: "⚠️ להחלפה — הגרסה הקיימת בעמידה. ראה missing → waiting_seated"
     description: >
-      עומד, יד אחת על המותן, נשען קדימה. הבעה שטוחה, מבט ישיר.
+      יושב אל השולחן, ידיים שלובות רפויות עליו, ראש זקוף. הבעה
+      דדפן לגמרי — עיניים קרות, פה שטוח ולחוץ, אפס חום.
     reads_as: "נו? אני מחכה"
 
     use_for:
@@ -165,13 +165,17 @@ states:
       לבין disapprove לא היה כלום. "אתה מתחמק" ו"פגעת בלקוח" הן לא
       אותה חומרה, ועכשיו יש להן שתי פנים שונות.
 
+    production_history: >
+      שלושה סבבים. הראשון בעמידה עם יד על המותן — נפסל, קפץ בפאנל
+      הקבוע. השני בישיבה — נפסל, התנגש עם neutral כי הנטייה אחורה
+      לא נחתה. השלישי התקבל.
+      **הלקח שנשמר: זווית גוף היא ציר הבחנה חלש — המחולל מיישר את
+      הגב כמעט תמיד. להסתמך על סימני פנים.**
+
     caveat: >
-      ⚠️ הפנים כאן מעט שונות משאר הסט — לסת צרה יותר, הבעה עייפה,
-      תאורה אחרת. כנראה seed שונה או דריפט. בבועת צ'אט קטנה זה לא
-      ייראה; בחיתוך portrait זה כן. **לשקול הפקה חוזרת עם ה-seed
-      המקורי לפני שמשלבים במסך גדול.**
-      בנוסף: המסגור עומד ובגוף מלא, בעוד שאר הסט יושב/נשען. חיתוך
-      avatar חייב להיות הדוק כדי להסתיר את הפער.
+      הגבה האסימטרית יצאה עדינה יותר מהמבוקש. הדדפן הכולל נושא את
+      המצב, אבל **אם בבדיקה בכיתה מתברר שתלמידים לא קוראים את זה
+      כחוסר סבלנות — זה הפרט לחזק**, לא הפוזה.
 
 # ====================================================================
 # חסר בסט
@@ -183,79 +187,6 @@ states:
 # הפנים. לשנות רק את פסקת התנוחה וההבעה.
 # ====================================================================
 missing:
-
-  - id: waiting_seated
-    replaces: waiting
-    needed_for: "אותם שימושים כמו waiting — רק בישיבה"
-    priority: high
-
-    why_reshoot: >
-      waiting הוא המצב היחיד שהופק בעמידה ובגוף מלא. במודל הדמות-על-לבן
-      עם פאנל קבוע הוא **יקפוץ בגודל ובמיקום** בכל החלפת מצב, ולא ניתן
-      לנרמל אותו לאותו קו בסיס כמו השאר. הפקה מחדש בישיבה פותרת את
-      display_requirements → normalized_baseline.
-
-    # שלושה מצבים יושבים אל אותו שולחן — ההפרדה ביניהם חייבת להיות חדה
-    distinguish_from: >
-      **מול concerned:** שם הוא נוטה **פנימה** עם גבות מורמות במרכז
-      ומבט רך. כאן הוא נשען **אחורה** עם גבות ישרות ומבט קר.
-      נטייה פנימה = אכפתיות. נטייה אחורה = ריחוק והמתנה.
-      **מול disapprove:** שם ידיים שלובות על החזה ומצח מכווץ. כאן
-      הידיים על השולחן והמצח חלק — הוא מחכה, לא שופט.
-
-    # ניסיון ראשון בישיבה — נפסל
-    rejected_attempt_1: >
-      יצא איכותי ועקבי ופתר את בעיית העמידה, **אבל התנגש עם neutral
-      ולא עם concerned.** הנטייה אחורה לא נחתה — הוא ישב זקוף — ומה
-      שנשאר להבדיל אותו מ-neutral היה רק היעדר החיוך. התוצאה נקראה
-      "רגוע וקשוב", לא "נו?".
-      **המסקנה: זווית גוף היא ציר הבחנה חלש. המחולל מיישר את הגב.**
-
-    design_fix: >
-      **גבה אחת מורמת.** זהו הסימן היחיד בסט שאי אפשר לבלבל אותו עם
-      כלום — לא concerned (שתיהן מורמות במרכז), לא disapprove (שתיהן
-      מכווצות), ולא neutral (ישרות). מוסיפים אצבעות מתופפות על השולחן
-      וסנטר מורם קלות, ומפסיקים להסתמך על נטיית הגוף.
-
-    prompt_en: >
-      Professional portrait of a 30-year-old Israeli man, modern-Orthodox
-      (national-religious). Medium build, oval face, light olive skin,
-      brown eyes. Short dark-brown hair, neatly trimmed short beard along
-      the jawline. Thin dark-rimmed eyeglasses. Wearing a medium-sized
-      knitted kippah in blue-grey with a subtle geometric border, set back
-      on the crown of his head. Light blue button-down shirt, sleeves
-      rolled to mid-forearm, no tie. Simple watch with a brown leather
-      strap, employee badge on a grey lanyard.
-      Seated at the same plain white desk. Clearly impatient and waiting:
-      ONE eyebrow raised high in a distinctly quizzical arch while the
-      other stays level — a strong asymmetric "well?" expression. Chin
-      lifted slightly, head drawn back a little, forehead smooth. Lips
-      closed and pressed into a flat line, no smile whatsoever. Steady,
-      unamused, direct stare at the viewer. One hand on the desk with
-      fingers mid-drum, the other forearm resting. He looks like someone
-      who asked a question a while ago and is still waiting for the
-      answer.
-      Isolated on a plain white background, cut out, no scenery beyond
-      the desk edge. Photorealistic, soft even lighting, shallow depth of
-      field, shot at eye level, upper-body framing.
-
-    negative_prompt_en: >
-      both eyebrows level, both eyebrows raised evenly, symmetric
-      expression, inner eyebrows raised, worried, concerned,
-      sympathetic, warm, kind, friendly, smiling, smirk, teeth showing,
-      head tilted to the side, leaning forward, furrowed brow, angry,
-      scowling, standing, full-body, hands on hips, crossed arms,
-      gesturing, hands raised, black hat, long beard, payot, elderly,
-      cartoon, illustration, 3D render.
-
-    acceptance_check: >
-      **להעמיד ליד neutral, לא ליד concerned** — שם ההתנגשות בפועל.
-      אם ההבדל היחיד הוא שכאן הוא לא מחייך — נפסל. הגבה המורמת
-      חייבת להיות מיידית וברורה.
-
-    desk_continuity: >
-      אותו שולחן, אותו גובה, אותו קנה מידה כמו concerned. אם אפשר —
-      להפיק באותה הרצה כדי שקו השולחן יתלכד.
 
   - id: presenting
     needed_for: "הצגת פניית לקוח — משבוע 11 והלאה, כ-20 שבועות"
