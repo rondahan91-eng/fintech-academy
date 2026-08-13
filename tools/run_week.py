@@ -22,12 +22,40 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def capture_output(solution_path: Path) -> str:
-    """מריץ את קוד התלמיד ומחזיר את כל מה שהודפס."""
-    code = solution_path.read_text(encoding="utf-8")
+def load_meta(week_dir: Path) -> dict:
+    """קורא meta.yml. מחזיר dict ריק אם אין yaml מותקן או אין קובץ."""
+    meta_path = week_dir / "meta.yml"
+    if not meta_path.is_file():
+        return {}
+    try:
+        import yaml
+    except ImportError:
+        print("אזהרה: pyyaml לא מותקן — קוד תשתית לא יוזרק.")
+        return {}
+    return yaml.safe_load(meta_path.read_text(encoding="utf-8")) or {}
+
+
+def capture_output(solution_path: Path, injects: list) -> str:
+    """
+    מריץ את קוד התלמיד ומחזיר את כל מה שהודפס.
+
+    קוד התשתית מ-meta.yml → injects מורץ קודם, **באותו namespace**,
+    כך שהמחלקות שהוא מגדיר זמינות לתלמיד בלי import — בדיוק כפי
+    שהפלטפורמה תעשה.
+    """
+    namespace = {"__name__": "__main__"}
     buf = io.StringIO()
+
     with contextlib.redirect_stdout(buf):
-        exec(compile(code, str(solution_path), "exec"), {"__name__": "__main__"})
+        for rel in injects:
+            lib_path = ROOT / rel
+            if not lib_path.is_file():
+                raise FileNotFoundError(f"קוד תשתית חסר: {rel}")
+            exec(compile(lib_path.read_text(encoding="utf-8"), str(lib_path), "exec"), namespace)
+
+        code = solution_path.read_text(encoding="utf-8")
+        exec(compile(code, str(solution_path), "exec"), namespace)
+
     return buf.getvalue()
 
 
@@ -69,8 +97,13 @@ def main() -> int:
         print(f"לא נמצא קובץ פתרון: {args.solution}")
         return 2
 
+    meta = load_meta(week_dir)
+    injects = meta.get("injects") or []
+    if injects:
+        print(f"קוד תשתית מוזרק: {', '.join(injects)}\n")
+
     try:
-        output = capture_output(args.solution)
+        output = capture_output(args.solution, injects)
     except Exception as exc:  # noqa: BLE001
         print(f"קוד הפתרון קרס לפני שהטסטים רצו:\n  {type(exc).__name__}: {exc}")
         return 1
