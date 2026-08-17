@@ -10,7 +10,7 @@
     py tools/run_week.py 1 solutions/week-01_reference.py --hidden-only
 
 חוזה הטסטים זהה לזה שהפלטפורמה תממש (ראה content/_schema/README.md):
-כל פונקציה test_* מורצת, ולרשותה OUTPUT ו-LINES.
+כל פונקציה test_* מורצת, ולרשותה OUTPUT, LINES ו-VARS.
 """
 
 import argparse
@@ -35,13 +35,16 @@ def load_meta(week_dir: Path) -> dict:
     return yaml.safe_load(meta_path.read_text(encoding="utf-8")) or {}
 
 
-def capture_output(solution_path: Path, injects: list) -> str:
+def capture_output(solution_path: Path, injects: list):
     """
-    מריץ את קוד התלמיד ומחזיר את כל מה שהודפס.
+    מריץ את קוד התלמיד ומחזיר (פלט, namespace).
 
     קוד התשתית מ-meta.yml → injects מורץ קודם, **באותו namespace**,
     כך שהמחלקות שהוא מגדיר זמינות לתלמיד בלי import — בדיוק כפי
     שהפלטפורמה תעשה.
+
+    ה-namespace מוחזר כדי שטסטים יוכלו לבדוק משתנים של התלמיד
+    (VARS). נדרש משבוע 3, שכולו על משתנים וטיפוסים.
     """
     namespace = {"__name__": "__main__"}
     buf = io.StringIO()
@@ -56,12 +59,16 @@ def capture_output(solution_path: Path, injects: list) -> str:
         code = solution_path.read_text(encoding="utf-8")
         exec(compile(code, str(solution_path), "exec"), namespace)
 
-    return buf.getvalue()
+    return buf.getvalue(), namespace
 
 
-def run_suite(test_path: Path, output: str):
+def run_suite(test_path: Path, output: str, student_vars: dict):
     """מריץ קובץ טסטים אחד. מחזיר [(שם, עבר, הודעה)]."""
-    namespace = {"OUTPUT": output, "LINES": output.split("\n")}
+    namespace = {
+        "OUTPUT": output,
+        "LINES": output.split("\n"),
+        "VARS": student_vars,
+    }
     exec(compile(test_path.read_text(encoding="utf-8"), str(test_path), "exec"), namespace)
 
     results = []
@@ -103,7 +110,7 @@ def main() -> int:
         print(f"קוד תשתית מוזרק: {', '.join(injects)}\n")
 
     try:
-        output = capture_output(args.solution, injects)
+        output, student_vars = capture_output(args.solution, injects)
     except Exception as exc:  # noqa: BLE001
         print(f"קוד הפתרון קרס לפני שהטסטים רצו:\n  {type(exc).__name__}: {exc}")
         return 1
@@ -122,7 +129,7 @@ def main() -> int:
             print(f"{suite}: לא קיים, מדלג")
             continue
 
-        results = run_suite(path, output)
+        results = run_suite(path, output, student_vars)
         passed = sum(1 for _, ok, _ in results if ok)
         failed = len(results) - passed
         total_failed += failed

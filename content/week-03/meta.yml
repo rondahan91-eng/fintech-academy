@@ -1,0 +1,44 @@
+week: 3
+title: "תיק לקוח"
+sprint: "מושגי יסוד"
+
+syllabus:
+  chapter: 2
+  items: [2, 3, 4, 6, 7]
+  hours: 2
+
+python_concepts:
+  - "מושג המשתנה"
+  - "פקודת השמה"
+  - "הגדרה ואתחול של משתנה"
+  - "טיפוסי נתונים בסיסיים: int, float, str, bool"
+  - "הפעולה type() לזיהוי טיפוס"
+  - "השמה מחדש — משתנה משנה ערך"
+
+financial_concepts:
+  - "מה בנק שומר על לקוח ולמה"
+  - "מספר חשבון הוא מזהה, לא כמות"
+  - "סטטוס לקוח: פתוח מול פעיל"
+
+deliverable: "תיק לקוח"
+is_star: false
+rank_gate: null
+depends_on: [1]
+xp: 500
+
+injects: []
+
+fixture:
+  customer_name: "רותם אזולאי"
+  account_number: "0521147"
+  age: 34
+  gross_salary: 12500.5
+  is_active_initial: false
+  gross_salary_after_raise: 13750.5
+  is_active_after_kyc: true
+
+notes: >
+  השבוע הראשון עם משתנים. אין אריתמטיקה — היא שבוע 4. התלמיד מגדיר,
+  מדפיס, בודק טיפוס, ומשנה ערך.
+  **הציר של השבוע: מספר החשבון 0521147 חייב להישמר כמחרוזת.** כמספר
+  האפס המוביל נעלם, וזו הדגמה שאפשר לראות במו העיניים — לא כלל לשנן.
