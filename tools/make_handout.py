@@ -6,7 +6,7 @@
 עוקב אחריו. הקובץ הזה מייצר מהם גרסה קריאה להדפסה, בלי להפוך אותה
 למקור אמת שני.
 
-    py tools/make_handout.py 4          # שבוע 4 -> handouts/week-04.html
+    py tools/make_handout.py 4          # -> content/week-04/handout.html
     py tools/make_handout.py 1 2 3 4    # כמה שבועות
     py tools/make_handout.py all
 
@@ -20,7 +20,6 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "handouts"
 
 # הסדר שבו החלקים מופיעים בדף. מה שלא קיים — מדולג.
 SECTIONS = [
@@ -236,8 +235,7 @@ def build_week(week: int) -> Path | None:
         + "</body></html>"
     )
 
-    OUT_DIR.mkdir(exist_ok=True)
-    out = OUT_DIR / f"week-{week:02d}.html"
+    out = week_dir / "handout.html"
     out.write_text(page, encoding="utf-8")
     return out
 
