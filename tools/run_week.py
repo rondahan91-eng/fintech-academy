@@ -6,8 +6,9 @@
 נועד לאימות התוכן לפני שקיימת פלטפורמה: מאמת שפתרון ייחוס עובר,
 ושפתרונות שגויים נכשלים בדיוק בטסט הנכון.
 
-    py tools/run_week.py 1 solutions/week-01_reference.py
-    py tools/run_week.py 1 solutions/week-01_reference.py --hidden-only
+    py tools/run_week.py 1                       # פתרון הייחוס של השבוע
+    py tools/run_week.py 1 --hidden-only
+    py tools/run_week.py 1 path/to/other.py       # פתרון אחר
 
 חוזה הטסטים זהה לזה שהפלטפורמה תממש (ראה content/_schema/README.md):
 כל פונקציה test_* מורצת, ולרשותה OUTPUT, LINES ו-VARS.
@@ -88,7 +89,12 @@ def run_suite(test_path: Path, output: str, student_vars: dict):
 def main() -> int:
     parser = argparse.ArgumentParser(description="מריץ פתרון מול טסטים של שבוע")
     parser.add_argument("week", type=int, help="מספר שבוע (1-30)")
-    parser.add_argument("solution", type=Path, help="נתיב לקובץ הפתרון")
+    parser.add_argument(
+        "solution",
+        type=Path,
+        nargs="?",
+        help="נתיב לקובץ פתרון. ברירת מחדל: reference.py של אותו שבוע",
+    )
     parser.add_argument("--hidden-only", action="store_true", help="רק הטסטים הנסתרים")
     parser.add_argument("--show-output", action="store_true", help="להדפיס גם את פלט הפתרון")
     args = parser.parse_args()
@@ -100,8 +106,9 @@ def main() -> int:
     if not week_dir.is_dir():
         print(f"לא נמצאה תיקיית שבוע: {week_dir}")
         return 2
-    if not args.solution.is_file():
-        print(f"לא נמצא קובץ פתרון: {args.solution}")
+    solution = args.solution or (week_dir / "reference.py")
+    if not solution.is_file():
+        print(f"לא נמצא קובץ פתרון: {solution}")
         return 2
 
     meta = load_meta(week_dir)
@@ -110,7 +117,7 @@ def main() -> int:
         print(f"קוד תשתית מוזרק: {', '.join(injects)}\n")
 
     try:
-        output, student_vars = capture_output(args.solution, injects)
+        output, student_vars = capture_output(solution, injects)
     except Exception as exc:  # noqa: BLE001
         print(f"קוד הפתרון קרס לפני שהטסטים רצו:\n  {type(exc).__name__}: {exc}")
         return 1

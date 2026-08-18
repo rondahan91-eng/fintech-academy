@@ -41,7 +41,7 @@ def test_gross_present():
 
 
 def test_income_tax_present():
-    assert 800 in _numbers_in_output(), (
+    assert 900 in _numbers_in_output(), (
         "לא מצאתי את סכום מס ההכנסה בתלוש."
     )
 
@@ -55,7 +55,7 @@ def test_national_insurance_present():
 def test_net_is_correct():
     """הבדיקה היחידה שדורשת חשיבה ולא העתקה."""
     nums = _numbers_in_output()
-    assert 4990 in nums, (
+    assert 4890 in nums, (
         "סכום הנטו שהדפסת אינו נכון. "
         "הנטו הוא מה שנשאר מהברוטו אחרי שמורידים את כל הניכויים — "
         "בדוק שהורדת את שניהם."
@@ -74,7 +74,7 @@ def test_lines_are_separate():
 
 
 def test_net_not_on_same_line_as_gross():
-    """מונע 'print(6000, 800, 210, 4990)' כפתרון בשורה אחת."""
+    """מונע 'print(6000, 900, 210, 4890)' כפתרון בשורה אחת."""
     for line in LINES:
         digits = re.findall(r"\d+", line.replace(",", ""))
         assert len(digits) < 3, (
