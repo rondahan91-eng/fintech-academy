@@ -20,16 +20,17 @@ body {
   padding: 10px 16px; display: flex; gap: 8px; align-items: center;
 }
 .switcher b { margin-left: 16px; font-weight: 600; }
-.switcher button {
-  background: #444; color: #fff; border: 0; padding: 7px 14px;
-  border-radius: 3px; cursor: pointer; font-family: inherit; font-size: 13px;
+.switcher a {
+  background: #444; color: #fff; text-decoration: none; padding: 7px 14px;
+  border-radius: 3px; font-size: 13px;
 }
-.switcher button.on { background: #fff; color: #222; }
+.switcher a:hover { background: #fff; color: #222; }
 .switcher span { margin-right: auto; opacity: .55; font-size: 12px; }
+.screen-title { max-width: 1280px; margin: 0 auto 10px; font-size: 15px;
+  color: #55555c; font-weight: 600; letter-spacing: .02em; }
 
 /* --- מסגרת מסך --- */
-.screen { display: none; padding: 20px; }
-.screen.on { display: block; }
+.screen { padding: 20px 20px 40px; }
 .frame {
   background: #fff; border: 1px solid #bbb; max-width: 1280px; margin: 0 auto;
   min-height: 720px; display: flex; flex-direction: column;
@@ -80,15 +81,16 @@ th { background: #f0f0f3; font-weight: 600; }
 
 <div class="switcher">
   <b>FinTech Academy · פריסה גסה</b>
-  <button class="on" data-s="login">מסך כניסה</button>
-  <button data-s="student">מסך תלמיד</button>
-  <button data-s="teacher">מסך מורה</button>
+  <a href="#login">מסך כניסה</a>
+  <a href="#student">מסך תלמיד</a>
+  <a href="#teacher">מסך מורה</a>
   <span>ללא עיצוב — מיקום ומבנה בלבד</span>
 </div>
 
 
 <!-- ============================== מסך כניסה ============================== -->
-<section class="screen on" id="login">
+<section class="screen" id="login">
+<h2 class="screen-title">1 · מסך כניסה</h2>
 <div class="frame" style="min-height:520px; max-width:900px; align-items:center; justify-content:center;">
 
   <div class="box" style="width:380px;">
@@ -131,6 +133,7 @@ th { background: #f0f0f3; font-weight: 600; }
 
 <!-- ============================== מסך תלמיד ============================== -->
 <section class="screen" id="student">
+<h2 class="screen-title">2 · מסך תלמיד</h2>
 <div class="frame">
 
   <!-- סרגל עליון -->
@@ -236,6 +239,7 @@ th { background: #f0f0f3; font-weight: 600; }
 
 <!-- ============================== מסך מורה ============================== -->
 <section class="screen" id="teacher">
+<h2 class="screen-title">3 · מסך מורה</h2>
 <div class="frame">
 
   <div class="topbar box" style="border-style:solid;">
@@ -343,16 +347,6 @@ th { background: #f0f0f3; font-weight: 600; }
 </section>
 
 
-<script>
-document.querySelectorAll('.switcher button').forEach(function (b) {
-  b.addEventListener('click', function () {
-    document.querySelectorAll('.switcher button').forEach(x => x.classList.remove('on'));
-    document.querySelectorAll('.screen').forEach(x => x.classList.remove('on'));
-    b.classList.add('on');
-    document.getElementById(b.dataset.s).classList.add('on');
-  });
-});
-</script>
 
 </body>
 </html>
