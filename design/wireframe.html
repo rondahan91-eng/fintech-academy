@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>FinTech Academy — פריסת מסכים</title>
+<style>
+/* ==========================================================
+   WIREFRAME בלבד — אין כאן עיצוב.
+   אפור, מסגרות מקווקוות, ותוויות. הכול נועד להזזה.
+   ========================================================== */
+* { box-sizing: border-box; }
+body {
+  direction: rtl; margin: 0; background: #e9e9ec;
+  font-family: "Segoe UI", Arial, sans-serif; font-size: 13px; color: #333;
+}
+
+/* --- סרגל מתגי מסכים (לא חלק מהמוצר) --- */
+.switcher {
+  position: sticky; top: 0; z-index: 50; background: #2b2b30; color: #fff;
+  padding: 10px 16px; display: flex; gap: 8px; align-items: center;
+}
+.switcher b { margin-left: 16px; font-weight: 600; }
+.switcher button {
+  background: #444; color: #fff; border: 0; padding: 7px 14px;
+  border-radius: 3px; cursor: pointer; font-family: inherit; font-size: 13px;
+}
+.switcher button.on { background: #fff; color: #222; }
+.switcher span { margin-right: auto; opacity: .55; font-size: 12px; }
+
+/* --- מסגרת מסך --- */
+.screen { display: none; padding: 20px; }
+.screen.on { display: block; }
+.frame {
+  background: #fff; border: 1px solid #bbb; max-width: 1280px; margin: 0 auto;
+  min-height: 720px; display: flex; flex-direction: column;
+}
+
+/* --- אזור גנרי --- */
+.box { border: 1px dashed #9a9a9a; background: #f6f6f8; padding: 10px;
+       position: relative; }
+.box > .tag {
+  position: absolute; top: -1px; right: -1px; background: #9a9a9a; color: #fff;
+  font-size: 10px; padding: 1px 6px; letter-spacing: .02em;
+}
+.ph { color: #8a8a8a; font-size: 12px; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; gap: 10px; }
+
+/* --- רכיבי ממשק גולמיים --- */
+.btn { display: inline-block; border: 1px solid #777; background: #ececef;
+       padding: 6px 14px; border-radius: 3px; font-size: 12px; }
+.btn.primary { background: #d8d8dd; border-color: #555; font-weight: 600; }
+.field { border: 1px solid #999; background: #fff; padding: 7px 10px;
+         font-size: 12px; color: #999; }
+.chip { display: inline-block; border: 1px solid #999; background: #fff;
+        padding: 2px 9px; border-radius: 10px; font-size: 11px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid #bbb; }
+.tab { border: 1px solid #bbb; border-bottom: 0; background: #ececef;
+       padding: 5px 14px; font-size: 12px; }
+.tab.on { background: #fff; font-weight: 600; }
+.avatar { border: 1px dashed #9a9a9a; background: #f0f0f3; height: 150px;
+          display: flex; align-items: center; justify-content: center;
+          color: #8a8a8a; font-size: 12px; }
+.bubble { border: 1px solid #bbb; background: #fff; padding: 8px 10px;
+          border-radius: 4px; font-size: 12px; }
+.bubble.me { background: #ececef; margin-inline-start: 40px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { border: 1px solid #ccc; padding: 5px 8px; text-align: right; }
+th { background: #f0f0f3; font-weight: 600; }
+.note { font-size: 11px; color: #7a7a7a; margin-top: 6px; font-style: italic; }
+
+/* --- סרגל עליון של המוצר --- */
+.topbar { border-bottom: 1px solid #bbb; padding: 8px 14px; display: flex;
+          align-items: center; gap: 14px; background: #f6f6f8; }
+.topbar .logo { font-weight: 700; }
+.topbar .spacer { margin-right: auto; }
+</style>
+</head>
+<body>
+
+<div class="switcher">
+  <b>FinTech Academy · פריסה גסה</b>
+  <button class="on" data-s="login">מסך כניסה</button>
+  <button data-s="student">מסך תלמיד</button>
+  <button data-s="teacher">מסך מורה</button>
+  <span>ללא עיצוב — מיקום ומבנה בלבד</span>
+</div>
+
+
+<!-- ============================== מסך כניסה ============================== -->
+<section class="screen on" id="login">
+<div class="frame" style="min-height:520px; max-width:900px; align-items:center; justify-content:center;">
+
+  <div class="box" style="width:380px;">
+    <span class="tag">כרטיס כניסה</span>
+    <div class="stack">
+      <div class="box" style="text-align:center; padding:18px;">
+        <span class="tag">לוגו + שם</span>
+        <div class="ph">FinTech Academy</div>
+      </div>
+
+      <div class="field">שם משתמש / מספר תלמיד</div>
+      <div class="field">סיסמה</div>
+
+      <div class="row">
+        <div class="btn primary" style="flex:1; text-align:center;">כניסה</div>
+      </div>
+
+      <div class="box">
+        <span class="tag">בחירת תפקיד</span>
+        <span class="chip">תלמיד</span>
+        <span class="chip">מורה</span>
+        <div class="note">אולי מיותר — אפשר להסיק מהחשבון. להחלטה.</div>
+      </div>
+
+      <div class="ph" style="text-align:center;">שכחתי סיסמה · פנייה למורה</div>
+    </div>
+  </div>
+
+  <div class="box" style="width:380px; margin-top:14px;">
+    <span class="tag">הערה</span>
+    <div class="note" style="font-style:normal;">
+      פתיחה ראשונה של תלמיד מובילה ישירות לשיחת הקליטה עם אלעד,
+      לא למסך התלמיד. ראה <code>content/_shared/onboarding.yml</code>.
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+<!-- ============================== מסך תלמיד ============================== -->
+<section class="screen" id="student">
+<div class="frame">
+
+  <!-- סרגל עליון -->
+  <div class="topbar box" style="border-style:solid;">
+    <span class="tag">סרגל עליון</span>
+    <span class="logo">FinTech Academy</span>
+    <span class="chip">שבוע 4 · מחשבון המשכורת</span>
+    <span class="chip">דרגה D1 · מפתח זוטר</span>
+    <span class="chip">יתרה 4,890 ₪</span>
+    <span class="chip">דדליין: עוד 3 ימים</span>
+    <span class="spacer"></span>
+    <span class="btn">חנות</span>
+    <span class="btn">התלוש שלי</span>
+    <span class="btn">☰ תפריט</span>
+  </div>
+
+  <!-- גוף: שלוש עמודות -->
+  <div class="row" style="flex:1; padding:10px; gap:10px;">
+
+    <!-- ימין: אלעד -->
+    <div class="box stack" style="width:300px;">
+      <span class="tag">אלעד — פאנל קבוע</span>
+      <div class="avatar">אווטאר · מצב משתנה<br>(9 מצבים)</div>
+      <div class="stack" style="flex:1;">
+        <div class="bubble">הודעה מאלעד</div>
+        <div class="bubble me">תשובת התלמיד</div>
+        <div class="bubble">הודעה מאלעד</div>
+      </div>
+      <div class="field">כתוב לאלעד…</div>
+      <div class="note">
+        אווטאר אחד קבוע שמחליף מצב — לא אחד לכל הודעה.
+        רקע לבן, דעיכה בתחתית.
+      </div>
+    </div>
+
+    <!-- מרכז: קוד -->
+    <div class="stack" style="flex:1;">
+      <div class="tabs">
+        <div class="tab on">הקוד שלי</div>
+        <div class="tab">קוד פתיחה</div>
+      </div>
+      <div class="box" style="flex:1; min-height:280px;">
+        <span class="tag">עורך קוד</span>
+        <div class="ph" dir="ltr" style="font-family:Consolas,monospace;">
+          gross_salary = 6000<br>
+          tax_rate = 0.15<br>
+          …
+        </div>
+      </div>
+      <div class="row">
+        <span class="btn primary">▶ הרצה</span>
+        <span class="btn">בדיקות</span>
+        <span class="btn">איפוס</span>
+        <span class="spacer"></span>
+        <span class="btn primary">הגשה</span>
+      </div>
+      <div class="box" style="min-height:120px;">
+        <span class="tag">פלט</span>
+        <div class="ph" dir="ltr" style="font-family:Consolas,monospace;">
+          === תלוש משכורת ===<br>ברוטו: 6000
+        </div>
+      </div>
+    </div>
+
+    <!-- שמאל: משימה ובדיקות -->
+    <div class="stack" style="width:290px;">
+      <div class="box" style="flex:1;">
+        <span class="tag">המשימה</span>
+        <div class="ph">
+          כותרת, נתונים, חלקים א'–ג'.<br><br>
+          גלילה. תמיד גלוי — לא טאב.
+        </div>
+      </div>
+      <div class="box">
+        <span class="tag">בדיקות גלויות</span>
+        <div class="ph">
+          ✓ המשתנים קיימים<br>
+          ✓ השיעורים עשרוניים<br>
+          ✗ הנטו אינו נכון
+        </div>
+        <div class="note">הנסתרות לא מוצגות</div>
+      </div>
+      <div class="box">
+        <span class="tag">התקדמות</span>
+        <div class="ph">XP · פנסיה · שבועות שהושלמו</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="box" style="margin:0 10px 10px;">
+    <span class="tag">הערות פריסה</span>
+    <div class="note" style="font-style:normal;">
+      · שלוש עמודות דורשות 1280px. מתחת לזה — עמודת המשימה מתקפלת לטאב.<br>
+      · המצב נשמר בשרת: קוד שלא הוגש, השיחה, ושלב הרמז. חזרה מהבית ממשיכה מאותה נקודה.<br>
+      · "חנות" נפתחת רק משבוע 5.
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+<!-- ============================== מסך מורה ============================== -->
+<section class="screen" id="teacher">
+<div class="frame">
+
+  <div class="topbar box" style="border-style:solid;">
+    <span class="tag">סרגל עליון</span>
+    <span class="logo">FinTech Academy · מורה</span>
+    <span class="chip">כיתה י'2</span>
+    <span class="chip">שבוע 4 ▾</span>
+    <span class="spacer"></span>
+    <span class="btn">דוח יומי</span>
+    <span class="btn">ציונים</span>
+    <span class="btn">מדידת בסיס</span>
+    <span class="btn">☰ תפריט</span>
+  </div>
+
+  <div class="row" style="flex:1; padding:10px; gap:10px;">
+
+    <!-- ימין: רשימת כיתה -->
+    <div class="box stack" style="width:250px;">
+      <span class="tag">רשימת תלמידים</span>
+      <div class="field">חיפוש</div>
+      <div class="ph">
+        ● רותם — הגיש<br>
+        ● דניאל — בעבודה<br>
+        ▲ נועה — תקוע (רמז 5)<br>
+        ○ יובל — לא פתח<br>
+        ● עמית — הגיש<br>
+      </div>
+      <div class="note">מיון: סטטוס · שם · דרגה</div>
+    </div>
+
+    <!-- מרכז: לוח -->
+    <div class="stack" style="flex:1;">
+
+      <div class="row">
+        <div class="box" style="flex:1; text-align:center;">
+          <span class="tag">הגישו</span><div class="ph" style="font-size:22px;">18/24</div>
+        </div>
+        <div class="box" style="flex:1; text-align:center;">
+          <span class="tag">תקועים</span><div class="ph" style="font-size:22px;">3</div>
+        </div>
+        <div class="box" style="flex:1; text-align:center;">
+          <span class="tag">לא פתחו</span><div class="ph" style="font-size:22px;">3</div>
+        </div>
+        <div class="box" style="flex:1; text-align:center;">
+          <span class="tag">זמן חציוני</span><div class="ph" style="font-size:22px;">47 דק'</div>
+        </div>
+      </div>
+
+      <div class="box">
+        <span class="tag">דוח יומי — מה שדורש התערבות</span>
+        <div class="ph">
+          · 3 תלמידים הגיעו לשלב 5 בסולם הרמזים, כולם על אותו דבר: המרת אחוזים<br>
+          · תפיסה שגויה חוזרת אצל 5 תלמידים: 0.4% נכתב כ-0.4<br>
+          · תלמיד אחד ניסה לחלץ פתרון מאלעד שלוש פעמים<br>
+          · יובל לא נכנס למערכת השבוע
+        </div>
+        <div class="note">נבנה מהשיחות. לא כולל הערכה איכותית ולא השוואה בין תלמידים.</div>
+      </div>
+
+      <div class="box" style="flex:1;">
+        <span class="tag">טבלת מצב — שבוע 4</span>
+        <table>
+          <tr><th>תלמיד</th><th>סטטוס</th><th>טסטים</th><th>רמז מרבי</th><th>דרגה</th><th>פנסיה</th></tr>
+          <tr><td>רותם</td><td>הגיש</td><td>15/15</td><td>2</td><td>D1</td><td>7%</td></tr>
+          <tr><td>נועה</td><td>תקוע</td><td>9/15</td><td>5</td><td>D1</td><td>3%</td></tr>
+          <tr><td>יובל</td><td>לא פתח</td><td>—</td><td>—</td><td>D1</td><td>0%</td></tr>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- שמאל: תלמיד נבחר -->
+    <div class="box stack" style="width:280px;">
+      <span class="tag">תלמיד נבחר · נועה</span>
+      <div class="box">
+        <span class="tag">מצב נוכחי</span>
+        <div class="ph">שבוע 4 · 9/15 טסטים · רמז 5</div>
+      </div>
+      <div class="box" style="flex:1;">
+        <span class="tag">השיחה עם אלעד</span>
+        <div class="ph">תמליל מלא, לקריאה בלבד</div>
+      </div>
+      <div class="box">
+        <span class="tag">מדידת בסיס</span>
+        <div class="ph">3/6 · הפער: דמי ניהול, ריבית דריבית</div>
+      </div>
+      <div class="row">
+        <span class="btn">הארכת דדליין</span>
+        <span class="btn">סימון להתערבות</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="box" style="margin:0 10px 10px;">
+    <span class="tag">שאלות פתוחות</span>
+    <div class="note" style="font-style:normal;">
+      · האם המורה רואה תמליל שיחה מלא? יש כאן שיקול פרטיות מול ערך פדגוגי.<br>
+      · האם "הארכת דדליין" של המורה נפרדת מהפריט בחנות? (כן — התאמות הן זכות, לא רכישה)<br>
+      · טבלת השכר לא מופיעה כאן במכוון. שכר הוא פרטי.
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+<script>
+document.querySelectorAll('.switcher button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.querySelectorAll('.switcher button').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('.screen').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById(b.dataset.s).classList.add('on');
+  });
+});
+</script>
+
+</body>
+</html>
