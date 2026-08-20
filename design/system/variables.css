@@ -1,0 +1,136 @@
+/* ==========================================================================
+   FinTech Academy — טוקני עיצוב
+   --------------------------------------------------------------------------
+   נגזר ממערכת אכרומטית עם צבע הדגשה יחיד, ומותאם לאפליקציית עבודה
+   בעברית. מה שהשתנה מהמקור ולמה — design/system/DESIGN.md.
+
+   שני כללים שקובעים הכול:
+   1. הממשק אכרומטי. צבע נושא משמעות, לעולם לא קישוט.
+   2. כישלון בבדיקה אינו שגיאה — הוא המצב הרגיל. אין בו אדום.
+   ========================================================================== */
+
+:root {
+
+  /* ---------- דיו ומשטחים ---------- */
+  --ink-strong:        #211d1d;   /* גוף טקסט ארוך, ניגודיות גבוהה */
+  --ink:               #2c2d30;   /* טקסט ראשי, כותרות, אייקונים */
+  --ink-muted:         #6e6f72;   /* טקסט משני, עזרה, תוויות */
+  --ink-faint:         #97989a;   /* מצב מושבת, placeholder */
+
+  --line:              #dcdcde;   /* גבול הדגשה — קווי הפרדה, מסגרות */
+  --line-strong:       #afafaf;   /* גבול מודגש, שדה קלט במיקוד */
+
+  --surface-canvas:    #f6f6f8;   /* רקע האפליקציה */
+  --surface-panel:     #ffffff;   /* פאנלים, כרטיסים, שדות */
+  --surface-sunken:    #f0f0f2;   /* עורך קוד, אזור פלט */
+  --surface-hover:     #ececef;   /* מצב ריחוף על פריט אינטראקטיבי */
+
+  /* ---------- ההדגשה היחידה ---------- */
+  /* פעולה ראשית בלבד. לא גבולות, לא אייקונים, לא ריחוף. */
+  --accent:            #00a382;
+  --accent-pressed:    #008a6e;
+  --accent-on:         #ffffff;   /* טקסט על גבי ההדגשה */
+
+  /* ---------- מצבים סמנטיים ---------- */
+  /* לכל מצב: רקע רחיצה + דיו. הדיו לאייקון ולמספר, לא לטקסט גוף. */
+
+  --state-pass-wash:   #d9f2e9;   /* בדיקה עברה */
+  --state-pass-ink:    #16785f;
+
+  --state-pending-wash:#f4ebe4;   /* בדיקה טרם עברה — נייטרלי בכוונה */
+  --state-pending-ink: #7a6a5e;
+
+  --state-attention-wash:#faeddb; /* דדליין מתקרב, פעולה נדרשת */
+  --state-attention-ink: #8a6320;
+
+  --state-breach-wash: #f5e2e0;   /* הפרה אתית בלבד. הצבע היחיד שמזהיר */
+  --state-breach-ink:  #9c463b;
+
+  /* ---------- טיפוגרפיה ---------- */
+  /* גופנים מוגשים מקומית. סביבה סגורה — אין CDN. */
+  --font-ui:   "Assistant", "Heebo", "Segoe UI", "Arial Hebrew", Arial, sans-serif;
+  --font-code: Consolas, "Courier New", ui-monospace, monospace;
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+
+  /* סולם — ללא מדרגת display. אין באפליקציה כותרת ראווה. */
+  --text-micro:      12px;   --leading-micro:      1.35;
+  --text-caption:    13px;   --leading-caption:    1.45;
+  --text-body:       15px;   --leading-body:       1.55;
+  --text-body-lg:    16px;   --leading-body-lg:    1.55;
+  --text-subheading: 18px;   --leading-subheading: 1.4;
+  --text-heading:    21px;   --leading-heading:    1.35;
+  --text-heading-lg: 26px;   --leading-heading-lg: 1.3;
+
+  --text-code:       13px;   --leading-code:       1.6;
+
+  /* עברית לא מרוויחה ממרווח אותיות שלילי. אפס לאורך כל הסולם. */
+  --tracking: 0;
+
+  /* ---------- מרווחים ---------- */
+  /* בסיס 4 ולא 8 — סרגלים וצ'יפים באפליקציה צפופה צריכים חצי מדרגה. */
+  --space-4:   4px;
+  --space-8:   8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+
+  /* ---------- רדיוסים ---------- */
+  --radius-sm:    4px;    /* צ'יפ, תג, שדה קטן */
+  --radius-md:    8px;    /* כפתור, שדה קלט, טאב */
+  --radius-lg:   12px;    /* פאנל, כרטיס */
+  --radius-bubble:14px;   /* בועת צ'אט */
+  --radius-pill:  999px;  /* פעולה ראשית בלבד */
+
+  /* ---------- הגבהה ---------- */
+  /* אין צללים. הפרדה נעשית בקו של פיקסל אחד ובמשטח. */
+  --hairline: 0 0 0 1px var(--line);
+
+  /* ---------- פריסה ---------- */
+  --app-min-width:      1280px;  /* מתחת לזה עמודת המשימה מתקפלת */
+  --panel-elad:          300px;  /* פאנל אלעד — רוחב קבוע, לא מתקפל */
+  --panel-task:          290px;
+  --topbar-height:        52px;
+  --avatar-height:       190px;
+
+  /* ---------- תנועה ---------- */
+  --motion-fast: 120ms ease-out;
+  --motion-base: 200ms ease-out;
+}
+
+/* ==========================================================================
+   בסיס
+   ========================================================================== */
+
+html { direction: rtl; }
+
+body {
+  margin: 0;
+  background: var(--surface-canvas);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* קוד תמיד LTR, גם בתוך פסקה עברית */
+code, pre, .code, kbd, samp {
+  font-family: var(--font-code);
+  font-size: var(--text-code);
+  line-height: var(--leading-code);
+  direction: ltr;
+  unicode-bidi: embed;
+  text-align: left;
+}
+
+/* מיקוד נראה תמיד. מקלדת בלבד — אין מגע. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
