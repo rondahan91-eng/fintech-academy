@@ -68,15 +68,18 @@ def main() -> int:
         f"<style>{wire_css}{BRIEF_CSS}</style>\n</head>\n<body>\n\n"
         '<div class="nav">\n'
         "  <b>FinTech Academy · חבילת עיצוב</b>\n"
-        '  <a href="#brief">תדריך</a>\n'
+        '  <a href="#brief">זרימה</a>\n'
+        '  <a href="#layout">פריסה</a>\n'
         '  <a href="#login">מסך כניסה</a>\n'
         '  <a href="#student">מסך תלמיד</a>\n'
         '  <a href="#teacher">מסך מורה</a>\n'
         '  <span>הקשר + פריסה גסה · ללא החלטות עיצוב</span>\n'
         "</div>\n\n"
-        '<div class="part">\n  <div class="part-title">חלק א\' · תדריך</div>\n'
+        '<div class="part">\n  <div class="part-title">חלק א\' · זרימה ועקרונות</div>\n'
         f'  <div class="brief" id="brief">\n{md_to_html(brief)}\n  </div>\n</div>\n\n'
-        '<div class="part">\n  <div class="part-title">חלק ב\' · פריסת מסכים</div>\n</div>\n'
+        '<div class="part">\n  <div class="part-title">חלק ב\' · פריסה</div>\n'
+        f'  <div class="brief" id="layout">\n{md_to_html(layout)}\n  </div>\n</div>\n\n'
+        '<div class="part">\n  <div class="part-title">חלק ג\' · ויירפריים גס</div>\n</div>\n'
         f"{wire_body}\n</body>\n</html>\n"
     )
 
