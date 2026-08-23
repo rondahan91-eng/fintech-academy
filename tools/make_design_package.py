@@ -55,6 +55,7 @@ def main() -> int:
     from make_handout import md_to_html
 
     brief = (DESIGN / "design-brief.md").read_text(encoding="utf-8")
+    layout = (DESIGN / "layout.md").read_text(encoding="utf-8")
     wire = (DESIGN / "wireframe.html").read_text(encoding="utf-8")
 
     wire_css = re.search(r"<style>(.*?)</style>", wire, re.S).group(1)

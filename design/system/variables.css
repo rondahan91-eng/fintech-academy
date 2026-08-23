@@ -91,11 +91,11 @@
   --hairline: 0 0 0 1px var(--line);
 
   /* ---------- פריסה ---------- */
-  --app-min-width:      1280px;  /* מתחת לזה עמודת המשימה מתקפלת */
-  --panel-elad:          300px;  /* פאנל אלעד — רוחב קבוע, לא מתקפל */
-  --panel-task:          290px;
+  --app-min-width:      1220px;  /* רצפה נוחה. 1140 עם שבירת שורות. ראה layout.md §1 */
+  --panel-elad:          360px;  /* פאנל אלעד — רוחב קבוע, לא מתקפל. ראה layout.md §3 */
+  --panel-task:          296px;
   --topbar-height:        52px;
-  --avatar-height:       190px;
+  --avatar-height:       240px;  /* חיתוך, לא הקטנה. ראה layout.md §3 */
 
   /* ---------- תנועה ---------- */
   --motion-fast: 120ms ease-out;
