@@ -8,6 +8,10 @@
 yml ו-py; הסקריפט הזה מתרגם אותו ל-JS. כל שינוי בתוכן מחייב הרצה מחדש.
 
 ⛔ אין לערוך את app/content.js ידנית.
+
+⛔ **הקובץ הזה נשלח לדפדפן של התלמיד. כל מה שנכנס ל-payload גלוי לו.**
+   ‏reference.py ו-tests_hidden.py **לא נכנסים**, ויש בדיקה בסוף שאוכפת
+   את זה. הקובץ נשלח בשלמותו ואין בו "חלק פרטי".
 """
 import io
 import json
@@ -102,10 +106,45 @@ def main() -> int:
         "requirements": task["requirements"],
         "starter": read(d / "starter.py"),
         "testsVisible": read(d / "tests_visible.py"),
-        "reference": read(d / "reference.py"),
         "manager": parse_manager_opening(read(d / "manager.yml")),
         "avatars": parse_avatar_states(read(ROOT / "assets/persona/manifest.yml")),
     }
+
+    # ═══ שער הדליפה ═══════════════════════════════════════════════════
+    # ‏content.js הוא קובץ ציבורי. הפתרון והטסטים הנסתרים אסור שיגיעו
+    # אליו — לא בשדה, לא בטעות. הבדיקה על **הטקסט הסופי**, לא על
+    # רשימת השדות, כי שדה חדש הוא בדיוק איך שזה קורה שוב.
+    def code_lines(src: str) -> set:
+        """שורות קוד ממשיות. הערות יורדות — הן זהות בכוונה בין הקבצים."""
+        return {ln.strip() for ln in src.splitlines()
+                if len(ln.strip()) > 25 and not ln.lstrip().startswith("#")}
+
+    # שורה שמופיעה גם בקובץ שנשלח בכוונה אינה דליפה. `real_lines = [...]`
+    # הוא אותו ניב בטסטים הגלויים ובנסתרים, ושם הוא לגיטימי.
+    public = code_lines(read(d / "starter.py")) | code_lines(read(d / "tests_visible.py"))
+
+    # ⚠️ **לחפש בערכים, לא ב-JSON.** בטקסט המקודד כל גרשיים הם \" ,
+    #    ולכן `print("נטו: 4890")` לעולם אינו תת-מחרוזת שלו. גרסה
+    #    קודמת של השער חיפשה ב-json.dumps ותפסה **רק שורות הערה** —
+    #    היחידות בלי גרשיים. היא הייתה עוברת על הדליפה האמיתית.
+    def walk(node):
+        if isinstance(node, str):
+            yield node
+        elif isinstance(node, dict):
+            for v in node.values():
+                yield from walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                yield from walk(v)
+
+    blob = "\n".join(walk(payload))
+    for name in ("reference.py", "tests_hidden.py"):
+        leaked = sorted(ln for ln in code_lines(read(d / name)) - public
+                        if ln in blob)
+        if leaked:
+            print(f"⛔ {name} דולף ל-content.js — {len(leaked)} שורות קוד")
+            print(f"   לדוגמה: {leaked[0][:70]}")
+            return 1
 
     out = ROOT / "app" / "content.js"
     out.parent.mkdir(exist_ok=True)

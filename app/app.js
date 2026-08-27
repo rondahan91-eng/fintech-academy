@@ -179,14 +179,40 @@ addEventListener('pagehide', () => { if (saveTimer) saveNow(); });
 el.code.addEventListener('scroll', () => { el.gutter.scrollTop = el.code.scrollTop; });
 addEventListener('resize', drawGutter);     // שינוי רוחב משנה את השבירה
 
-// Tab מזיז פוקוס בדפדפן. בעורך הוא צריך להזיח. ‏4 רווחים — PEP 8.
+// ‏Tab מזיז פוקוס בדפדפן. בעורך הוא צריך להזיח. ‏4 רווחים — PEP 8.
+//
+// ⚠️ הגרסה הראשונה כתבה ארבעה רווחים **במקום** הבחירה. תלמיד שסימן
+//    שלוש שורות והקיש Tab כדי להזיח אותן — איבד אותן. משבוע 6 יש
+//    לולאות, וזו הפעולה הכי שגרתית בעורך.
+//
+// ‏execCommand ולא השמה ישירה ל-value: השמה מוחקת את מחסנית הביטול
+// של הדפדפן, כלומר Ctrl+Z מפסיק לעבוד אחרי כל הזחה.
+const UNIT = '    ';
+
 el.code.addEventListener('keydown', (e) => {
-  if (e.key !== 'Tab') return;
+  if (e.key !== 'Tab' || el.code.readOnly) return;
   e.preventDefault();
+
   const { selectionStart: s, selectionEnd: t, value: v } = el.code;
-  el.code.value = v.slice(0, s) + '    ' + v.slice(t);
-  el.code.selectionStart = el.code.selectionEnd = s + 4;
-  el.code.dispatchEvent(new Event('input'));
+
+  if (s === t && !e.shiftKey) {              // אין בחירה — פשוט מזיחים
+    document.execCommand('insertText', false, UNIT);
+    return;
+  }
+
+  // בחירה, או Shift — פועלים על כל שורה שהבחירה נוגעת בה
+  const from = v.lastIndexOf('\n', s - 1) + 1;
+  const toNl = v.indexOf('\n', t === s ? t : t - 1);
+  const to = toNl === -1 ? v.length : toNl;
+
+  const lines = v.slice(from, to).split('\n');
+  const next = e.shiftKey
+    ? lines.map((ln) => ln.replace(/^ {1,4}/, ''))
+    : lines.map((ln) => (ln.trim() ? UNIT + ln : ln));
+
+  el.code.setSelectionRange(from, to);
+  document.execCommand('insertText', false, next.join('\n'));
+  el.code.setSelectionRange(from, from + next.join('\n').length);
 });
 
 drawGutter();
@@ -256,11 +282,19 @@ el.handle.addEventListener('keydown', (e) => {
   autoOpened = true;
 });
 
-// פתיחה אוטומטית **פעם אחת בלבד** — בכישלון הראשון, כשיש מה לקרוא.
+// פתיחה אוטומטית **פעם אחת בלבד**, ו-§2 מדייק מתי: "בפעם הראשונה
+// שפלט חורג מהאזור... עד לגובה שמכיל את הפלט או עד 376, הנמוך מביניהם."
+//
+// ⚠️ הגרסה הראשונה קפצה ל-300 קבוע על כל כישלון — גם על שתי שורות
+//    שנכנסו ממילא ב-196, וגזלה חמש שורות קוד בלי סיבה. **התנאי הוא
+//    חריגה, לא כישלון**, והגובה נמדד ולא נבחר.
 function openOnce() {
   if (autoOpened) return;
+  const body = el.rbOut.hidden ? el.rbTests : el.rbOut;
+  const overflow = body.scrollHeight - body.clientHeight;
+  if (overflow <= 0) return;                 // נכנס — לא נוגעים, ולא שורפים
   autoOpened = true;
-  setResults(300);
+  setResults(resultsH + overflow);           // ‏setResults תוחמת ל-376
 }
 
 // ══ Pyodide ═══════════════════════════════════════════════════════════
@@ -344,7 +378,7 @@ el.btnRun.addEventListener('click', () => {
   const r = execute(false);
   el.rbOut.textContent = r.error ? `${r.output}\n${r.error}` : (r.output || '(אין פלט)');
   showTab('out');
-  if (r.error) openOnce();
+  openOnce();          // אחרי showTab — הפאנל הנמדד חייב להיות הגלוי
 });
 
 // ══ בדיקות ════════════════════════════════════════════════════════════
@@ -374,7 +408,7 @@ el.btnTests.addEventListener('click', () => {
     </div>`).join('');
 
   showTab('tests');
-  if (pass < r.tests.length) openOnce();
+  openOnce();
 });
 
 el.btnSubmit.addEventListener('click', () => {
