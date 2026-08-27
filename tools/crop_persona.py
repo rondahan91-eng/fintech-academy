@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""
+מנרמל את תשעת האווטארים לקנבס אחיד וחותך לגודל הפאנל.
+
+    py tools/crop_persona.py
+
+    assets/persona/elad-*.png        ← המקורות. 2816×1536, לא נוגעים בהם
+    assets/persona/panel/elad-*.png  ← מה שהאפליקציה טוענת. 656×480
+
+**למה בכלל צריך את זה.** המקורות הם פריים רחב עם הדמות באמצע והרבה
+לבן סביבה. ‏`object-fit: contain` על פריים כזה בקופסה של 240 פיקסלים
+היה נותן ראש בגודל 40 פיקסלים. `manifest.yml` אומר את זה במפורש:
+**"240px הוא חיתוך, לא הקטנה."**
+
+**ולמה כל התשעה יחד.** בפאנל האווטאר מחליף מצב תוך כדי שיחה. אם
+הראש יושב בגובה אחר בכל תמונה, הוא יקפוץ בכל החלפה — וזו הדרישה
+`normalized_baseline` במניפסט. הנרמול כאן הוא לפי שני ציוני דרך
+שנמדדים אמינות בכל התשעה:
+
+    top       השורה הראשונה שאינה לבנה — קודקוד הכיפה
+    headH     מ-top ועד קו הכתפיים, שם רוחב הצללית קופץ פי 1.8
+    cx        מרכז הראש אופקית
+
+‏headH נמדד 605–673 בתשעת המצבים — פער של 5%, וזה מה שהנרמול מיישר.
+"""
+import io
+import sys
+from pathlib import Path
+
+import numpy as np
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / "assets" / "persona"
+OUT = SRC / "panel"
+
+# הקופסה באפליקציה היא 328×240 (רוחב הפאנל פחות ריפוד). פי 2 לצפיפות גבוהה.
+OUT_W, OUT_H = 656, 480
+
+HEAD_H = 175      # גובה הראש ביעד. ‏36% מהגובה — משאיר מקום לידיים
+HEAD_TOP = 34     # כמה לבן מעל הקודקוד
+HALF_W = 1180     # חצי רוחב החלון במקור, ביחידות של headH=630
+
+WHITE_SUM = 720   # סכום RGB שמעליו פיקסל נחשב רקע
+
+
+def landmarks(path: Path) -> dict:
+    a = np.asarray(Image.open(path).convert("RGB")).astype(int)
+    mask = a.sum(axis=2) < WHITE_SUM
+    rows = mask.any(axis=1)
+    widths = mask.sum(axis=1)
+
+    top = int(np.argmax(rows))
+    h = len(rows) - top
+    head_w = int(widths[top: top + int(h * 0.15)].max())
+
+    shoulder = next((y for y in range(top + int(h * 0.15), len(widths))
+                     if widths[y] > head_w * 1.8), None)
+    if shoulder is None:
+        raise SystemExit(f"{path.name}: לא נמצא קו כתפיים")
+
+    band = mask[top: top + int(h * 0.12)]
+    cols = np.where(band.any(axis=0))[0]
+    cx = int((cols[0] + cols[-1]) / 2)
+
+    return {"top": top, "headH": shoulder - top, "cx": cx,
+            "size": (a.shape[1], a.shape[0])}
+
+
+def crop(path: Path, lm: dict) -> Image.Image:
+    s = HEAD_H / lm["headH"]                 # קנה מידה שמיישר את גובה הראש
+    w_src = round(OUT_W / s)
+    h_src = round(OUT_H / s)
+    x0 = lm["cx"] - w_src // 2
+    y0 = lm["top"] - round(HEAD_TOP / s)
+
+    # החלון חורג מהמקור למעלה ולמטה. הרקע לבן ממילא, אז מרפדים בלבן
+    # ולא נותנים ל-PIL למלא בשחור.
+    canvas = Image.new("RGB", (w_src, h_src), "white")
+    src = Image.open(path).convert("RGB")
+    sx0, sy0 = max(0, x0), max(0, y0)
+    sx1 = min(src.width, x0 + w_src)
+    sy1 = min(src.height, y0 + h_src)
+    canvas.paste(src.crop((sx0, sy0, sx1, sy1)), (sx0 - x0, sy0 - y0))
+
+    return canvas.resize((OUT_W, OUT_H), Image.LANCZOS)
+
+
+def main() -> int:
+    if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+        sys.stdout.reconfigure(encoding="utf-8")
+
+    masters = sorted(SRC.glob("elad-*.png"))
+    if not masters:
+        print(f"אין מקורות ב-{SRC}")
+        return 1
+
+    OUT.mkdir(exist_ok=True)
+    lms = {p: landmarks(p) for p in masters}
+
+    heads = [lm["headH"] for lm in lms.values()]
+    print(f"{len(masters)} מצבים · גובה ראש במקור {min(heads)}–{max(heads)} "
+          f"→ מנורמל ל-{HEAD_H}\n")
+
+    for p, lm in lms.items():
+        img = crop(p, lm)
+        dest = OUT / p.name
+        img.save(dest, optimize=True)
+        kb = dest.stat().st_size // 1024
+        print(f"  {p.name[5:-4]:14s} headH={lm['headH']:4d} cx={lm['cx']:5d} "
+              f"→ {OUT_W}×{OUT_H}  {kb:4d} KB")
+
+    print(f"\nנוצר: {OUT.relative_to(ROOT)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

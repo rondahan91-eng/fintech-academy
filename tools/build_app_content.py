@@ -121,11 +121,14 @@ def main() -> int:
     print(f"  שבוע {payload['week']} · {payload['title']}")
     print(f"  {n_tests} בדיקות גלויות · starter {len(payload['starter'].splitlines())} שורות")
 
+    # האפליקציה טוענת את החיתוכים, לא את המקורות
     missing = [a["file"] for a in payload["avatars"]
-               if not (ROOT / "assets/persona" / a["file"]).is_file()]
+               if not (ROOT / "assets/persona/panel" / a["file"]).is_file()]
     if missing:
-        print(f"  ⚠️ {len(missing)} מתוך {len(payload['avatars'])} אווטארים חסרים "
-              f"ב-assets/persona/ — הפאנל יציג גרפיקת מקום")
+        print(f"  ⚠️ {len(missing)} מתוך {len(payload['avatars'])} חיתוכי אווטאר "
+              f"חסרים — הרץ py tools/crop_persona.py")
+    else:
+        print(f"  {len(payload['avatars'])} אווטארים · חיתוכי פאנל קיימים")
     return 0
 
 

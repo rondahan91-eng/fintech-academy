@@ -48,9 +48,10 @@ el.taskBody.innerHTML = WEEK.requirements.map((sec) => `
 
 // ══ האווטאר ═══════════════════════════════════════════════════════════
 // המצבים מגיעים מ-assets/persona/manifest.yml דרך סקריפט הבנייה.
-// ⚠️ תשעת קובצי ה-PNG מעולם לא נשמרו לריפו. ברגע שיונחו ב-assets/persona/
-//    בשמות שב-manifest, זה נדלק בלי שינוי קוד.
+// **נטען מ-panel/ ולא מהמקור** — המקורות הם פריים רחב 2816×1536 שבו
+// הראש היה יוצא בגודל 40 פיקסלים. ‏tools/crop_persona.py מנרמל אותם.
 
+const AVATAR_DIR = '../assets/persona/panel';
 const AVATARS = new Map((WEEK.avatars || []).map((a) => [a.id, a.file]));
 const AVATAR_DEFAULT = (WEEK.avatars || []).find((a) => a.default)?.id ?? 'neutral';
 
@@ -58,7 +59,7 @@ function setAvatar(state) {
   const file = AVATARS.get(state) ?? AVATARS.get(AVATAR_DEFAULT);
   if (!file) return;
   el.avatar.dataset.state = state;
-  el.avatarImg.src = `../assets/persona/${file}`;
+  el.avatarImg.src = `${AVATAR_DIR}/${file}`;
 }
 
 el.avatarImg.addEventListener('load', () => {
@@ -70,11 +71,20 @@ el.avatarImg.addEventListener('error', () => {
   el.avatarImg.hidden = true;
   el.avatarFallback.hidden = false;
   el.avatarNote.textContent =
-    `חסר: assets/persona/${AVATARS.get(el.avatar.dataset.state) ?? '?'}\n` +
-    `${AVATARS.size} מצבים רשומים ב-manifest`;
+    `חסר: ${AVATAR_DIR}/${AVATARS.get(el.avatar.dataset.state) ?? '?'}\n` +
+    `הרץ  py tools/crop_persona.py`;
 });
 
 setAvatar('presenting');   // מסירת המשימה — manifest.yml → presenting.use_for
+
+// בפרוסה אין מודל שיבחר מצב, ואי אפשר לאמת "הראש לא קופץ" בלי להחליף.
+// לחיצה על האווטאר עוברת למצב הבא. **כלי פיתוח — יורד עם ה-stub.**
+el.avatar.addEventListener('click', () => {
+  const ids = [...AVATARS.keys()];
+  const next = ids[(ids.indexOf(el.avatar.dataset.state) + 1) % ids.length];
+  setAvatar(next);
+  el.avatarNote.textContent = next;
+});
 
 // ══ אלעד ══════════════════════════════════════════════════════════════
 // בפרוסה אין LLM. הטקסט כאן הוא **stub** שמחזיק את המקום ומראה את

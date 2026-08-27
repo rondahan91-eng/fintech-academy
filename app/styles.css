@@ -107,10 +107,11 @@ body {
   content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 48px;
   background: linear-gradient(to top, #fff, transparent); pointer-events: none;
 }
-/* ‏contain + bottom: הראש נשאר בגובה קבוע כשהמצב מתחלף, גם אם הקנבסים
-   לא מנורמלים לגמרי. ‏manifest.yml → display_requirements.normalized_baseline */
+/* ‏panel/ מנורמל ל-656×480, בדיוק היחס של הקופסה — cover ו-contain זהים
+   כאן, ו-cover בטוח יותר אם הרוחב ישתנה. הראש יושב באותה שורה בתשעתם. */
+.avatar { cursor: pointer; }              /* מחליף מצב — כלי פיתוח */
 #avatar-img, .avatar-fallback {
-  height: 100%; width: 100%; object-fit: contain; object-position: bottom;
+  height: 100%; width: 100%; object-fit: cover; object-position: top center;
 }
 #avatar-img[hidden], .avatar-fallback[hidden] { display: none; }
 .avatar-note {
