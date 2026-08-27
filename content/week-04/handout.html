@@ -1,0 +1,166 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>שבוע 4 · מחשבון המשכורת — גרסה ראשונה</title><style>
+:root { --ink:#1a1a1a; --muted:#5a5a5a; --line:#d8d8d8; --accent:#1e5aa8;
+        --soft:#f4f6f9; --warn:#fff8e6; --warn-line:#e0a800; }
+* { box-sizing:border-box; }
+body { direction:rtl; font-family:"Segoe UI","Arial",sans-serif;
+       color:var(--ink); line-height:1.65; max-width:19cm;
+       margin:0 auto; padding:1.5cm 1.2cm; font-size:11.5pt; }
+h1 { font-size:22pt; border-bottom:3px solid var(--accent); padding-bottom:.3em;
+     margin:0 0 .6em; }
+h2 { font-size:15pt; color:var(--accent); margin:1.6em 0 .5em;
+     border-bottom:1px solid var(--line); padding-bottom:.2em; }
+h3 { font-size:12.5pt; margin:1.2em 0 .4em; }
+h4 { font-size:11.5pt; color:var(--muted); margin:1em 0 .3em; }
+p { margin:.5em 0; }
+ul,ol { margin:.5em 0; padding-inline-start:1.5em; }
+li { margin:.25em 0; }
+code { direction:ltr; unicode-bidi:embed; font-family:Consolas,monospace;
+       background:var(--soft); padding:.1em .35em; border-radius:3px;
+       font-size:.9em; }
+pre { direction:ltr; text-align:left; background:var(--soft);
+      border:1px solid var(--line); border-inline-start:3px solid var(--accent);
+      padding:.7em .9em; border-radius:4px; overflow-x:auto; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; width:100%; margin:.8em 0; font-size:10.5pt; }
+th,td { border:1px solid var(--line); padding:.45em .6em; text-align:right;
+        vertical-align:top; }
+th { background:var(--soft); font-weight:600; }
+tr:nth-child(even) td { background:#fafbfc; }
+blockquote { background:var(--warn); border-inline-start:4px solid var(--warn-line);
+             margin:.9em 0; padding:.6em .9em; border-radius:0 4px 4px 0; }
+blockquote p { margin:.3em 0; }
+hr { border:none; border-top:1px solid var(--line); margin:1.6em 0; }
+a { color:var(--accent); }
+.box { display:inline-block; width:.95em; height:.95em; border:1.5px solid var(--muted);
+       border-radius:2px; margin-inline-end:.5em; vertical-align:-2px;
+       text-align:center; line-height:.9em; font-size:.8em; }
+.checklist { list-style:none; padding-inline-start:.2em; }
+.doc-head { color:var(--muted); font-size:10pt; margin-bottom:1.5em;
+            padding-bottom:.6em; border-bottom:1px solid var(--line); }
+.section-label { background:var(--accent); color:#fff; display:inline-block;
+                 padding:.25em .9em; border-radius:3px; font-size:10pt;
+                 margin:2.5em 0 .8em; }
+@media print {
+  body { padding:0; max-width:none; font-size:10.5pt; }
+  @page { margin:1.6cm 1.4cm; }
+  h1,h2,h3 { break-after:avoid; }
+  table,blockquote,pre { break-inside:avoid; }
+  .page-break { break-before:page; }
+  a { color:var(--ink); text-decoration:none; }
+}
+</style></head><body><div class="doc-head">FinTech Academy · חומרי מורה</div><div><span class="section-label">מערך שיעור</span>
+<h1>מערך שיעור — שבוע 4 · מחשבון המשכורת</h1>
+<p><strong>משך:</strong> 90 דקות (2 ש&quot;ש) + גלישה לשיעורי בית <strong>סעיפי סילבוס:</strong> פרק 2 סעיפים 8, 10 (round), 11</p>
+<p>⭐ <strong>שבוע ייצור.</strong> הקוד שהתלמידים יגישו השבוע יחשב את התלושים שלהם מכאן והלאה. שווה לומר את זה בכיתה — זה משנה את היחס למשימה.</p>
+<hr>
+<h2>0. חלוקת העבודה</h2>
+<table><thead><tr><th>נושא</th><th>מי מלמד</th></tr></thead><tbody><tr><td>אופרטורים חשבוניים <code>+ − * /</code></td><td><strong>המורה</strong></td></tr><tr><td>סדר קדימויות וסוגריים</td><td><strong>המורה</strong></td></tr><tr><td><code>round()</code></td><td><strong>המורה</strong></td></tr><tr><td><strong>אחוז כפעולת כפל</strong></td><td><strong>אלעד</strong></td></tr><tr><td><strong>המספר המוזר בביטוח לאומי</strong></td><td><strong>אלעד</strong></td></tr><tr><td><strong>בחירת הפרשה לפנסיה</strong></td><td><strong>אלעד</strong></td></tr></tbody></table>
+<p><strong>התפר השבוע:</strong> <em>איך פייתון מחשב</em> — שלך. <em>למה 0.4% הוא 0.004</em> — שלו. אתה מלמד סדר פעולות; הוא מלמד למה זה חשוב בכסף.</p>
+<blockquote><p>⚠️ <strong>אל תסביר את <code>210.00000000000003</code>.</strong> לאלעד יש שם תשובה קצרה (&quot;עגל בהדפסה, ההסבר בהמשך&quot;) ולשבוע 8 יש שיעור שלם. הסבר מוקדם שורף אותו.</p></blockquote>
+<hr>
+<h1>חלק א&#x27; — פרונטלי (0:00–0:45)</h1>
+<h2>1. ארבעת האופרטורים (0:00–0:12)</h2>
+<p><code>+ − * /</code> על המסך, בהרצה חיה. נקודה אחת שלא מובנת מאליה:</p>
+<pre dir="ltr"><code>print(7 / 2)</code></pre>
+<p><strong>התוצאה היא 3.5, לא 3.</strong> חילוק בפייתון תמיד מחזיר עשרוני, גם כשהוא מתחלק בדיוק. הרץ <code>print(6 / 2)</code> ותראה <code>3.0</code>.</p>
+<h2>2. סדר קדימויות (0:12–0:25)</h2>
+<p><strong>הדגם, אל תספר.</strong> על המסך, שתי שורות זו אחרי זו:</p>
+<pre dir="ltr"><code>print(2 + 3 * 4)
+print((2 + 3) * 4)</code></pre>
+<p><em>&quot;מה יצא? למה?&quot;</em> — 14 מול 20. אותם מספרים, אותם סימנים, תוצאה שונה.</p>
+<p>הכלל: <strong>כפל וחילוק לפני חיבור וחיסור.</strong> בדיוק כמו במתמטיקה. סוגריים גוברים על הכול.</p>
+<h3>התרגיל שכדאי לעשות דווקא כאן</h3>
+<pre dir="ltr"><code>print(10 + 20 / 5 * 100)
+print((10 + 20) / 5 * 100)</code></pre>
+<p>400 + 10 = 410, מול 600. <strong>הפער עצום, ואף אחת מהשורות לא זורקת שגיאה.</strong> זו הנקודה: שגיאת סדר פעולות היא שקטה. היא לא מודיעה על עצמה — היא רק נותנת תשובה לא נכונה.</p>
+<h2>3. <code>round()</code> (0:25–0:33)</h2>
+<pre dir="ltr"><code>print(round(3.14159, 2))
+print(round(210.00000000000003, 2))</code></pre>
+<p>שני ארגומנטים: מה לעגל, ולכמה ספרות.</p>
+<p><strong>ואמירה אחת שכדאי לומר עכשיו:</strong> מעגלים בהדפסה, לא בשמירה. אם תעגל את המשתנה ואז תחשב ממנו עוד משהו — הטעות תצטבר. <strong>מעגלים בקצה.</strong></p>
+<h2>4. תרגול מודרך — חשבון במסעדה (0:33–0:45)</h2>
+<p>שיכתבו בעצמם:</p>
+<pre dir="ltr"><code>bill = 240
+tip_rate = 0.12</code></pre>
+<p>לחשב את הטיפ, את הסכום הכולל, ולהדפיס את שניהם מעוגלים לשתי ספרות. ואז: <strong>איזה אחוז מהסכום הכולל הוא הטיפ?</strong> — זה מכריח סוגריים.</p>
+<p><strong>זו בדיוק המשימה בבנק</strong> — שיעור כמשתנה, חישוב, עיגול, וביטוי עם סוגריים — על תוכן אחר.</p>
+<h3>מי שסיים מהר</h3>
+<p>לפצל את החשבון בין ארבעה אנשים ולהדפיס כמה כל אחד משלם.</p>
+<hr>
+<h1>חלק ב&#x27; — עבודה בבנק (0:45–1:30 ← גולש לשיעורי בית)</h1>
+<h2>5. עבודה על המשימה</h2>
+<h3>מה לחפש</h3>
+<table><thead><tr><th>סימן</th><th>מה לעשות</th></tr></thead><tbody><tr><td>עמלה של 1,000 ₪ על העברה של 2,500</td><td>להפנות לאלעד. <strong>לא לתקן</strong> — השאלה &quot;זה הגיוני?&quot; עושה את העבודה</td></tr><tr><td>מס של 90,000 ₪</td><td>אותו דבר. מספר אבסורדי הוא מתנה</td></tr><tr><td>שיעור אפקטיבי בסביבות 903</td><td>להפנות לאלעד — יש לו סולם רמזים לסוגריים</td></tr><tr><td>הקליד תוצאה במקום לחשב</td><td>הטסט יתפוס. לשאול מה יקרה כשיקבל העלאה</td></tr><tr><td>נבהל מ-<code>210.00000000000003</code></td><td><strong>להרגיע ולהפנות לאלעד.</strong> לא להסביר</td></tr><tr><td>כתב <code>6000 * 0.15</code> ישירות</td><td>לא נכשל בטסט, אבל יעלה לו בשבוע 13. שווה הערה</td></tr><tr><td>סיים מהר</td><td>להוסיף שורת &quot;עלות מעביד&quot; — ברוטו כפול 1.2</td></tr></tbody></table>
+<h3>מתי כן להתערב</h3>
+<p>תקלות סביבה, ושגיאות תחביר בסוגריים — סוגר שלא נסגר הוא שגיאת שפה טהורה.</p>
+<h2>6. סיום</h2>
+<p><em>&quot;מי שלא סיים ממשיך בבית. המערכת זוכרת איפה עצרתם.&quot;</em></p>
+<p><strong>ובסוף השבוע — המשכורת הראשונה נכנסת.</strong> אלעד ידבר איתם על הפרשה לפנסיה. זו החלטה שלהם, ולא צריך להתערב בה.</p>
+<hr>
+<h2>6.1 שאלה שתיפול בכיתה — &quot;אבל בתלוש שלי אין מס&quot;</h2>
+<p><strong>זה יקרה, וכדאי שתדע את התשובה לפני שהיא נשאלת.</strong></p>
+<p>חלק מהתלמידים עובדים. <strong>מי שיסתכל על תלוש אמיתי יראה מס הכנסה אפס</strong> — לא כי הוא לא משלם, אלא כי <strong>נקודות זיכוי מאפסות אותו.</strong> תושב ישראל מקבל 2.25 נקודות, ועובד מתחת לגיל 18 מקבל נקודה נוספת. בערך של ~242 ₪ לנקודה זה מכסה מס של כמעט 800 ₪ לחודש.</p>
+<p><strong>ולקטין יש גם ניכוי מופחת:</strong> דמי ביטוח בריאות מתחילים בגיל 18 — עד אז הוא מבוטח דרך ההורה.</p>
+<p><strong>מה לומר:</strong> שזה נכון, שהמס האמיתי שלו כנראה אפס, <strong>ושהמערכת מלמדת פישוט בכוונה.</strong> אלעד אומר את זה מיוזמתו כשהוא מוסר את המשימה, אז זה לא אמור להפתיע.</p>
+<p><strong>מה לא לעשות:</strong> לא ללמד נקודות זיכוי כאן. <strong>זה שבוע 13</strong>, שם הן נלמדות לצד המדרגות, ושם התלמיד מגלה גם שאם נוכה לו מס בקיץ — <strong>הוא יכול לקבל אותו בחזרה.</strong></p>
+<blockquote><p>זו לא הסתייגות מהחומר — <strong>זו הנקודה שבה הקורס מוכיח שהוא על החיים שלהם.</strong> תלמיד ששאל את השאלה הזאת עשה בדיוק מה שרצינו.</p></blockquote>
+<hr>
+<h2>7. הכנה לפני השיעור</h2>
+<ul class="checklist"><li><span class="box"></span>דוגמאות סעיפים 2–3 מוכנות להרצה חיה, לא שקופיות</li><li><span class="box"></span>לוודא שהמשכורת הראשונה מוגדרת להיכנס בסוף השבוע</li><li><span class="box"></span>לבדוק שאלעד עונה</li><li><span class="box"></span><strong>לרענן את ערכי נקודות הזיכוי לשנת המס הנוכחית</strong> — ראה 6.1</li></ul>
+<hr>
+<h2>8. הערכה — מה אמור לקרות</h2>
+<p><strong>כל תלמיד:</strong> כתב ביטוי חשבוני שמחשב ערך ממשתנים אחרים.</p>
+<p><strong>רוב הכיתה:</strong> יודעים להמיר אחוז לעשרוני, ומבינים למה הסוגריים משנים.</p>
+<p><strong>סימן שהשיעור הצליח:</strong> תלמיד שואל <strong>&quot;אז אם השכר שלי ישתנה, המחשבון יעבוד לבד?&quot;</strong></p>
+<p><strong>סימן שצריך לחזור:</strong> תלמיד שממשיך להקליד תוצאות אחרי שהטסט תפס אותו. הוא רואה במשימה מבחן ולא כלי.</p>
+<hr>
+<h2>9. שיעורי בית</h2>
+<p>השלמת המשימה במערכת, <strong>וההחלטה על ההפרשה לפנסיה</strong> בשיחה עם אלעד.</p>
+</div>
+<div class="page-break"><span class="section-label">המשימה כפי שהתלמיד רואה אותה</span>
+<h1>שבוע 4 · מחשבון המשכורת</h1>
+<p>בשבוע הראשון חישבת את הנטו שלך בראש והקלדת את התוצאה. אמרתי לך אז שנגיע לזה.</p>
+<p>הגענו. <strong>השבוע המחשב יחשב במקומך.</strong></p>
+<p>ויש כאן משהו שכדאי שתדע לפני שאתה מתחיל: הקוד שתכתוב היום לא נשאר בתרגיל. <strong>מרגע שתגיש אותו, המערכת תשתמש בו כדי לחשב את התלוש החודשי שלך.</strong> אם יהיה בו באג — תקבל תלוש שגוי, ותראה אותו.</p>
+<hr>
+<h2>חלק א&#x27; — עמלת העברה</h2>
+<p>לקוח מעביר <strong>2500 ₪</strong>. הבנק גובה עמלה של <strong>0.4%</strong>.</p>
+<p>שמור את שני הנתונים במשתנים, <strong>חשב</strong> את העמלה, והדפס אותה.</p>
+<table><thead><tr><th>מה</th><th>שם המשתנה</th></tr></thead><tbody><tr><td>סכום ההעברה</td><td><code>transfer_amount</code></td></tr><tr><td>שיעור העמלה</td><td><code>commission_rate</code></td></tr><tr><td>העמלה בשקלים</td><td><code>commission</code></td></tr></tbody></table>
+<p>⚠️ <strong>0.4% אינו 0.4.</strong> אחוז הוא חלק ממאה. תשאל את אלעד איך אחוז הופך למספר שאפשר להכפיל בו — זה הבסיס לכל מה שנעשה השנה.</p>
+<hr>
+<h2>חלק ב&#x27; — התלוש ⭐</h2>
+<p>עכשיו החלק האמיתי.</p>
+<table><thead><tr><th>מה</th><th>הערך</th><th>שם המשתנה</th></tr></thead><tbody><tr><td>ברוטו</td><td>6000</td><td><code>gross_salary</code></td></tr><tr><td>שיעור מס הכנסה</td><td>15%</td><td><code>tax_rate</code></td></tr><tr><td>שיעור ביטוח לאומי</td><td>3.5%</td><td><code>national_insurance_rate</code></td></tr></tbody></table>
+<p><strong>חשב</strong> — אל תקליד את התשובות:</p>
+<table><thead><tr><th>מה</th><th>שם המשתנה</th></tr></thead><tbody><tr><td>מס הכנסה בשקלים</td><td><code>income_tax</code></td></tr><tr><td>ביטוח לאומי בשקלים</td><td><code>national_insurance</code></td></tr><tr><td>נטו</td><td><code>net_salary</code></td></tr></tbody></table>
+<p>והדפס תלוש מסודר: ברוטו, שני הניכויים, ונטו.</p>
+<blockquote><p><strong>שים לב למספר שיצא לך בביטוח לאומי.</strong> הוא ייראה מוזר. זה לא באג שלך ולא טעות שלך — יש לזה סיבה אמיתית, ואלעד יגיד לך מה לעשות בינתיים. את ההסבר המלא תקבל בעוד כמה שבועות.</p></blockquote>
+<hr>
+<h2>חלק ג&#x27; — שיעור הניכוי האפקטיבי</h2>
+<p>כמה אחוז מהברוטו שלך בעצם ירד?</p>
+<pre dir="ltr"><code>שיעור הניכוי = (מס הכנסה + ביטוח לאומי) ÷ ברוטו × 100</code></pre>
+<p>שמור ב-<code>effective_rate</code>, <strong>מעוגל לספרה אחת אחרי הנקודה</strong>, והדפס.</p>
+<p>⚠️ <strong>הסוגריים בנוסחה למעלה אינם קישוט.</strong> נסה פעם אחת בלעדיהם ותראה מה יוצא. פייתון מבצע כפל וחילוק לפני חיבור וחיסור, בדיוק כמו בשיעורי מתמטיקה — והסוגריים הם מה שמשנה את הסדר.</p>
+<hr>
+<h2>מה נבדק</h2>
+<ul><li>שבעת המשתנים קיימים בשמות המדויקים</li><li><strong>הערכים חושבו ולא הוקלדו</strong> — הטסטים בודקים את זה</li><li>התלוש מודפס ומכיל את כל השורות</li><li><code>effective_rate</code> מעוגל נכון</li></ul>
+<hr>
+<h2>מותר להיעזר</h2>
+<ul><li><strong>באלעד</strong> — במיוחד על אחוזים, ועל המספר המוזר בחלק ב&#x27;</li><li>בהרצה חוזרת, בלי הגבלה</li></ul>
+<p><strong>לא להקליד תוצאות.</strong> אם כתבת <code>income_tax = 900</code> במקום לחשב — הטסטים יעברו והתלוש שלך יעבוד החודש. אבל בחודש הבא, כשהשכר שלך ישתנה בגלל קידום, המחשבון ימשיך להחזיר 900. <strong>זו הסיבה שמחשבים ולא מקלידים.</strong></p>
+</div>
+<div class="page-break"><span class="section-label">רובריקת איכות קוד</span>
+<h1>רובריקת איכות קוד — שבוע 4</h1>
+<p>הרכיב השלישי בתגמול הביצועים (150 ₪). נבדק <strong>רק אחרי</strong> שכל הטסטים הנסתרים עברו.</p>
+<p>⭐ <strong>שבוע ייצור.</strong> הקוד הזה יריץ תלושים אמיתיים, ולכן הרובריקה כאן מחמירה יותר מהשבועות הקודמים.</p>
+<h2>מזכה ב-150 ₪</h2>
+<table><thead><tr><th>קריטריון</th><th>מה מחפשים</th></tr></thead><tbody><tr><td>הפרדה בין נתונים לחישוב</td><td>קודם כל ההשמות של הנתונים והשיעורים, אחר כך החישובים, ורק אז ההדפסות</td></tr><tr><td>שיעורים כמשתנים</td><td><code>gross_salary <em> tax_rate</code> ולא <code>gross_salary </em> 0.15</code>. מספר קסם בקוד ייצור הוא באג ממתין</td></tr><tr><td>עיגול בקצה בלבד</td><td><code>round()</code> מופיע בהדפסה. המשתנים מחזיקים את הערך המחושב</td></tr><tr><td>שלושת החלקים מופרדים</td><td>אפשר לראות איפה נגמרת העמלה ומתחיל התלוש</td></tr></tbody></table>
+<h2>לא מזכה</h2>
+<ul><li>ערך מוקלד לצד ערך מחושב — עקביות חשובה מנוחות</li><li><code>round()</code> על המשתנה עצמו</li><li>חישוב שנכתב בתוך ה-<code>print</code> במקום במשתנה עם שם</li><li>שאריות מקוד הפתיחה</li></ul>
+<h2>לא נבדק השבוע</h2>
+<p>בחירת שמות (ניתנו במשימה), כפילות (אין עדיין לולאות), יעילות.</p>
+<hr>
+<blockquote><p><strong>למורה:</strong> הקריטריון שמפריד באמת הוא <strong>&quot;שיעורים כמשתנים&quot;</strong>. תלמיד שכתב <code>6000 * 0.15</code> קיבל את התשובה הנכונה וכתב קוד שאי אפשר לתחזק — וזה בדיוק מה ששבוע 13 יבוא לשנות. מי שהשתמש במשתנים יחליף שורה אחת; מי שלא, יחפש מספרים בכל הקובץ.</p>
+<p>זו גם ההזדמנות הראשונה לומר בקול את המשפט שילווה את השנה: <strong>קוד נכתב פעם אחת ונקרא עשר פעמים.</strong></p></blockquote>
+</div></body></html>

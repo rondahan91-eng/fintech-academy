@@ -1,0 +1,1207 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>FinTech Academy — חבילת עיצוב</title>
+<style>
+/* ==========================================================
+   WIREFRAME בלבד — אין כאן עיצוב.
+   אפור, מסגרות מקווקוות, ותוויות. הכול נועד להזזה.
+   ========================================================== */
+* { box-sizing: border-box; }
+body {
+  direction: rtl; margin: 0; background: #e9e9ec;
+  font-family: "Segoe UI", Arial, sans-serif; font-size: 13px; color: #333;
+}
+
+/* --- סרגל מתגי מסכים (לא חלק מהמוצר) --- */
+.switcher {
+  position: sticky; top: 0; z-index: 50; background: #2b2b30; color: #fff;
+  padding: 10px 16px; display: flex; gap: 8px; align-items: center;
+}
+.switcher b { margin-left: 16px; font-weight: 600; }
+.switcher a {
+  background: #444; color: #fff; text-decoration: none; padding: 7px 14px;
+  border-radius: 3px; font-size: 13px;
+}
+.switcher a:hover { background: #fff; color: #222; }
+.switcher span { margin-right: auto; opacity: .55; font-size: 12px; }
+.screen-title { max-width: 1280px; margin: 0 auto 10px; font-size: 15px;
+  color: #55555c; font-weight: 600; letter-spacing: .02em; }
+
+/* --- מסגרת מסך --- */
+.screen { padding: 20px 20px 40px; }
+.frame {
+  background: #fff; border: 1px solid #bbb; max-width: 1280px; margin: 0 auto;
+  min-height: 720px; display: flex; flex-direction: column;
+}
+
+/* --- אזור גנרי --- */
+.box { border: 1px dashed #9a9a9a; background: #f6f6f8; padding: 10px;
+       position: relative; }
+.box > .tag {
+  position: absolute; top: -1px; right: -1px; background: #9a9a9a; color: #fff;
+  font-size: 10px; padding: 1px 6px; letter-spacing: .02em;
+}
+.ph { color: #8a8a8a; font-size: 12px; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; gap: 10px; }
+
+/* --- רכיבי ממשק גולמיים --- */
+.btn { display: inline-block; border: 1px solid #777; background: #ececef;
+       padding: 6px 14px; border-radius: 3px; font-size: 12px; }
+.btn.primary { background: #d8d8dd; border-color: #555; font-weight: 600; }
+.field { border: 1px solid #999; background: #fff; padding: 7px 10px;
+         font-size: 12px; color: #999; }
+.chip { display: inline-block; border: 1px solid #999; background: #fff;
+        padding: 2px 9px; border-radius: 10px; font-size: 11px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid #bbb; }
+.tab { border: 1px solid #bbb; border-bottom: 0; background: #ececef;
+       padding: 5px 14px; font-size: 12px; }
+.tab.on { background: #fff; font-weight: 600; }
+.avatar { border: 1px dashed #9a9a9a; background: #f0f0f3; height: 150px;
+          display: flex; align-items: center; justify-content: center;
+          color: #8a8a8a; font-size: 12px; }
+.bubble { border: 1px solid #bbb; background: #fff; padding: 8px 10px;
+          border-radius: 4px; font-size: 12px; }
+.bubble.me { background: #ececef; margin-inline-start: 40px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { border: 1px solid #ccc; padding: 5px 8px; text-align: right; }
+th { background: #f0f0f3; font-weight: 600; }
+.note { font-size: 11px; color: #7a7a7a; margin-top: 6px; font-style: italic; }
+
+/* --- סרגל עליון של המוצר --- */
+.topbar { border-bottom: 1px solid #bbb; padding: 8px 14px; display: flex;
+          align-items: center; gap: 14px; background: #f6f6f8; }
+.topbar .logo { font-weight: 700; }
+.topbar .spacer { margin-right: auto; }
+
+.brief { max-width: 900px; margin: 0 auto 50px; background:#fff; border:1px solid #bbb;
+         padding: 34px 40px; line-height:1.65; font-size:14px; color:#222; }
+.brief h1 { font-size:26px; margin:0 0 .2em; border-bottom:3px solid #2b2b30; padding-bottom:.25em; }
+.brief h2 { font-size:18px; margin:1.8em 0 .5em; color:#2b2b30;
+            border-bottom:1px solid #ddd; padding-bottom:.2em; }
+.brief h3 { font-size:15px; margin:1.3em 0 .4em; }
+.brief table { margin:1em 0; font-size:13px; }
+.brief th, .brief td { padding:.5em .7em; }
+.brief blockquote { background:#fff8e6; border-inline-start:4px solid #e0a800;
+                    margin:1em 0; padding:.7em 1em; }
+.brief code { background:#f0f0f3; padding:.1em .35em; border-radius:3px;
+              font-family:Consolas,monospace; font-size:.9em; direction:ltr;
+              unicode-bidi:embed; }
+.brief pre { background:#f4f6f9; border:1px solid #ddd; padding:.8em 1em;
+             direction:ltr; text-align:left; overflow-x:auto; }
+.brief hr { border:none; border-top:1px solid #ddd; margin:2em 0; }
+.brief ul, .brief ol { padding-inline-start:1.6em; }
+.nav { position:sticky; top:0; z-index:50; background:#2b2b30; color:#fff;
+       padding:11px 18px; display:flex; gap:8px; align-items:center; }
+.nav b { margin-left:18px; }
+.nav a { background:#444; color:#fff; text-decoration:none; padding:7px 14px;
+         border-radius:3px; font-size:13px; }
+.nav a:hover { background:#fff; color:#222; }
+.nav span { margin-right:auto; opacity:.55; font-size:12px; }
+.part { padding: 26px 20px 10px; }
+.part-title { max-width:1280px; margin:0 auto 14px; font-size:13px; color:#55555c;
+              font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <b>FinTech Academy · חבילת עיצוב</b>
+  <a href="#brief">זרימה</a>
+  <a href="#layout">פריסה</a>
+  <a href="#login">מסך כניסה</a>
+  <a href="#student">מסך תלמיד</a>
+  <a href="#teacher">מסך מורה</a>
+  <span>הקשר + פריסה גסה · ללא החלטות עיצוב</span>
+</div>
+
+<div class="part">
+  <div class="part-title">חלק א' · זרימה ועקרונות</div>
+  <div class="brief" id="brief">
+<h1>FinTech Academy — תדריך עיצוב</h1>
+<p><strong>מסמך הזרימה והעקרונות.</strong> מי המשתמשים, מה קורה מתי, ואילו החלטות פדגוגיות אסור לעיצוב לבטל.</p>
+<table><thead><tr><th>מסמך</th><th>תחום</th></tr></thead><tbody><tr><td><strong>זה</strong></td><td>זרימות, מצבים, מסכים, עקרונות</td></tr><tr><td><a href="layout.md"><code>layout.md</code></a></td><td>פריסה — רוחבים, אזורים, מה מתכווץ</td></tr><tr><td><a href="system/DESIGN.md"><code>system/DESIGN.md</code></a></td><td>צבע, טיפוגרפיה, ריווח, רדיוס</td></tr></tbody></table>
+<blockquote><p>שלוש החלטות במערכת העיצוב נשענות ישירות על המסמך הזה, וכדאי לדעת עליהן: <strong><code>--accent</code> שמור לפעולה ראשית בלבד</strong>, <strong>כישלון בבדיקה אינו אדום</strong> (סעיף 4.3 כאן), ו<strong><code>--state-breach</code> הוא לאתיקה בלבד ולעולם לא לבאג</strong> (סעיף 4.4).</p></blockquote>
+<p>מה שכן כאן: מה המוצר, מי משתמש בו, ו<strong>אילו החלטות שנראות כמו עיצוב הן בעצם החלטות פדגוגיות שאסור לבטל.</strong></p>
+<hr>
+<h2>1. מה זה</h2>
+<p>פלטפורמה ללימוד תכנות בפייתון וחינוך פיננסי, לכיתה י&#x27;. שנה שלמה, 30 שבועות.</p>
+<p>התלמידים משחקים <strong>עובדים זוטרים בבנק פינטק</strong>. כל שבוע הם מקבלים משימת תכנות מראש הצוות, מתקדמים בדרגות, מרוויחים שכר וירטואלי, ומפרישים לפנסיה — שמתורגמת בסוף השנה ל-20% מהציון.</p>
+<p><strong>שתי מטרות במקביל, ושתיהן אמיתיות:</strong> ללמד לתכנת, וללמד חינוך פיננסי.</p>
+<hr>
+<h2>2. שני משתמשים, צרכים הפוכים</h2>
+<table><thead><tr><th></th><th><strong>תלמיד</strong></th><th><strong>מורה</strong></th></tr></thead><tbody><tr><td>גיל</td><td>15–16</td><td>—</td></tr><tr><td>רקע</td><td><strong>אפס ניסיון בתכנות</strong></td><td>מורה לפייתון</td></tr><tr><td>כמה זמן במסך</td><td>45 דק&#x27; בשיעור + בית</td><td>סריקה מהירה בין שיעורים</td></tr><tr><td>מה הוא צריך</td><td>להתרכז במשימה אחת</td><td>לראות 30 תלמידים בבת אחת</td></tr><tr><td>צפיפות מידע</td><td><strong>מינימלית</strong></td><td><strong>גבוהה</strong></td></tr><tr><td>מה מזיק לו</td><td>הסחות, השוואה לאחרים</td><td>מידע חסר</td></tr></tbody></table>
+<p><strong>המסך של התלמיד נועד למיקוד. המסך של המורה נועד לטריאז&#x27;.</strong> אלה שני מוצרים שונים שחולקים מותג.</p>
+<hr>
+<h2>3. הדמות — אלעד שגב</h2>
+<p>ראש צוות הפיתוח בבנק. AI, ואומר את זה במפורש אם שואלים.</p>
+<p><strong>הוא לא קישוט ולא עוזר.</strong> התלמידים לומדים ממנו את <strong>כל</strong> התוכן הפיננסי — ברוטו ונטו, ריבית, מדרגות מס, דמי ניהול, אתיקה. המורה מלמד את הפייתון; אלעד מלמד את הכסף.</p>
+<p>יש <strong>תשעה אווטארים</strong> מוכנים, כולם בישיבה אל אותו שולחן, רקע לבן מבודד:</p>
+<table><thead><tr><th>מצב</th><th>קורא כ־</th><th>מתי</th></tr></thead><tbody><tr><td><code>neutral</code></td><td>מקשיב</td><td>ברירת מחדל</td></tr><tr><td><code>explaining</code></td><td>מסביר</td><td>מסירת מושג פיננסי</td></tr><tr><td><code>thinking</code></td><td>שוקל</td><td>רמזים, לפני פניית לקוח</td></tr><tr><td><code>presenting</code></td><td>&quot;זה שלך&quot;</td><td>מסירת משימה או לקוח</td></tr><tr><td><code>concerned</code></td><td>&quot;משהו נראה לי לא בסדר&quot;</td><td>תלמיד תקוע 10 דקות</td></tr><tr><td><code>waiting</code></td><td>&quot;נו?&quot;</td><td>לא ענה, או הגיש בלי חישוב</td></tr><tr><td><code>approve</code></td><td>הצלחה</td><td>דרגה, הערכה — <strong>נדיר</strong></td></tr><tr><td><code>impressed</code></td><td>&quot;לא חשבתי על זה&quot;</td><td>תלמיד הפתיע — <strong>נדיר</strong></td></tr><tr><td><code>disapprove</code></td><td>&quot;חצית קו&quot;</td><td><strong>אתיקה בלבד</strong></td></tr></tbody></table>
+<p><strong>אווטאר אחד קבוע שמחליף מצב — לא אחד לכל הודעה.</strong> זה מה שגורם לו להיקרא כאדם שמגיב בזמן אמת ולא כתמונה מוצמדת.</p>
+<p>⚠️ ה-PNG שקוף. <strong>על רקע כהה תופיע הילה סביב הדמות</strong> — הפאנל שלו חייב להישאר לבן.</p>
+<hr>
+<h2>4. תשע החלטות שנראות כמו עיצוב ואינן</h2>
+<p>זה החלק החשוב במסמך. כל אחת מהן תיראה למעצב כמו הזדמנות לשיפור, וכל אחת מהן תשבור משהו.</p>
+<p><strong>1. אלעד לא מתקפל לכפתור צף, בשום רוחב מסך.</strong> הוא ערוץ ההוראה של חצי מהקורס. ברגע שצריך ללחוץ כדי להגיע אליו — תלמידים לא ידברו איתו, והתוכן הפיננסי לא יילמד. הוא תופס נדל&quot;ן קבוע, וזה מכוון.</p>
+<p><strong>2. המשימה גלויה תמיד, לא בטאב.</strong> מתחילים לא זוכרים מה התבקשו תוך כדי כתיבת קוד. טאב שמסתיר את המשימה מייצר תלמיד שמנחש.</p>
+<p><strong>3. כישלון בטסטים הוא המצב הרגיל, לא שגיאה.</strong> תלמיד יריץ 15 פעמים לפני שיעבור. אם כל כישלון נראה כמו אזהרה אדומה, השיעור שנלמד הוא &quot;אני גרוע בזה&quot;. <strong>הטון של תוצאות הבדיקה צריך להיות אינפורמטיבי, לא שיפוטי.</strong></p>
+<p><strong>4. <code>disapprove</code> לעולם לא מופיע על באג.</strong> הפרצוף המאוכזב שמור להפרות אתיקה — מכירה שפוגעת בלקוח, ניסיון לחלץ פתרון. אם הוא יופיע על טסט שנכשל, התלמידים ילמדו שטעות בקוד היא כישלון מוסרי. <strong>הוא מופיע כשנפגע מישהו, לא כשנשבר משהו.</strong></p>
+<p><strong>5. <code>approve</code> נדיר בכוונה.</strong> דרגה, הערכה, בונוס אתיקה. <strong>לא</strong> השלמת משימה שבועית — זו העבודה. חגיגה על כל משימה הופכת אותה לרעש והמצב מת.</p>
+<p><strong>6. שכר פרטי, דרגה פומבית.</strong> הדרגה גלויה כי היא תפקיד. <strong>כמה מישהו מרוויח לא מוצג לאף אחד חוץ ממנו והמורה.</strong> השוואת שכר בין בני 16 היא בדיוק ההשפלה שהמערכת נבנתה כדי למנוע.</p>
+<p><strong>7. אין טבלת מובילים. בשום צורה.</strong> לא &quot;המקום שלך בכיתה&quot;, לא &quot;5 המובילים&quot;, לא אחוזון. אין השוואה בין תלמידים בשום מסך — כולל אצל המורה, שרואה נתונים אבל לא דירוג.</p>
+<p><strong>8. טסטים נסתרים לא נחשפים.</strong> התלמיד רואה תוצאות של בדיקות גלויות בלבד. הנסתרות קובעות ניקוד ונשארות סגורות, אלא אם קנה חשיפה בחנות.</p>
+<p><strong>9. הודעת כישלון אומרת מה חסר, לא איך לתקן.</strong> זו החלטה תוכנית שיש לה השלכה על העיצוב: <strong>הודעות השגיאה ארוכות יחסית</strong> — משפט או שניים בעברית, לא קוד שגיאה. צריך מקום.</p>
+<hr>
+<h2>5. המסכים</h2>
+<table><thead><tr><th>מסך</th><th>פריסה</th></tr></thead><tbody><tr><td><strong>מסך העבודה</strong></td><td>✅ מפורטת — <a href="layout.md"><code>layout.md</code></a></td></tr><tr><td>כניסה · תלמיד · מורה</td><td>ויירפריים גס — <code>wireframe.html</code></td></tr><tr><td>השאר</td><td>טרם</td></tr></tbody></table>
+<h3>קיימים בוויירפריים</h3>
+<p><strong>כניסה</strong> — פשוט. תלמיד או מורה. הערה חשובה: <strong>פתיחה ראשונה של תלמיד מובילה לשיחת קליטה, לא למסך התלמיד.</strong></p>
+<p><strong>מסך תלמיד</strong> — שלוש עמודות: אלעד ימין, עורך קוד במרכז, משימה ובדיקות שמאל. סרגל עליון עם שבוע, דרגה, יתרה ודדליין.</p>
+<p><strong>מסך מורה</strong> — רשימת כיתה, לוח מדדים, דוח יומי, וטבלת מצב. פאנל תלמיד נבחר.</p>
+<h3>חסרים</h3>
+<table><thead><tr><th>מסך</th><th>מה קורה בו</th></tr></thead><tbody><tr><td><strong>שיחת קליטה</strong></td><td>פעם אחת בחיים, ~10 דק&#x27;. הכרות, הסבר תפקיד, <strong>שש שאלות מדידת בסיס</strong>, מסירת המשימה. אלעד במרכז, בלי עורך קוד</td></tr><tr><td><strong>התלוש שלי</strong></td><td>תלוש חודשי: ברוטו, ניכויים, נטו, פנסיה. <strong>מחושב בקוד של התלמיד עצמו</strong></td></tr><tr><td><strong>החנות</strong></td><td>נפתחת בשבוע 5. הארכות דדליין, רמזים, שדרוגי עמדה קוסמטיים</td></tr><tr><td><strong>מעבר שבוע</strong></td><td>סגירת שבוע ופתיחת הבא. אולי גם קידום בדרגה</td></tr><tr><td><strong>הערכה</strong></td><td>5 בשנה. ממשק שונה — בלי אלעד, בלי רמזים</td></tr><tr><td><strong>פנסיה</strong></td><td>בחירת שיעור הפרשה ומסלול. פעם אחת בשבוע 4, שינוי אחד בשבוע 15</td></tr><tr><td><strong>פניית לקוח</strong></td><td>⚠️ ראה 5.1</td></tr><tr><td><strong>ביקורת עמיתים</strong></td><td>⚠️ ראה 5.2</td></tr><tr><td><strong>תקלת on-call</strong></td><td>⚠️ ראה 5.3</td></tr></tbody></table>
+<hr>
+<h2>5.1–5.3 · שלושה משטחים שהאפיון דורש ואין להם מקום</h2>
+<p>שלושת המנגנונים האלה מופיעים ב-<code>SPEC.md</code> כרכיבים פעילים — שניים מהם משפיעים ישירות על הציון — <strong>ולאף אחד מהם אין מסך.</strong> יחד הם מכסים כ-20 שבועות מתוך 30.</p>
+<h3>5.1 · פניית לקוח — משבוע 11, כ-20 שבועות</h3>
+<p>לקוח פונה בשאלה פיננסית מנוסחת בשפה אנושית ומעורפלת: <em>&quot;שמעתי שכדאי להשקיע, מה אתם ממליצים?&quot;</em> התלמיד צריך <strong>לתרגם אותה לחישוב</strong>, לחשב בעורך הקוד, ולהגיש תשובה.</p>
+<p><strong>ההגשה מובנית ואינה קוד:</strong></p>
+<pre dir="ltr"><code>המלצה:            [בחירה מתוך קטלוג המוצרים]
+המספר שמצדיק:     [שדה מספרי, לפעמים שניים להשוואה]
+נימוק:            [טקסט חופשי קצר]</code></pre>
+<p><strong>האילוץ:</strong> התלמיד מחשב בעורך ועונה בטופס. <strong>שני המשטחים צריכים להיות נגישים בלי לאבד אחד את השני</strong> — מי שסוגר את הקוד כדי לענות יאבד את המספר שהרגע חישב.</p>
+<p>✅ <strong>המשטח הוכרע</strong> — טאב שלישי באזור התוצאות, שמתרחב מ-196 ל-280 כשהוא פעיל. הנימוק והחלופות שנדחו: <a href="layout.md"><code>layout.md</code></a> §6.</p>
+<p><strong>עדיין פתוח:</strong> לקוח אחד בשבוע או כמה, והאם הפנייה נוספת על המשימה או מחליפה אותה.</p>
+<h3>5.2 · ביקורת עמיתים — מדרגה D3, כ-16 שבועות</h3>
+<p>תלמיד בכיר מקבל הגשה של זוטר שכבר עברה את הטסטים, ונותן <strong>הערת קריאוּת אחת</strong>.</p>
+<p><strong>זה 5% מהציון וגם תנאי סף לדרגה D4</strong> (שלוש ביקורות שהתקבלו).</p>
+<blockquote><p><strong>המסך הזה אינו נגיש לכל הכיתה, וזו החלטה ולא תקלה.</strong> תלמיד שלא יגיע ל-D3 לא יצבור את חמשת האחוזים, והציון המרבי שלו יהיה <strong>95</strong> (SPEC 5.1). מוצהר בשיעור הראשון.</p>
+<p><strong>מה שנגזר מזה לעיצוב:</strong> הסרגל העליון <strong>אינו זהה לכל התלמידים</strong> — לחלקם יש בו פריט נוסף. זה תקין, כי הדרגה גלויה ממילא לפי האפיון. <strong>הגבול: הסרגל משתנה לפי דרגה בלבד, לעולם לא לפי ציון או ביצועים.</strong></p></blockquote>
+<blockquote><p>⚠️ <strong>האנונימיות נושאת משקל.</strong> המבקר לא רואה שם, אווטאר, דרגה, ציון, או תוצאות טסטים של המחבר — <strong>ולא שום פרט שמאפשר לזהות אותו.</strong> זו לא העדפת פרטיות אלא הדבר שמונע מהמנגנון להפוך לדירוג חברתי. העיצוב צריך להפוך זיהוי לבלתי אפשרי מבנית, לא להסתיר שדה.</p>
+<p>וגם בכיוון השני: <strong>המחבר לא יודע מי ביקר אותו.</strong></p></blockquote>
+<p><strong>שאלות לעיצוב:</strong></p>
+<ul><li>מסך מלא שנפתח מהסרגל, וגלוי רק ל-D3 ומעלה?</li><li>איך מוצג קוד של מישהו אחר — קריאה בלבד, עם מספרי שורות?</li><li>הערה אחת בלבד. <strong>הממשק צריך לאכוף את זה</strong> ולא רק לבקש.</li></ul>
+<h3>5.3 · תקלת on-call</h3>
+<p>באג במערכת הבנק. התלמיד מקבל <strong>קוד קיים ושבור</strong> ומאתר את התקלה. בונוס 350 ₪.</p>
+<p>זה לא מנגנון חדש אלא <strong>וריאנט של מסך העבודה</strong> — כמו מצב הערכה: אותה פריסה, מקור תוכן אחר. ההבדל: הקוד מגיע מלא ושבור במקום ריק.</p>
+<p>✅ <strong>נפתר באפס ממשק חדש:</strong> הקוד השבור נטען ל&quot;הקוד שלי&quot;, וטאב &quot;קוד פתיחה&quot; מחזיק את הגרסה התקינה להשוואה. <a href="layout.md"><code>layout.md</code></a> §5.</p>
+<p><strong>וכאן מתחברת תעלומה שמפת הזרימות תפסה:</strong> למסגור <code>micro 64</code> הוגדר שימוש ב&quot;רשימת הודעות והתראות&quot;, ואין משטח כזה באף מסך. <strong>תקלת on-call היא בדיוק סוג האירוע שדורש התראה</strong> — היא מגיעה בלי שהתלמיד ביקש. ייתכן ששני החורים האלה הם חור אחד.</p>
+<p><strong>שאלות לעיצוב:</strong></p>
+<ul><li>התקלה מתוזמנת מראש כמו שבוע רגיל, או קופצת כאירוע?</li><li>אם היא קופצת — צריך משטח התראות, וזה מסך שאינו במפה.</li><li>האם היא מחליפה את המשימה השבועית או נוספת עליה?</li></ul>
+<hr>
+<h2>6. מחזור החיים של שבוע</h2>
+<pre dir="ltr"><code>שיעור בכיתה (המורה מלמד פייתון)
+        ↓
+כניסה למערכת → אלעד מוסר משימה
+        ↓
+כתיבת קוד ← → שיחה עם אלעד ← → הרצה
+        ↓
+בדיקות גלויות עוברות → הגשה
+        ↓
+בדיקות נסתרות → ניקוד → XP
+        ↓
+      (בית)</code></pre>
+<p><strong>החלק השני של כל שיעור גולש לשיעורי בית.</strong> כלומר כמעט כל תלמיד, כמעט כל שבוע, עוצר באמצע וממשיך מהבית — לפעמים ממחשב אחר.</p>
+<p><strong>המערכת חייבת להמשיך בדיוק מנקודת העצירה:</strong> קוד שלא הוגש, היסטוריית השיחה, השלב בסולם הרמזים, תוצאת ההרצה האחרונה, ומצב האווטאר. יש לזה השלכה על העיצוב — <strong>אין מסך &quot;התחל מחדש&quot;.</strong> תמיד ממשיכים.</p>
+<hr>
+<h2>7. אילוצים</h2>
+<p><strong>מסכים.</strong> מחשבי בית ספר, 1366×768 הוא המקרה הנפוץ. <strong>הרוחבים והתדרדרות הפריסה — <a href="layout.md"><code>layout.md</code></a> סעיף 1.</strong></p>
+<p><strong>גובה הוא האילוץ ההדוק, לא רוחב.</strong> ב-768 פיקסלים נשארות כ-20 שורות קוד גלויות. כל אזור שמתווסף בא ישירות מהעורך.</p>
+<p><strong>עברית RTL לאורך כל הממשק.</strong> קוד ופלט הרצה נשארים LTR — הם אנגלית. הערבוב הזה קורה בתוך אותו מסך והוא נקודת כשל ידועה.</p>
+<p><strong>רקע לבן חובה בפאנל אלעד.</strong> ראה סעיף 3.</p>
+<p><strong>מגע.</strong> אין. מקלדת ועכבר בלבד.</p>
+<hr>
+<h2>8. הטון</h2>
+<p><strong>התלמיד לא אמור להרגיש שהוא במשחק ילדים ולא שהוא במבחן.</strong></p>
+<p>הנרטיב הוא מקום עבודה: הוא עובד בבנק, יש לו ראש צוות, יש דדליין ויש משכורת. זה עובד כי הוא מכבד את התלמיד כמבוגר. <strong>גיימיפיקציה רועשת — נקודות שקופצות, קונפטי, אימוג&#x27;י — הורסת את זה.</strong></p>
+<p>מצד שני זה לא כלי ארגוני. תלמיד בן 15 שנכשל שבע פעמים ברצף צריך משהו שלא מרגיש כמו נזיפה.</p>
+<p><strong>המדד:</strong> אם זה נראה כמו Duolingo — יותר מדי. אם זה נראה כמו Jira — יותר מדי.</p>
+<hr>
+<h2>9. מה כבר קיים</h2>
+<table><thead><tr><th>נכס</th><th>מצב</th></tr></thead><tbody><tr><td><code>design/wireframe.html</code></td><td>3 מסכים, פריסה גסה</td></tr><tr><td><code>assets/persona/</code></td><td>9 אווטארים + כללי שימוש</td></tr><tr><td><code>content/week-01..04/</code></td><td>4 שבועות תוכן מלא ובדוק</td></tr><tr><td><code>SPEC.md</code></td><td>מודל הכלכלה, הדרגות והציון</td></tr><tr><td><code>קטלוג-מוצרים.md</code></td><td>24 מוצרים, 30 לקוחות</td></tr></tbody></table>
+<p><strong>התוכן והכללים קבועים. הפריסה פתוחה לגמרי.</strong></p>
+<hr>
+<h2>10. שאלות שהעיצוב יכול לעזור להכריע</h2>
+<p><strong>0. ✅ הוכרע — למצב ההערכה יש כניסה יזומה.</strong> הסתירה שהמפה חשפה (מצב הערכה נשלט בלוח שנה מול הערכות שניתנות לתיקון) נסגרה: <strong>חזרה אחת לכל הערכה, בחלון שנפתח עם קבלת התוצאה ונסגר כשנפתחת ההערכה הבאה.</strong> ראה <code>SPEC.md</code> 5.3.</p>
+<p><strong>מה שנגזר מזה לעיצוב:</strong></p>
+<ul><li>למסך הציונים דרוש <strong>כפתור חזרה</strong>, פעיל רק כשהחלון פתוח וכשטרם נוצלה החזרה.</li><li>כלומר מצב ההערכה נכנס <strong>בשתי דרכים</strong>: אוטומטית לפי לוח השנה, ויזומה מהציונים. שתיהן מגיעות לאותו מסך.</li><li>צריך להציג מצב: החלון פתוח / נוצל / נסגר. <strong>תלמיד שלא ידע שיש לו חזרה זמינה — לא קיבל אותה.</strong></li></ul>
+<ol><li><strong>איפה מוצג סטטוס הפנסיה לתלמיד?</strong> הוא 20% מהציון ומצטבר כל השנה, אבל אסור שיהפוך למד לחץ יומי.</li><li><strong>איך נראית תוצאת בדיקה שנכשלה</strong> כך שתקרא כאינפורמציה ולא כשיפוט — בהתחשב בכך שזה המצב הרגיל.</li><li><strong>האם המורה רואה תמליל שיחה מלא של תלמיד?</strong> ערך פדגוגי מול פרטיות. טרם הוכרע.</li><li><strong>מה קורה ברגע ההגשה?</strong> זה הרגע היחיד בשבוע שמצדיק משוב מובחן — בלי להפוך לחגיגה.</li><li><strong>איך מסמנים ש-<code>approve</code> נדיר</strong> מבלי שהתלמיד ירגיש שהוא לא מקבל משוב.</li></ol>
+  </div>
+</div>
+
+<div class="part">
+  <div class="part-title">חלק ב' · פריסה</div>
+  <div class="brief" id="layout">
+<h1>פריסת המסכים</h1>
+<p>מסמך מרחבי בלבד: <strong>מה נמצא איפה, כמה מקום כל אזור מקבל, ומה קורה כשהמצב משתנה.</strong></p>
+<p>זרימות, מצבי אווטאר, עקרונות פדגוגיים והחלטות תוכן — ב-<a href="design-brief.md">design-brief.md</a>. צבעים, גופנים וריווח — ב-<a href="system/DESIGN.md">system/DESIGN.md</a>.</p>
+<hr>
+<h2>1. המסגרת</h2>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>יעד</strong></td><td>1366×768 — מחשב בית ספר טיפוסי</td></tr><tr><td><strong>רצפה נוחה</strong></td><td>1220px</td></tr><tr><td><strong>רצפה מוחלטת</strong></td><td>1140px, עם שבירת שורות בעורך</td></tr></tbody></table>
+<h3>הנוסחה האופקית</h3>
+<pre dir="ltr"><code>רוחב העורך = רוחב המסך − 720</code></pre>
+<p>720 = פאנל אלעד 360 + עמודת משימה 296 + מרווחים 64 (2 פנימיים של 16, ריפוד חיצוני 2×16).</p>
+<table><thead><tr><th>רוחב מסך</th><th>עורך</th><th>מצב</th></tr></thead><tbody><tr><td>1440</td><td>720</td><td>מרווח</td></tr><tr><td><strong>1366</strong></td><td><strong>646</strong></td><td><strong>היעד. ~90 תווים בשורה</strong></td></tr><tr><td>1280</td><td>560</td><td>תקין</td></tr><tr><td><strong>1220</strong></td><td><strong>500</strong></td><td><strong>מינימום נוח — ~70 תווים</strong></td></tr><tr><td>1140</td><td>420</td><td>~58 תווים. שורות ארוכות נשברות</td></tr></tbody></table>
+<h3>התדרדרות בשני שלבים</h3>
+<p><strong>1220 ומעלה</strong> — שלוש עמודות, הכול נוח.</p>
+<p><strong>1140–1220</strong> — שלוש עמודות נשמרות, <strong>העורך משלם</strong>. שבירת שורות מופעלת. שורה כמו <code>net_salary = gross_salary - income_tax - national_insurance</code> תישבר, וזה מקובל.</p>
+<p><strong>מתחת ל-1140</strong> — רק כאן עמודת המשימה מתקפלת לטאב. <strong>פאנל אלעד לעולם לא מתקפל.</strong></p>
+<blockquote><p>זה מיישב סתירה שהייתה בין המסמכים. התדריך קבע שהמשימה מתקפלת מתחת ל-1280; פריסת המסכים קבעה שהעורך מצטמק. <strong>שניהם נכונים בטווח אחר.</strong></p></blockquote>
+<hr>
+<h2>2. התקציב האנכי — האילוץ ההדוק יותר</h2>
+<p>ברוחב יש מרווח. <strong>בגובה אין</strong>, וזה לא נבדק קודם.</p>
+<p>ב-768 פיקסלים גובה:</p>
+<pre dir="ltr"><code>768
+− 52   סרגל עליון
+− 32   ריפוד חיצוני
+━━━━
+ 684   לתוכן
+
+ 684
+− 196  אזור התוצאות
+−  44  שורת הכפתורים
+−  24  מרווחים
+━━━━
+ 420   לעורך  ←  כ-20 שורות קוד גלויות</code></pre>
+<p><strong>20 שורות מספיקות לשבועות 1–8 ונעשות צפופות מהשבוע שבו נכנסות לולאות.</strong> זה המספר שכדאי לעקוב אחריו בפיילוט.</p>
+<p><strong>המסקנה לעיצוב:</strong> כל אזור שמתווסף אנכית בא ישירות מהעורך. אין רזרבה.</p>
+<h3>196 הוא בסיס, לא קבוע</h3>
+<p>הקו בין העורך לאזור התוצאות <strong>נגרר</strong>, בטווח <strong>196–376</strong>, והמיקום נשמר לתלמיד.</p>
+<table><thead><tr><th>תוצאות</th><th>שורות פלט</th><th>עורך</th><th>שורות קוד</th></tr></thead><tbody><tr><td><strong>196</strong> — ברירת מחדל</td><td>7</td><td>420</td><td>20</td></tr><tr><td>240</td><td>9</td><td>376</td><td>17</td></tr><tr><td>280</td><td>11</td><td>336</td><td>16</td></tr><tr><td>376 — רצפת העורך</td><td>15</td><td>240</td><td>11</td></tr></tbody></table>
+<p><strong>הסיבה אינה נוחות — היא שאי אפשר לחזות.</strong> מדדתי את שבוע 4: 11 שורות פלט. שבועות 12–30 מדפיסים טבלאות בלולאה ואיש אינו יודע כמה שורות. <strong>כל מספר קבוע שאבחר יהיה שגוי לשבוע כלשהו</strong>, וגורר פותר את כולם בקו אחד.</p>
+<p>המיקום נכנס לרשימת השחזור ב-SPEC §11.1, יחד עם תוכן העורך ומיקום בסולם הרמזים.</p>
+<p><strong>בפעם הראשונה שפלט חורג מהאזור, הקו נפתח פעם אחת מעצמו</strong> — עד לגובה שמכיל את הפלט או עד 376, הנמוך מביניהם. משם והלאה הוא של התלמיד ולא זז שוב לבדו.</p>
+<p>בלי זה הגורר פותר בעיה שרוב התלמידים לא יידעו שיש להם. <strong>תזוזה אחת מלמדת שהקו זז; תזוזה שנייה כבר מעצבנת.</strong></p>
+<hr>
+<h2>3. שלוש עמודות, סדר קבוע</h2>
+<pre dir="ltr"><code>┌──────────── סרגל עליון · 52px ────────────┐
+│ אלעד 360 │  עורך  גמיש  │  משימה 296     │
+│  (ימין)  │   (מרכז)     │   (שמאל)       │
+└───────────────────────────────────────────┘</code></pre>
+<p><strong>הסדר אינו משתנה באף מצב.</strong> החלפת מקומות עולה למשתמש בזמן חיפוש בכל פעם שהמצב מתחלף.</p>
+<h3>פאנל אלעד · 360px</h3>
+<table><thead><tr><th></th><th>גובה</th></tr></thead><tbody><tr><td>אווטאר</td><td><strong>240px</strong></td></tr><tr><td>שיחה</td><td>344px — כ-4 הודעות בלי גלילה</td></tr><tr><td>שדה כתיבה</td><td>44px</td></tr><tr><td>מרווחים וריפוד</td><td>56px</td></tr><tr><td><strong>סה&quot;כ</strong></td><td><strong>684px</strong> — בדיוק הגובה הפנוי ב-768</td></tr></tbody></table>
+<p><strong>רקע לבן, בלי מסכה, דעיכה 48px בתחתית.</strong></p>
+<blockquote><p>⚠️ <strong>240px הוא חיתוך, לא הקטנה.</strong> מסגור <code>panel</code> הוא 420×520; ברוחב 296 היחס הזה נותן <strong>366px גובה</strong>, והפאנל היה חורג מהמסך ב-126 פיקסלים. <strong>צריך חיתוך ייעודי — ראש וחצי גוף — ולא הקטנה של המסגור הקיים.</strong></p></blockquote>
+<blockquote><p>⚠️ <strong>הרוחב עודכן מ-300 ל-360.</strong> ב-300 האווטאר מתכווץ מתחת למסגור שהוגדר, או שהשיחה נחנקת. הטוקן <code>--panel-elad</code> עודכן בהתאם.</p></blockquote>
+<h3>עורך · גמיש</h3>
+<p>טאבים למעלה: <strong>הקוד שלי</strong> · <strong>קוד פתיחה</strong>. סטטוס שמירה אוטומטית. שורת כפתורים למטה: הרצה · בדיקות · איפוס · מונה רמזים · <strong>הגשה</strong>.</p>
+<p><strong>הגבול התחתון של העורך הוא ידית גרירה</strong> — לא קו הפרדה. הוא צריך אזור פגיעה של 8px וסמן <code>row-resize</code>, והוא חייב להופיע במוקאפ של המצב הבסיסי ולא רק בהסבר. <strong>גבול שנראה כמו קו לא ייבנה כידית.</strong></p>
+<h3>עמודת המשימה · 296px</h3>
+<p>תוכן המשימה בגלילה, ומתחתיו: מועד · שכר · <strong>פריטי השבוע</strong>.</p>
+<p><strong>גלויה תמיד</strong> — ראה סעיף 1.</p>
+<blockquote><p>⚠️ <strong>הצהרת הפישוט יושבת כאן, מתחת למספרים.</strong> מאז שנקודות הזיכוי נכנסו ל-SPEC, <code>week-04/manager.yml</code> מחייב את אלעד לומר <strong>מיוזמתו</strong> ש-15% הם פישוט ושהמס האמיתי בגיל התלמיד כנראה אפס. <strong>אבל הודעה בשיחה נגללת</strong> — ומדדתי: שתי הודעות הפתיחה תופסות <strong>165px מתוך 344</strong>, כלומר כמעט חצי מהשיחה לפני שהתלמיד אמר מילה. תוך שני חילופי דברים ההצהרה מחוץ למסך.</p>
+<p><strong>וזה בדיוק מה שהיא נועדה למנוע:</strong> תלמיד שעובד יסתכל על תלוש אמיתי, יראה מס אפס, ולא יזכור שנאמר לו. <strong>אלעד מוסר, עמודת המשימה מחזיקה</strong> — אותו כלל כמו דוח התקלה בסעיף 5.</p>
+<p>שורת <code>caption</code> אחת מתחת ל&quot;מס 15%&quot;: <em>&quot;פישוט. המס האמיתי — שבוע 13.&quot;</em></p></blockquote>
+<blockquote><p>⚠️ <strong>&quot;פריטי השבוע&quot; ריק במצב הבסיסי.</strong> בשבוע 4 הפריט הוא בחירת הפנסיה, ו-<code>manager.yml</code> קובע במפורש: <strong>הפנסיה — אחרי שהמשימה הוגשה.</strong> המטרה שם היא שהתלמיד יבחר &quot;מתוך הבנה ולא בניחוש&quot;, אחרי שאלעד הסביר שהבנק מוסיף שקל וחצי על כל שקל. <strong>זו החלטה ששווה 20% מהציון השנתי — פריסה שמציגה אותה בפתיחה מזמינה ניחוש.</strong> ראה סעיף 5, מצב &quot;אחרי הגשה&quot;.</p></blockquote>
+<hr>
+<h2>4. אזור התוצאות · 196px בסיס</h2>
+<p>טאבים: <strong>בדיקות גלויות</strong> · <strong>פלט</strong>.</p>
+<p>איחוד של שני אזורים שהיו נפרדים בוויירפריים הגס. שניהם תוצאה של הרצה, ושני אזורים היו גוזלים מהעורך פעמיים.</p>
+<p><strong>כלל מיקוד:</strong> הרצה → טאב פלט. בדיקות → טאב בדיקות. המערכת עוברת, המשתמש לא לוחץ.</p>
+<h3>הפלט הוא שקובע את הגובה, לא הבדיקות</h3>
+<p>הבדיקות <strong>הגלויות</strong> בשבוע 4 הן <strong>ארבע</strong>. הנסתרות — 15. הרשימה הגלויה אינה נגללת לעולם, ואין צורך באפורדנס גלילה עבורה.</p>
+<pre dir="ltr"><code>בדיקות גלויות   4 שורות   ≈ 112px
+פלט שבוע 4      11 שורות  ≈ 232px   ←  זה הקובע</code></pre>
+<p><strong>האזור נמדד לפי הטאב הגדול, וזה תמיד הפלט.</strong> ב-196 התלמיד רואה 7 שורות מתוך 11 — <strong>ומשימת שבוע 4 היא מילולית &quot;תלוש שאדם יכול לקרוא&quot;.</strong> זה מה שהגורר פותר.</p>
+<h3>הטאב הרביעי · תוצאת ההגשה</h3>
+<p><strong>קיים רק במצב &quot;אחרי הגשה&quot;.</strong> במהלך העבודה יש שלושה טאבים ורצועת הטאבים אינה משתנה.</p>
+<p>מציג את <strong>כל 15 הבדיקות הנסתרות</strong> — עוברות ונכשלות כאחד, באותן שתי צורות שורה. לא רק כשלים: תלמיד שעבר הכול היה רואה טאב ריק, <strong>והמונה עצמו הוא מה שהציון נשען עליו.</strong></p>
+<blockquote><p>⚠️ <strong>הנעילה היא מה שמאפשר את הטאב.</strong> במצב &quot;אחרי הגשה&quot; העורך לקריאה בלבד. <strong>הצגת התוצאות הנסתרות בלי לנעול הופכת אותן לבדיקות גלויות עם צעד נוסף</strong> — התלמיד מתקן, מגיש שוב, וההבחנה כולה מתמוטטת.</p></blockquote>
+<p><strong>הכלל שמחזיק בכל מדיניות:</strong> מציגים את התוצאות <strong>או</strong> מאפשרים הגשה נוספת — לעולם לא את שניהם על אותו ניסיון.</p>
+<blockquote><p><strong>חסר ב-SPEC:</strong> אין מדיניות להגשה חוזרת של <strong>משימה שבועית</strong> (§5.3 עוסק בהערכות בלבד). אם אין הגשה חוזרת, הטאב נפתח עם ההגשה. אם תתווסף — הוא נפתח בסגירת המועד. <strong>מרחבית זה זהה</strong>, ולכן אין כאן חסימה.</p></blockquote>
+<p>15 שורות אינן נכנסות ב-196. <strong>הן נכנסות בדיוק ב-376</strong> — קצה טווח הגורר, שנגזר במקור מהפלט ומתאים כאן במקרה. ההרחבה החד-פעמית מסעיף 2 חלה גם על הטאב הזה.</p>
+<h3>שתי צורות לשורת כשל</h3>
+<p><strong>א · השוואה</strong> — כשלבדיקה יש זוג ערכים:</p>
+<pre dir="ltr"><code>✕  הנטו אינו נכון        התקבל 4,650 · צפוי 4,890</code></pre>
+<p>זה מה שמונע קפיצה מתמדת לטאב הפלט. <strong>בלי זה איחוד הבדיקות והפלט לא היה עובד.</strong></p>
+<p><strong>ב · הסבר</strong> — כשאין זוג:</p>
+<pre dir="ltr"><code>✕  ביטוח לאומי הוקלד ולא חושב
+   6000 כפול 0.035 אינו יוצא עגול לגמרי. עגל רק בהדפסה, לא בשמירה.</code></pre>
+<blockquote><p>⚠️ <strong>גלאי ההקלדה של שבוע 4 שובר את צורה א&#x27;.</strong> הכשל הוא ש-<code>national_insurance</code> מחזיק <strong>בדיוק</strong> 210.0 במקום 210.00000000000003. &quot;התקבל 210.0 · צפוי 210.00000000000003&quot; יהיה אבסורדי — הערך שהתקבל הוא בדיוק הערך שנראה נכון.</p></blockquote>
+<p><strong>הכלל:</strong> יש זוג ערכים → צורה א&#x27;. אין → צורה ב&#x27;, והכותרת קצרה עם ההסבר גולש מתחתיה.</p>
+<p><strong>תלוי בחוזה הבדיקות:</strong> על הבדיקה למסור <code>got</code>/<code>expected</code> בנפרד מההודעה, אחרת אין דרך להבחין. עדכון ל-<code>content/_schema/README.md</code>.</p>
+<hr>
+<h2>5. שבעה מצבים</h2>
+<table><thead><tr><th>מצב</th><th>אלעד</th><th>עורך</th><th>תוצאות</th><th>משימה</th></tr></thead><tbody><tr><td><strong>בסיסי</strong></td><td><code>presenting</code></td><td>ריק / שמור</td><td>בדיקות + פלט</td><td>דרישות · <strong>פריטי שבוע ריק</strong></td></tr><tr><td><strong>אחרי הגשה</strong></td><td><code>presenting</code> → שיחת הפנסיה</td><td>לקריאה בלבד</td><td>תוצאה סופית</td><td>דרישות · <strong>פריטי השבוע נפתחים</strong></td></tr><tr><td><strong>תקוע</strong></td><td><code>concerned</code></td><td>—</td><td>—</td><td>—</td></tr><tr><td><strong>הערכה</strong></td><td><code>neutral</code> 40%, <strong>בלי שדה כתיבה</strong></td><td>בלי מונה רמזים</td><td><strong>בדיקות + פלט</strong></td><td>מצב הערכה · בלי פנסיה, בלי חנות</td></tr><tr><td><strong>on-call</strong></td><td><code>presenting</code> → <code>thinking</code></td><td><strong>נטען מלא ושבור</strong></td><td><strong>שורש אחד · 2 מתוך 4</strong></td><td>דוח תקלה · בונוס · <strong>בלי דרישות</strong></td></tr><tr><td><strong>ביקורת · D3</strong></td><td><code>presenting</code> → <code>thinking</code></td><td><strong>קוד מחובר, לא שלו</strong></td><td>הטסטים קובעים</td><td>תדריך · <strong>מונה 2 מתוך 3</strong></td></tr><tr><td><strong>צר</strong></td><td>ללא שינוי</td><td>מצטמק</td><td>ללא שינוי</td><td>גלילה פנימית</td></tr></tbody></table>
+<h3>האווטאר מתחלף גם בתוך השבוע</h3>
+<p>הטבלה למעלה נותנת מצב לכל <strong>מצב מסך</strong>. <code>week-04/manager.yml</code> מוסיף רובד שני — <code>avatar_sequence</code> <strong>בתוך המצב הבסיסי</strong>:</p>
+<table><thead><tr><th>שלב</th><th>מצב</th></tr></thead><tbody><tr><td>מסירת המשימה</td><td><code>presenting</code></td></tr><tr><td>הסבר אחוזים</td><td><code>explaining</code></td></tr><tr><td>רמזים</td><td><code>thinking</code></td></tr><tr><td>שיחת הפנסיה</td><td><code>explaining</code></td></tr></tbody></table>
+<p><strong>אותו כלל כמו בשיחת הקליטה (סעיף 10.4): מעבר בהחלפת שלב בלבד, 200ms.</strong> לא בתגובה להודעה בודדת — אווטאר שמגיב לכל משפט הופך לאנימציה.</p>
+<h3>אין שעון על עבודת התלמיד — באף מצב</h3>
+<p><strong>לא בהערכה, לא ב-on-call, ולא בשיחת הקליטה.</strong> גרסאות קודמות של הטבלה הזאת הציגו &quot;שעון&quot; בשני מצבים; <strong>הוא הוסר, וזו הכרעה ולא השמטה.</strong></p>
+<p><strong>מועד אינו שעון.</strong> למשימות יש דדליין בתאריך, ול-SPEC יש קנס איחור — <strong>זה נשאר.</strong> מה שאין הוא ספירה לאחור בתוך מושב עבודה.</p>
+<p><strong>שני נימוקים, והשני מבני:</strong></p>
+<p><strong>המערכת מודדת מה התלמיד יודע לעשות, לא כמה מהר.</strong> ספירה לאחור הופכת מדידה למבחן עמידות בלחץ, ואצל בן 15 היא מודדת חרדה.</p>
+<blockquote><p>⚠️ <strong>ושעון סותר את SPEC §11.1.</strong> הסעיף מבטיח שמושב שנקטע חוזר <strong>בדיוק מנקודת העצירה.</strong> תחת שעון, שחזור אחרי קריסת דפדפן חייב לבחור: להחזיר את הזמן — ואז השעון חסר משמעות — או לא להחזיר, <strong>ואז המערכת מענישה על תקלה שלה.</strong> אין אפשרות שלישית. <strong>המנגנונים אינם יכולים להתקיים יחד, ו-§11.1 חוסם.</strong></p></blockquote>
+<h3>מה שקבוע בכל המצבים</h3>
+<p><strong>הפאנל נשאר במקומו ובגודלו המלא, גם במצב הערכה.</strong> הסרתו הייתה מזיזה את העורך בדיוק ביום שבו הפריסה צריכה להיות מוכרת.</p>
+<p><strong>הרמז הוא הודעה בשיחה, לא חלונית.</strong> אין ממשק נפרד לרמזים.</p>
+<h3>אחרי הגשה — המצב שהיה חסר</h3>
+<p>לשבוע יש שלב שישי שלא הופיע בטבלה, והוא מחזיק את ההחלטה היקרה ביותר על המסך.</p>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>מה נפתח</strong></td><td>&quot;פריטי השבוע&quot; בעמודת המשימה — בשבוע 4, בוחר הפנסיה</td></tr><tr><td><strong>מה ננעל</strong></td><td>העורך עובר לקריאה בלבד. ההגשה בוצעה</td></tr><tr><td><strong>מי מוביל</strong></td><td>אלעד. <code>manager.yml</code> מגדיר &quot;שיחת הפנסיה&quot; כשלב משלו</td></tr></tbody></table>
+<p><strong>הסדר אינו קישוט.</strong> אלעד מציג את הפרשת המעסיק כמספר — 7% הם 420 ₪ מהברוטו, והבנק מוסיף 630 — <strong>ורק אחר כך נפתחת הבחירה.</strong> הפוך, התלמיד בוחר 20% מהציון השנתי בניחוש.</p>
+<p><strong>מבחינה מרחבית זה חינם:</strong> אותה עמודה, אותו מקום, מצב אחר.</p>
+<p><strong>טאב הפלט נשאר גם בהערכה.</strong> שקלתי להסיר אותו והחלטתי נגד: במשימת עיצוב-פלט הסרתו מונעת מהתלמיד לראות את התוצר שעליו הוא מוערך. הוא רואה את הפלט של עצמו — לא את הפתרון.</p>
+<p><strong>44px של שדה הכתיבה מתפנים בפאנל ואינם מחולקים מחדש.</strong> האווטאר נשאר 240 והשיחה נשארת 344. העורך ממילא בעמודה אחרת ואינו מושפע.</p>
+<h3>הערכה בחזרה — הפריסה חייבת להבחין</h3>
+<p>יש שתי דרכי כניסה למצב הערכה, לוח שנה וכפתור במסך הציונים, <strong>והמסך היה נראה זהה.</strong></p>
+<p><strong>עמודת המשימה נושאת את ההבחנה, בראשה:</strong></p>
+<pre dir="ltr"><code>חזרה · ניסיון 2 מתוך 2 · גרסה חלופית
+הציון הקובע הוא הגבוה מבין השניים
+הניסיון הקודם: 72</code></pre>
+<p><strong>שלוש השורות אינן קישוט:</strong></p>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>&quot;גרסה חלופית&quot;</strong></td><td>התלמיד לא יחפש את השאלות שהוא זוכר</td></tr><tr><td><strong>&quot;הגבוה מבין השניים&quot;</strong></td><td>ראה למטה — זו השורה הקריטית</td></tr><tr><td><strong>&quot;הקודם: 72&quot;</strong></td><td>מה שהופך את ההבטחה למוחשית</td></tr></tbody></table>
+<blockquote><p>⚠️ <strong>&quot;הגבוה קובע&quot; חייב להיות על המסך לאורך כל החזרה, לא רק בכניסה.</strong> כל מנגנון §5.3 נשען על כך שאין מה להפסיד — <strong>ותלמיד בדקה ה-40 שהולך רע ייבהל</strong> אם הוא חושב שהוא הורס 72. בלי השורה הזאת המנגנון עובד רק למי שקרא את ההכרזה בתחילת השנה וזוכר אותה.</p></blockquote>
+<p><strong>ואלעד אומר את זה פעם אחת בכניסה.</strong> הוא <code>neutral</code> 40% ואינו עוזר — <strong>אמירת כלל אינה עזרה.</strong></p>
+<h3>הכניסה צורכת את הניסיון, ולכן היא מאושרת</h3>
+<p><strong>הכניסה לחזרה היא הפעולה הבלתי הפיכה היחידה שתלמיד מבצע במערכת.</strong> לכן, ורק לכן, יש כאן דיאלוג אישור — <strong>המודאל היחיד בפריסה.</strong></p>
+<p>החלופה — שההגשה צורכת ולא הכניסה — נשמעת נדיבה יותר <strong>ופותחת את מה ש-§5.3 סגר מבנית:</strong> התלמיד נכנס, קורא את הגרסה החלופית, יוצא, מתכונן, וחוזר. החלון הוא 5–7 שבועות. <strong>&quot;אי אפשר לטחון עד שמצליחים&quot; מפסיק להיות נכון.</strong></p>
+<p><strong>וזה בטוח רק בזכות §11.1.</strong> קריסת דפדפן באמצע חזרה אינה מוחקת אותה — השחזור השרתי הוא מה שמאפשר לכניסה לצרוך. <strong>שני הסעיפים תלויים זה בזה, וזו סיבה נוספת ש-§11.1 חוסם.</strong></p>
+<h3>on-call — אין סביבה חדשה</h3>
+<p>הקוד השבור נטען ל<strong>הקוד שלי</strong>; <strong>קוד פתיחה</strong> מחזיק את הגרסה התקינה להשוואה; <strong>איפוס</strong> מחזיר אליה.</p>
+<p><strong>משטח שלם נפתר באפס ממשק חדש.</strong></p>
+<blockquote><p>⚠️ <strong>&quot;בדיקה אחת נכשלת&quot; אינו אפשרי, וצריך לוותר עליו.</strong> הרצתי את ארבע הבדיקות הגלויות של שבוע 4 מול שני באגים שונים בתלוש — <strong>שניהם מפילים בדיוק שתיים</strong>, כי <code>test_payslip_printed</code> בודק שהנטו מופיע בפלט וכל טעות בנטו מפילה גם אותו. <strong>הניסוח הנכון הוא &quot;שורש אחד&quot;, לא &quot;בדיקה אחת&quot;.</strong> זה מה שהופך את האיתור למשימה, וזה מה שנשאר נכון.</p></blockquote>
+<blockquote><p>⚠️ <strong>והבאג חייב לייצר מספר שנראה סביר.</strong> במוקאפ הוא מייצר <strong>נטו מינוס 900</strong> — וזו אינה תקלת ייצור אלא קריסה שהייתה נתפסת מיד. הנחת ה-on-call היא &quot;התלוש של 300 עובדים יצא <strong>שגוי</strong>&quot;, כלומר מספר שעבר ושולם. באג כמו החלפת <code>national_insurance_rate</code> ב-<code>tax_rate</code> נותן <strong>4,200</strong> — טעות העתקה אמינה, שנראית כמו משכורת.</p></blockquote>
+<p><strong>דוח התקלה יושב בעמודת המשימה שהתרוקנה</strong> — מה נשבר, מי דיווח, מתי. <strong>הודעה בשיחה נגללת;</strong> בדקה ה-20 של התקלה התלמיד צריך לקרוא שוב מה קרה, ואין לו לאן לחזור. אלעד מוסר את התקלה, העמודה מחזיקה אותה.</p>
+<h3>ביקורת קוד — המצב השביעי, ולא מסך</h3>
+<p><strong>נפתח ב-D3, כ-שבוע 14.</strong> התלמיד מקבל <strong>קטע קוד מחובר מראש</strong> שאינו שלו, מוצא את התקלה, מתקן, <strong>והטסטים קובעים.</strong></p>
+<p><strong>זה אינו מסך.</strong> אותן שלוש עמודות, אותו עורך, אותו אזור תוצאות — <strong>מה שמתחלף הוא מקור הקוד ותוכן עמודת המשימה.</strong></p>
+<h4>למה זה לא זהה ל-on-call</h4>
+<table><thead><tr><th></th><th>on-call</th><th>ביקורת</th></tr></thead><tbody><tr><td>הקוד</td><td><strong>שלו</strong>, נשבר בייצור</td><td><strong>לא שלו</strong>, לפני שנשלח</td></tr><tr><td>דחיפות</td><td>יש</td><td><strong>אין</strong></td></tr><tr><td>עמודת המשימה</td><td>דוח תקלה</td><td><strong>תדריך + מונה הביקורות</strong></td></tr><tr><td>שער</td><td>—</td><td><strong>D3</strong></td></tr><tr><td>בונוס</td><td>350 ₪</td><td>400 ₪</td></tr></tbody></table>
+<p><strong>on-call הוא ניפוי שגיאות בקוד שלך; ביקורת היא קריאת קוד שאינך מכיר.</strong> <strong>וזה מה שמצדיק את שער ה-D3</strong> — לא הוותק, אלא שהמיומנות קשה יותר.</p>
+<h4>הקוד ברמת התלמיד, הבאג לא</h4>
+<p><strong>זו ההכרעה שקובעת אם התרגיל שווה משהו.</strong></p>
+<p>אם גם הבאג ברמתו, התרגיל מלמד לזהות טעויות של תלמידים. <strong>שער ה-D3 אמור לתת משהו אחר: קוד שעובד כמעט תמיד, ונשבר במקרה קצה אחד.</strong></p>
+<p><strong>סוגי באג שמתאימים:</strong> גבול (<code>&lt;</code> מול <code>&lt;=</code>), סדר פעולות בלי סוגריים, מקרה שאין לו טסט גלוי, ערך שנראה נכון.</p>
+<blockquote><p><strong>התקדים קיים כבר בשבוע 4</strong> — גלאי ההקלדה, שבו <code>210.0</code> הוא <strong>בדיוק</strong> הערך שנראה נכון. <strong>באג שנראה נכון הוא מה שקריאה זהירה תופסת וריצה לא.</strong></p></blockquote>
+<h4>חוזה תרגיל הביקורת</h4>
+<p><strong>אותו חוזה כמו תקלת on-call</strong> — קוד שבור, טסטים שתופסים, פתרון ייחוס. <strong>המכונה קיימת ולא צריך לבנות אותה.</strong></p>
+<p><strong>מה שנוסף:</strong> התרגיל אינו קשור לשבוע. הוא נגיש מרגע ה-D3 ועד סוף השנה, <strong>וכל התלמידים מקבלים את אותם שלושה.</strong></p>
+<h4>עמודת המשימה · 296</h4>
+<pre dir="ltr"><code>ביקורת 2 מתוך 3
+שתיים נדרשות ל-5%          ✓
+
+הקוד הזה עובר את רוב הטסטים.
+מצא את מה שהוא לא עושה נכון.</code></pre>
+<p><strong>המונה ראשון כי הוא הגלאי של תקרת 95.</strong> §5.1 קובע שמי שביצע פחות משתיים אינו ניתן לניקוד — <strong>וזה חייב להיות המספר הראשון, לא מידע שמחפשים.</strong></p>
+<h4>ומה שנעדר, ולמה זה כבר לא צריך הגנה</h4>
+<p><strong>אין אנונימיות לשמור, אין הערה לנסח, ואין זוטר בצד השני.</strong></p>
+<blockquote><p><strong>עיקרון 2 — &quot;ציון של תלמיד לעולם לא תלוי בשיקול דעת של תלמיד אחר&quot; — מתקיים כאן מבנית.</strong> לא בגדרות, אלא בכך <strong>שאין קוד של תלמיד אחר.</strong> ומה ש-SPEC מכנה &quot;כאן נמצא הסיכון החברתי&quot; מתפרק איתו.</p></blockquote>
+<hr>
+<h2>6. פניית לקוח — הוכרע</h2>
+<p>התלמיד מתרגם שאלה מעורפלת לחישוב, מחשב בעורך, ומגיש טופס מובנה: <strong>המלצה מהקטלוג · המספר · נימוק.</strong> הוא עובר בין השניים פעמים רבות באותה משימה.</p>
+<p><strong>נבחר: הטופס באזור התוצאות, כטאב שלישי.</strong></p>
+<table><thead><tr><th></th><th>למה</th></tr></thead><tbody><tr><td><strong>שום דבר לא נעלם</strong></td><td>העורך והמשימה נשארים</td></tr><tr><td><strong>המספר טאב אחד משם</strong></td><td>התלמיד כבר מחפש תוצאות באזור הזה</td></tr><tr><td><strong>טופס רחב</strong></td><td>בחירה מקטלוג ושדות מספר הם אופקיים. רוחב עדיף על גובה</td></tr></tbody></table>
+<h3>התיקון שהופך את זה לעובד</h3>
+<p><strong>אזור התוצאות קופץ ל-<code>max(המיקום שנשמר, 280)</code> כשטאב הפנייה פעיל</strong>, והעורך סופג את ההפרש (מ-196: 420 → 336, כ-16 שורות). <strong>ביציאה מהטאב הוא חוזר למיקום של התלמיד, לא ל-196.</strong></p>
+<blockquote><p>⚠️ <strong>ה-<code>max</code> הוא העיקר.</strong> &quot;קופץ ל-280&quot; בניסוח מוחלט <strong>מקטין</strong> תלמיד שגרר ל-320. מרגע שהקו נגרר, כל קפיצה אוטומטית היא רצפה — לעולם לא תקרה.</p></blockquote>
+<p>בלי זה הנימוק נכתב בחלון של 196px, וזו החולשה היחידה של הפתרון.</p>
+<p><strong>למה כאן קפיצה אוטומטית ובפלט גורר ידני:</strong> הפנייה היא <strong>טופס</strong> ונכנסים אליה במכוון, פעם או פעמיים במשימה — היא חייבת להיות שמישה מיד. הפלט הוא <strong>צוהר</strong>, וטאב הפלט נבחר אוטומטית בכל הרצה. תלמיד מריץ 15 פעם במשימה אחת, וקפיצה אוטומטית שם הייתה מזיזה לו את הקוד 15 פעם.</p>
+<h3>מה נדחה</h3>
+<p><strong>טאב בעמודת המשימה</strong> — הטופס נדחק ל-296px רוחב. צר וגבוה, ורשימת הדרישות נעלמת.</p>
+<p><strong>מודאל מעל העורך</strong> — <strong>העורך נעלם בדיוק כשצריך ממנו את המספר</strong>, וכל מעבר הוא פתיחה וסגירה, עשרות פעמים במשימה אחת.</p>
+<hr>
+<h2>7. הסרגל העליון</h2>
+<pre dir="ltr"><code>FinTech Academy │ שבוע 4 · מחשבון המשכורת │ D1 · מפתח זוטר │ 3,640 ₪ │ עוד 3 ימים │→│ חנות · שבוע 5 │ התלוש שלי │ הציונים │ ☰</code></pre>
+<p><strong>היתרה נשארת בסרגל</strong> כי החנות מוציאה ממנה.</p>
+<blockquote><p>⚠️ <strong>הסרגל זהה בכל המסכים, ורק הפריט הפעיל משתנה.</strong> לא להסיר את המועד או את &quot;התלוש שלי&quot; במסך הציונים ולא להוסיף שם פריט שאינו קיים במסך העבודה. <strong>סרגל שמשתנה בין מסכים מפר את אותו כלל שהפריטים המעומעמים נועדו לקיים</strong> — שהוא אינו משתנה פתאום בלי הסבר.</p>
+<p><strong><code>הציונים</code> נוסף לרשימה</strong> אחרי שהמסך נפרס (סעיף 12). הוא לא היה כאן קודם, וזו הייתה השמטה.</p></blockquote>
+<h3>פריטים עתידיים מוצגים מעומעמים</h3>
+<p><strong>&quot;חנות · שבוע 5&quot;</strong> מופיע מעומעם מהשבוע הראשון. <strong>אותו כלל חל על ביקורת עמיתים ב-D3.</strong></p>
+<p>שתי סיבות: הסרגל אינו משתנה פתאום בלי הסבר, <strong>ופריט שמופיע אצל אחד ולא אצל אחר הוא בעצמו אות דירוג.</strong> פריט שקיים תמיד ורק מצבו משתנה מסיר את שניהם.</p>
+<hr>
+<h2>8. מונה הרמזים</h2>
+<p><strong>מוצג רק אחרי הרמז הראשון.</strong></p>
+<p>לפני שנעשה שימוש, &quot;רמז · שלב 1 מתוך 5&quot; הוא פרסומת לקביים. אחרי — הוא מידע כן על מיקום במשאב מדוד.</p>
+<p>הגישה לאלעד גלויה תמיד; המונה מופיע כשהוא רלוונטי.</p>
+<hr>
+<h2>9. מה שעדיין פתוח</h2>
+<p><strong>האם פניית הלקוח נוספת על המשימה או מחליפה אותה.</strong> הפריסה מניחה <strong>נוספת</strong>. אם מחליפה — עמודת המשימה מתפנה והבחירה בסעיף 6 נראית אחרת.</p>
+<p><strong>מדיניות הגשה חוזרת למשימה שבועית.</strong> לא מוגדרת ב-SPEC, וקובעת <strong>מתי</strong> נפתח הטאב הרביעי — לא איפה. <strong>אינה חוסמת את הפריסה</strong> (סעיף 4), אבל חוסמת את המימוש.</p>
+<p><strong>קטלוג המוצרים.</strong> &quot;המלצה מהקטלוג&quot; היא שדה בחירה. אם הקטלוג ארוך או דורש קריאה — זה משטח נוסף שאין לו מקום כאן.</p>
+<p><strong>20 שורות עורך ב-768px.</strong> מספיק עד שבוע 8, צפוף אחריו. הגורר נותן מוצא, אבל <strong>המספר שכדאי למדוד בפיילוט הוא כמה תלמידים בכלל מגלים אותו.</strong></p>
+<hr>
+<h2>10. שיחת הקליטה</h2>
+<p>רצה <strong>פעם אחת בחיים</strong>, בשבוע 1, לפני שהתלמיד רואה משימה. <code>content/_shared/onboarding.yml</code>.</p>
+<p><strong>המסך היחיד שבו אלעד לבד</strong>, ולכן המסך היחיד שנבנה סביבו ולא סביב עורך.</p>
+<h3>10.1 האילוץ שקובע הכול — אורך השיחה</h3>
+<p>ספרתי את חילופי הדברים לפי ארבעת השלבים:</p>
+<table><thead><tr><th>שלב</th><th>חילופי דברים</th></tr></thead><tbody><tr><td>arrival</td><td>2–3</td></tr><tr><td>role</td><td>3–4</td></tr><tr><td>baseline · שש שאלות</td><td>6–9</td></tr><tr><td>handoff</td><td>2–3</td></tr><tr><td><strong>סה&quot;כ</strong></td><td><strong>13–19</strong></td></tr></tbody></table>
+<p>בחילוף דברים ממוצע (אלעד שתי שורות, תלמיד אחת) זה <strong>כ-146px</strong>, והשיחה כולה <strong>1,900–2,800px</strong>.</p>
+<pre dir="ltr"><code>636px גלויים  →  4.3 חילופי דברים
+                 3–4.4 מסכי גלילה לכל השיחה</code></pre>
+<blockquote><p><strong>וזה הנימוק לשתי עמודות.</strong> אווטאר מוערם מעל השיחה <strong>היה נגלל מהמסך בדקה הראשונה ולא נראה שוב תשע דקות.</strong> בעמודה נפרדת הוא נוכח לכל אורך השיחה. זה לא העדפה חזותית — זה 2,800 פיקסלים של גלילה.</p></blockquote>
+<h3>10.2 הפריסה</h3>
+<pre dir="ltr"><code>┌─────────────────────────────────────────────┐
+│                                             │
+│   ┌─ אווטאר 420 ─┐   ┌─ שיחה 620 ────────┐  │
+│   │              │   │                   │  │
+│   │  ההתקדמות    │   │   היסטוריה 636    │  │
+│   │              │   │                   │  │
+│   │  ▓▓▓▓▓▓▓▓    │   │                   │  │
+│   │  ▓ 420×520 ▓ │   ├───────────────────┤  │
+│   │  ▓▓▓▓▓▓▓▓    │   │  שדה כתיבה 52     │  │
+│   └──────────────┘   └───────────────────┘  │
+│                                             │
+└─────────────────────────────────────────────┘
+     420 + 48 + 620 = 1088, ממורכז</code></pre>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>אווטאר</strong></td><td><strong>420×520 — המסגור המלא, בלי הקטנה</strong></td></tr><tr><td>שיחה</td><td>620px ≈ 71 תווים בשורה</td></tr><tr><td>שוליים ב-1366</td><td>139px לכל צד</td></tr><tr><td>ב-1220 / 1140</td><td>66 / 26 — <strong>למסך הזה יש עודף</strong></td></tr></tbody></table>
+<p><strong>אלעד בימין</strong>, כמו במסך העבודה. אותו צד בכל המערכת.</p>
+<blockquote><p><strong>לשון זכר בכל הודעה.</strong> הכיתה כולה בנים, וזה מוכרע ב-<code>persona.yml</code> תחת <code>student_address</code> ולא נשאר לשיקול דעת בכל משפט. <strong>בעברית אי אפשר לכתוב גוף שני בלי להכריע</strong>, וזו ההודעה הראשונה בשנה.</p></blockquote>
+<blockquote><p><strong>המסך הזה אינו דורש נכס חדש.</strong> מסך העבודה צריך חיתוך ייעודי של 240px (סעיף 3); כאן משמש <strong>המסגור הקיים 420×520 כפי שהוא.</strong> האווטאר מיושר לתחתית — דעיכה 48px, קו בסיס מנורמל.</p></blockquote>
+<p><strong>ההתקדמות יושבת מעל האווטאר</strong>, ב-184 הפיקסלים שנשארים.</p>
+<pre dir="ltr"><code>768
+−  0   סרגל עליון · אין
+− 64   ריפוד 32 מעל ומתחת
+━━━━
+704    לשתי העמודות
+
+אווטאר 520 + התקדמות 184                       = 704
+היסטוריה 636 + מרווח 16 + שדה כתיבה 52         = 704</code></pre>
+<p><strong>704 ולא 684 — הסרת הסרגל מחזירה 20 פיקסלים.</strong> שתי העמודות נגמרות באותו קו, <strong>ואין כאן אזור שאפשר להוסיף.</strong></p>
+<p><strong>חלופה שנייה שנדחתה: אווטאר דביק קטן בפינה.</strong> הוא היה שורד את הגלילה, <strong>אבל מכווץ את אלעד בחזרה לחיתוך</strong> — ומחזיר בדיוק את הבעיה שמסך העבודה כבר משלם עליה (סעיף 3). <strong>במסך היחיד שבו יש לו מקום, אין סיבה להקטין אותו.</strong></p>
+<blockquote><p><strong>אין שורת גילוי AI, וזו הכרעה.</strong> התלמידים מבינים שמדובר ב-AI, ושורה קבועה שאומרת זאת מציבה הצהרה במקום שבו אין שאלה. <strong>הגילוי נשאר תגובתי כפי ש-<code>edge_cases</code> קובע</strong> — נשאל, עונה מיד ובפשטות. <code>persona.yml</code>: <strong>הכחשה תהרוס את האמון לכל השנה.</strong></p>
+<p>184 הפיקסלים נשארים להתקדמות בלבד. <strong>אין כאן שורת סטטוס.</strong></p></blockquote>
+<h3>10.3 אין סרגל עליון</h3>
+<p><strong>זה המסך היחיד בלי סרגל.</strong></p>
+<p>אין שבוע, אין דרגה, אין יתרה — התלמיד לא הרוויח דבר ולא ראה דבר. סרגל עם צ׳יפים ריקים גרוע מהיעדרו.</p>
+<p><strong>והדבר הראשון שהוא רואה במערכת צריך להיות אדם, לא כרום.</strong> הופעת הסרגל במעבר למשימה היא בעצמה הרגע שבו העבודה מתחילה.</p>
+<h3>10.4 האווטאר מתחלף בכל שלב</h3>
+<p><code>onboarding.yml</code> מקצה מצב לכל שלב, וכל הארבעה <strong>קיימים כבר בקטלוג</strong>:</p>
+<table><thead><tr><th>שלב</th><th>מצב</th></tr></thead><tbody><tr><td>arrival</td><td><code>neutral</code></td></tr><tr><td>role</td><td><code>explaining</code></td></tr><tr><td>baseline · שש השאלות</td><td><code>thinking</code></td></tr><tr><td>handoff</td><td><code>presenting</code></td></tr></tbody></table>
+<p><strong>זה אות ההתקדמות השני, והשקט מבין השניים.</strong> ארבעת המצבים וארבעת הקטעים הם אותם ארבעה שלבים — התלמיד רואה שהשיחה זזה בלי שנאמר לו דבר, <strong>ובלי שנספר לו כלום.</strong></p>
+<p><strong>מעבר בין מצבים: 200ms</strong> (<code>--motion-base</code>), בהחלפת שלב בלבד. לא בתוך שלב ולא בתגובה להודעה בודדת — <strong>אווטאר שמגיב לכל משפט הופך לאנימציה, ובשלב <code>baseline</code> גם למשוב.</strong></p>
+<h3>10.5 ההתקדמות — ארבעה קטעים, בלי מספרים</h3>
+<pre dir="ltr"><code>▬▬▬▬  ▬▬▬▬  ░░░░  ░░░░</code></pre>
+<p>ארבעה קטעים לארבעת השלבים. <strong>בלי כותרות ובלי מספרים.</strong></p>
+<p><strong>מה שנדחה: מונה שאלות.</strong> &quot;שאלה 3 מתוך 6&quot; הוא הדבר היחיד שהיה הורס את השלב כולו — <code>baseline.goal</code> הוא <strong>&quot;לקבל תשובה לשש השאלות, בלי שהתלמיד ירגיש שנבחן&quot;</strong>, ומונה הופך את השיחה למבחן בשורת ממשק אחת.</p>
+<p><strong>ולמה בכל זאת יש משהו:</strong> <code>never_do</code> אוסר על אלעד לומר &quot;עוד קצת ונסיים&quot;. מישהו צריך לענות על &quot;כמה זמן זה&quot; — <strong>וזה הממשק, בשקט, בלי לספור.</strong></p>
+<h3>10.6 שש השאלות נראות כמו כל הודעה אחרת</h3>
+<p><strong>אותה בועה, אותו גופן, אותו צבע.</strong> בלי מסגרת, בלי אייקון, בלי כותרת &quot;שאלה&quot;.</p>
+<p>הניסוח שלהן קבוע מילה במילה וחוזר בשבוע 30 — <strong>אבל זה קבוע בתוכן, לא בצורה.</strong> כל הבחנה חזותית מסגירה שאלו פריטי מדידה, ו-<code>never_judge</code> בנוי כדי שלא ידע.</p>
+<h3>10.7 שדה חופשי בלבד — בלי צ&#x27;יפים</h3>
+<p>מפתה להציע כפתורי מענה מהירים לשאלות כמו &quot;פיקדון או השקעה&quot;. <strong>לא.</strong></p>
+<p><code>baseline_record.stored</code> שומר <strong>&quot;התשובה המילולית לכל שאלה, כלשונה&quot;</strong> ו<strong>&quot;נימוק שהתלמיד נתן מיוזמתו&quot;</strong>, ו-<code>adapt_to</code> קובע שנימוק <strong>&quot;שווה יותר מהתשובה עצמה&quot;</strong>.</p>
+<p><strong>צ&#x27;יפ הורס את שניהם בבת אחת</strong> — אין ניסוח משלו, ואין מקום שממנו יצוץ נימוק.</p>
+<h3>10.8 חזרה לשיחה קטועה</h3>
+<p><code>edge_cases</code> קובע: השיחה חוזרת מהשלב שנעצר, <strong>עם כל מה שנאמר</strong>, ואלעד <strong>אינו מציג את עצמו מחדש</strong>.</p>
+<p><strong>מרחבית:</strong> המסך נטען עם ההיסטוריה המלאה, גלול לתחתית. <strong>בלי מסך ביניים, בלי &quot;ברוך שובך&quot;, בלי סימון של הפסקה.</strong> התלמיד נכנס לאמצע שיחה, כי שם הוא נמצא.</p>
+<p>תלוי ב-SPEC §11.1 — כמו החזרה על הערכה בסעיף 5.</p>
+<h3>10.9 המעבר למשימה</h3>
+<p>התלמיד עונה על שאלת הברוטו/נטו, <strong>ומסך הקליטה נגמר.</strong> חתך, לא מורפינג — הוא לא חוזר.</p>
+<blockquote><p><strong>שלוש ההודעות האחרונות עוברות איתו לפאנל של אלעד במסך העבודה.</strong> הפאנל אינו נפתח ריק, וההיסטוריה זמינה בגלילה.</p>
+<p><strong>זה מה שהופך את <code>memory_hooks</code> לאמין.</strong> אלעד שיזכיר בשבוע 4 שהתלמיד עובד בסופר, חייב שהשיחה שבה זה נאמר תהיה במקום שהתלמיד יכול להצביע עליו.</p></blockquote>
+<h3>10.10 מה שעדיין פתוח במסך הזה</h3>
+<p><strong>נסגר: לא קורה כלום ב-15 דקות.</strong> <code>hard_cap_minutes</code> הוא <strong>הנחיית קצב לאלעד</strong> — לקצר את שלב <code>role</code> ואת האישורים — <strong>ולא חיתוך.</strong> הממשק אינו סופר ואינו מפסיק. ראה סעיף 5, &quot;אין שעון על עבודת התלמיד&quot;.</p>
+<hr>
+<h2>11. מסך המורה</h2>
+<p><strong>המשתמש השני, ומוצר אחר.</strong> התדריך מנסח את זה חד: <em>&quot;המסך של התלמיד נועד למיקוד. <strong>המסך של המורה נועד לטריאז&#x27;.</strong>&quot;</em></p>
+<table><thead><tr><th></th><th>תלמיד</th><th>מורה</th></tr></thead><tbody><tr><td>כמה זמן במסך</td><td>45 דקות</td><td><strong>סריקה בין שיעורים</strong></td></tr><tr><td>מה הוא צריך</td><td>משימה אחת</td><td><strong>30 תלמידים בבת אחת</strong></td></tr><tr><td>צפיפות</td><td>מינימלית</td><td><strong>גבוהה</strong></td></tr><tr><td>מה מזיק לו</td><td>הסחות</td><td><strong>מידע חסר</strong></td></tr></tbody></table>
+<p><strong>כל כלל שנבנה במסך העבודה מתהפך כאן.</strong> שם הוספת אזור גזלה מהעורך; כאן היעדר מידע הוא הנזק.</p>
+<h3>11.1 גובה השורה הוא גודל הכיתה — והכיתה היא 30</h3>
+<pre dir="ltr"><code>768
+− 52   סרגל עליון
+− 32   ריפוד
+− 32   כותרת הטבלה
+━━━━
+ 652   לשורות
+
+ 652
+− 630  30 שורות × 21
+−   5  חמישה קווי שיער בין שש הקבוצות
+━━━━
+  17   שארית</code></pre>
+<p><strong>21 פיקסלים לשורה. זה הכול, ואין מרווח.</strong></p>
+<table><thead><tr><th>כיתה</th><th>שורה</th></tr></thead><tbody><tr><td>24</td><td>26px — נוח</td></tr><tr><td><strong>30</strong></td><td><strong>21px — שורת גיליון</strong></td></tr></tbody></table>
+<p><strong>21px הוא 13px טקסט ועוד 4 פיקסלים ריפוד מכל צד.</strong> זו בדיוק שורת אקסל, ומורים קוראים גיליונות כל היום — <strong>אבל זה הרף התחתון, לא בחירה.</strong></p>
+<blockquote><p>⚠️ <strong>13px נושא כאן תוכן ראשי, וזה המקום היחיד במערכת.</strong> במסך התלמיד 13px הוא טקסט משני. <code>system/DESIGN.md</code> צריך לתעד את התפקיד הנוסף.</p></blockquote>
+<h4>שתי מגבלות שנובעות ישירות מ-21px</h4>
+<p><strong>אין צ&#x27;יפים לסטטוס.</strong> גלולה עם ריפוד משלה אינה נכנסת ב-21px. <strong>הסטטוס הוא נקודה צבועה ועוד מילה</strong> — <code>state.ink</code> לנקודה, <code>caption</code> למילה. <strong>החיסכון בריפוד הוא מה שמאפשר את השורה.</strong></p>
+<p><strong>נקודה אחת, שלושה ערכי <code>state.ink</code>.</strong> לא שלוש צורות ולא שלושה אייקונים — <strong>אותה נקודה בכל השורות, והצבע הוא כל ההבדל.</strong> בשרטוטים היא מצוירת כ-<code>● ▲ ○</code> כי לשרטוט אין צבע; <strong>במוצר זו נקודה אחת.</strong></p>
+<p><strong>קיבוץ כל חמש שורות הוא חובה, לא קישוט.</strong> 630 פיקסלים של פסים ברצף ב-21px — <strong>העין מאבדת את השורה באמצע הקריאה לרוחב.</strong> קו שיער כל חמש שורות נותן גם עוגני ספירה (&quot;זה בקבוצה השלישית&quot;) בלי הרעש של הצללה לסירוגין.</p>
+<blockquote><p>⚠️ <strong>וקווי השיער עולים 5 פיקסלים.</strong> שש קבוצות, חמישה מפרידים ביניהן. <strong>הכלל הזה נדרש כאן ואז לא תוקצב</strong> — התקציב למעלה מתוקן. אם 17 פיקסלים לא יספיקו, המפריד נכנס <strong>בתוך</strong> 21 הפיקסלים של השורה החמישית (<code>box-sizing: border-box</code>), במחיר פיקסל אחד של גובה טקסט בשש שורות מתוך 30.</p></blockquote>
+<h4>מה שנבדק ונדחה: שתי עמודות של 15</h4>
+<p>ברוחב 978 שני בלוקים נותנים 481px כל אחד — <strong>מקום ל-4 עמודות מתוך שמונה.</strong> השורה הייתה עולה ל-41px ונעשית נוחה מאוד.</p>
+<p><strong>נדחה משתי סיבות, והשנייה מכריעה:</strong></p>
+<p><strong>&quot;מידע חסר&quot; הוא מה שמזיק למורה</strong> לפי טבלת שני המשתמשים. לוותר על חצי מהעמודות כדי להרוויח מרווח הוא בדיוק ההיפוך הלא נכון.</p>
+<p><strong>והמיון נשבר.</strong> כל הפריסה בנויה על כך שכל מדד מסנן ושהמיון הוא כלי עבודה. <strong>רשימה ממוינת שנחתכת לשני בלוקים דורשת מהקורא לדעת את כלל המילוי</strong> — ובכל מיון חדש, שוב.</p>
+<h3>11.2 אותם 30 תלמידים מופיעים שלוש פעמים</h3>
+<p>בוויירפריים הגס יש <strong>רשימת תלמידים</strong>, <strong>לוח מדדים</strong> ו<strong>טבלת מצב</strong>. שלושתם מציגים את אותו מידע:</p>
+<table><thead><tr><th></th><th>מה מציג</th></tr></thead><tbody><tr><td>לוח מדדים</td><td>הגישו 23/30 · תקועים 4 · לא פתחו 3 — <strong>ספירות של שורות הטבלה</strong></td></tr><tr><td>רשימת תלמידים</td><td>שם + סטטוס — <strong>תת-קבוצה של עמודות הטבלה</strong></td></tr><tr><td>טבלת מצב</td><td>שם + סטטוס + טסטים + רמז + דרגה + פנסיה</td></tr></tbody></table>
+<p><strong>במסך שכל תכליתו צפיפות — ושבו לשורה יש 21 פיקסלים — זה בזבוז המשאב היחיד שיש.</strong> הרשימה נבלעת בטבלה — החיפוש והמיון שלה עוברים לכותרת הטבלה — <strong>ומתפנה עמודה שלמה.</strong></p>
+<h3>11.3 כל מספר על המסך הוא מסנן</h3>
+<p>המדדים נשארים, כי הם <strong>המבט של שלוש שניות</strong>. אבל הם מפסיקים להיות תצוגה:</p>
+<pre dir="ltr"><code>הגישו 23/30 │ תקועים 4 │ לא פתחו 3 │ זמן חציוני 47 דק&#x27;
+     ↓            ↓          ↓
+              לחיצה מסננת את הטבלה</code></pre>
+<blockquote><p>⚠️ <strong>זמן חציוני הוא היוצא מן הכלל, ולכן הוא נראה אחרת.</strong> שלושת הראשונים מגדירים תת-קבוצה של תלמידים; <strong>חציון אינו מגדיר.</strong> הוא מוצג במסגרת מנוקדת ובלי אפורדנס לחיצה — <strong>אחרת הוא מלמד שכל מספר כאן נלחץ, וזה נשבר בדיוק במספר הרביעי.</strong></p></blockquote>
+<p><strong>אותו כלל חל על הדוח היומי.</strong> &quot;שלושה תלמידים הגיעו לשלב 5, כולם על המרת אחוזים&quot; — לחיצה מסננת לשלושה. הדוח מפסיק להיות תזכורת והופך ל<strong>נקודת הכניסה</strong>.</p>
+<blockquote><p><strong>זה מה שפותר את &quot;איך אני מוצא את השלושה&quot;.</strong> בלי זה המורה קורא מספר ואז סורק 30 שורות בעיניים כדי לאתר אותו. <strong>כל סיכום שאינו מסנן הוא עבודה שנזרקה על המורה.</strong></p></blockquote>
+<h3>11.4 שתי עמודות</h3>
+<pre dir="ltr"><code>┌──────────── סרגל · 52 ─────────────────────────┐
+│ טריאז&#x27; 340 │  טבלת המצב  978                   │
+│  (ימין)    │       (שמאל)                      │
+└────────────────────────────────────────────────┘</code></pre>
+<p><strong>ימין — טריאז&#x27; · 340px:</strong> המדדים למעלה, הדוח היומי מתחתיו. <strong>שניהם מסננים.</strong></p>
+<p><strong>שמאל — הטבלה · 978px:</strong> חיפוש ומיון בכותרת.</p>
+<p><strong>ברירת המחדל היא מיון טריאז&#x27; — סטטוס, תקועים למעלה.</strong> <em>מי שצריך אותי קודם.</em> המורה מחליף אותו כרצונו, <strong>וזו בדיוק הסיבה שזה מיון ולא סדר קבוע</strong> (ראה 11.7).</p>
+<table><thead><tr><th>עמודה</th><th>רוחב</th></tr></thead><tbody><tr><td>שם</td><td>170</td></tr><tr><td>סטטוס</td><td>110</td></tr><tr><td>טסטים</td><td>90</td></tr><tr><td>רמז מרבי</td><td>80</td></tr><tr><td>זמן</td><td>80</td></tr><tr><td>פעילות אחרונה</td><td>110</td></tr><tr><td>דרגה</td><td>110</td></tr><tr><td>פנסיה</td><td>80</td></tr><tr><td><strong>סה&quot;כ</strong></td><td><strong>830</strong> — 146 לריפוד 2×10 ולשבעה מרווחים של 18</td></tr></tbody></table>
+<p><strong>החיפוש יושב בתא הכותרת של &quot;שם&quot;.</strong> הרשימה נבלעה בטבלה והחיפוש שלה עבר לכותרת — <strong>אבל בתקציב האנכי יש 32 פיקסלים לכותרת, לא 32 ועוד שורת חיפוש.</strong> החיפוש מסנן שמות ולכן הוא יושב בתא של עמודת השם; שבעת התאים האחרים הם מתגי מיון. <strong>אפס פיקסלים נוספים.</strong></p>
+<p><strong>עמודת הדרגה מוקצית מהיום הראשון.</strong> בשבוע 4 כל הכיתה D1 והעמודה זהה ב-30 השורות. <strong>טבלה שגדלה בעמודה באמצע השנה מזיזה למורה את כל המסך</strong> — והדרגה מגיעה בשבוע 9.</p>
+<p><strong>זמן ופעילות אחרונה נוספו:</strong> המדדים כבר סופרים זמן חציוני, ו&quot;מי לא נגע מאז יום ראשון&quot; היא שאלת הטריאז&#x27; שאין לה עמודה.</p>
+<blockquote><p><strong>עמודת הטסטים נושאת שני מדדים, והמכנה הוא ההבדל.</strong> <code>2/4</code> הוא בדיקות גלויות תוך עבודה; <code>15/15</code> הוא הנסתרות אחרי הגשה (סעיף 4). <strong>המכנה אומר למורה באיזה צד של ההגשה התלמיד נמצא</strong> — ולכן הוא מוצג ואינו מקוצר.</p></blockquote>
+<h3>11.5 השורה נפתחת במקום, ואין עמודת תלמיד נבחר</h3>
+<p>לחיצה על שורה <strong>מרחיבה אותה ל-180px</strong> — מצב נוכחי, פערי מדידת הבסיס, וכפתורי הפעולה.</p>
+<p><strong>עמודה קבועה לתלמיד נבחר הייתה גובה 360px בכל רגע שבו אף אחד לא נבחר</strong> — כלומר רוב הזמן. והרחבה במקום שומרת את ההקשר צמוד לשורה, במקום להכריח את העין לנדוד לקצה השני של המסך.</p>
+<p><strong>בהרחבה יש גלילה, וזה מקובל:</strong> 29×21 + 180 = 789 מול 652 פנויים. <strong>ברגע שנבחר תלמיד, המורה כבר לא סורק את כולם</strong> — הוא עוסק באחד.</p>
+<h3>11.6 התמליל אינו על המסך הזה</h3>
+<p>התדריך מותיר פתוחה שאלת פרטיות: <strong>האם המורה רואה תמליל שיחה מלא.</strong></p>
+<p><strong>הפריסה מוכרעת בלי לענות עליה.</strong> תמליל של 20 חילופי דברים הוא קריאה של דקות — <strong>על מסך שנבנה לסריקה של שלוש.</strong> גם אם התשובה תהיה &quot;כן, מלא&quot;, <strong>מקומו אינו כאן.</strong></p>
+<p><strong>מהשורה המורחבת יוצא קישור למשטח נפרד.</strong> הכרעת הפרטיות קובעת מה יש שם — מלא, מסוכם, או דגלים בלבד — ולא משנה דבר בפריסה.</p>
+<h3>11.7 מה שנעדר בכוונה</h3>
+<table><thead><tr><th></th><th>למה</th></tr></thead><tbody><tr><td><strong>שכר</strong></td><td><em>&quot;כמה מישהו מרוויח לא מוצג לאף אחד חוץ ממנו והמורה&quot;</em> — ולמורה הוא לא נחוץ לטריאז&#x27;. <strong>הוא בעמודה של התלמיד הנבחר, לא בטבלה</strong></td></tr><tr><td><strong>דירוג</strong></td><td><em>&quot;אין השוואה בין תלמידים בשום מסך — כולל אצל המורה, שרואה נתונים אבל לא דירוג&quot;</em></td></tr><tr><td><strong>הערכה איכותית</strong></td><td><code>teacher_report.never_includes</code>. הדוח מדווח התנהגות, לא שופט</td></tr></tbody></table>
+<blockquote><p><strong>המיון אינו דירוג.</strong> מיון לפי טסטים הוא כלי עבודה שהמורה מפעיל ומכבה; טור &quot;מקום בכיתה&quot; הוא קביעה. <strong>ההבדל הוא מי החליט ולכמה זמן.</strong></p></blockquote>
+<h3>11.8 הדוח היומי מגיע מוכן</h3>
+<p><code>persona.yml</code> → <code>teacher_report.daily</code> כבר מגדיר ארבעה סוגים:</p>
+<pre dir="ltr"><code>מי לא פתח את המשימה השבוע
+מי הגיע לשלב 4 או 5 בסולם הרמזים, ועל מה
+תפיסות שגויות שחזרו אצל שלושה תלמידים או יותר
+מי ניסה לחלץ פתרון, ובאיזה ניסוח</code></pre>
+<p><strong>ארבעתם ניתנים לסינון לטבלה</strong> — זו לא הרחבה של המפרט אלא שימוש בו.</p>
+<p><strong>ומדידת הבסיס נכנסת גם היא:</strong> <code>onboarding.yml</code> מבטיח <em>&quot;דוח כיתתי למורה — איפה הכיתה נמצאת בכל נושא&quot;</em>. <strong>זה לא שייך למסך היומי</strong> — הוא נמדד פעמיים בשנה. משטח נפרד, קישור מהתפריט.</p>
+<h3>11.9 מה שעדיין פתוח</h3>
+<p><strong>21px בשדה.</strong> המספר נגזר נכון, אבל <strong>הוא הרף התחתון ולא נבדק על מורה אמיתי מול 30 שורות.</strong> זה המדד למדוד בפיילוט — ואם ייפול, <strong>המוצא היחיד שאינו גובה עמודות הוא מסך גדול יותר.</strong></p>
+<p><strong>אילו פעולות יש בהרחבה.</strong> התדריך אינו מגדיר אותן — <strong>המקום שלהן מוגדר, התוכן לא.</strong> הארכת דדליין וסימון להתערבות הופיעו בוויירפריים הגס ולא אושרו מאז.</p>
+<p><strong>האם ההרחבה במקום מספיקה.</strong> 180px מחזיקים מצב ופעולות. אם יתברר שהמורה צריך יותר — זה משטח נפרד, לא עמודה.</p>
+<p><strong>מה יש בתמליל.</strong> הכרעת פרטיות, לא פריסה — ראה 11.6.</p>
+<hr>
+<h2>12. מסך הציונים</h2>
+<p><code>SPEC.md</code> §5. <strong>המסך שבו תלמיד בן 15 לומד מה מצבו</strong> — ולכן היחיד שבו כל טעות בהצגה היא טעות פדגוגית.</p>
+<h3>12.1 ההכרעה שקובעת את כל השאר: אין סכום</h3>
+<p>שלושה מארבעת הרכיבים אינם קיימים ברוב השנה. בשבוע 4 המצב הוא <strong>0 מתוך 5 הערכות, פרויקט שלא התחיל, פנסיה שרק החלה לצבור, וביקורת נעולה.</strong></p>
+<table><thead><tr><th></th><th>מה היה קורה</th></tr></thead><tbody><tr><td>להציג סכום רץ</td><td><strong>&quot;יש לך 34&quot;</strong> בשבוע 10 — נמוך ומטעה, כי שלושה רכיבים ריקים</td></tr><tr><td>לא להציג כלום עד הסוף</td><td>מסך חסר תועלת שלומדים להתעלם ממנו</td></tr><tr><td><strong>להציג כל רכיב בנפרד, בלי לסכם</strong></td><td><strong>✓</strong></td></tr></tbody></table>
+<blockquote><p>⚠️ <strong>סכום מרמז על שלמות.</strong> &quot;34 מתוך 100&quot; בשבוע 10 אומר לתלמיד שהוא נכשל; <strong>&quot;הערכות: 1 מתוך 5 · 82&quot;</strong> אומר את האמת. המשקלים מוצגים — <strong>הם פשוט לא מוכפלים.</strong></p></blockquote>
+<p><strong>במקום שבו סכום היה יושב, יושב משפט:</strong> <em>&quot;הציון מחושב בסוף השנה. עד אז — כל רכיב לחוד.&quot;</em></p>
+<h3>12.2 המסך אינו המקום שבו מגלים את התקרה</h3>
+<p>§5.1 קובע שהתקרה <strong>חייבת</strong> להיאמר בשיעור הראשון: <em>&quot;תלמיד שיגלה בשבוע 25 שהתקרה שלו 95 — התלונה שלו מוצדקת.&quot;</em></p>
+<p><strong>כלומר הפריסה אסור שתהיה ההתגלות.</strong> רכיב הביקורת מוצג <strong>מהשבוע הראשון</strong>, נעול ומעומעם, עם מה שנדרש כדי לפתוח אותו.</p>
+<p><strong>אותו כלל בדיוק כמו הפריטים המעומעמים בסרגל (סעיף 7)</strong> — פריט שקיים תמיד ורק מצבו משתנה אינו מפתיע ואינו אות דירוג.</p>
+<h3>12.3 שתי עמודות</h3>
+<pre dir="ltr"><code>┌──────────── סרגל · 52 ──────────────────────┐
+│  ארבעת הרכיבים 760  │  התקרה והדרך אליה 380 │
+│      (ימין)         │        (שמאל)          │
+└─────────────────────────────────────────────┘
+     760 + 32 + 380 = 1172, שוליים 97</code></pre>
+<p><strong>הרכיבים ראשונים</strong> — התלמיד בא לראות איפה הוא עומד, לא לקרוא הסבר.</p>
+<h3>12.4 התקציב האנכי — נכנס בלי גלילה</h3>
+<pre dir="ltr"><code>684
+
+הערכות שליטה · 50%    262   (מסגרת 2 + כותרת 40 + 5 × 44)
+פרויקט גמר · 25%       96
+פנסיה · 20%            96
+ביקורת עמיתים · 5%     96
+מרווחים                48
+━━━━━━━━━━━━━━━━━━━━━━━━━
+                      598   →  נשארים 86</code></pre>
+<blockquote><p>⚠️ <strong>המספרים כאן הם <code>border-box</code>, והמסגרת נספרת.</strong> כרטיס ההערכות מחזיק 40 + 5×44 = <strong>260 של תוכן</strong>, ומסגרת של פיקסל מכל צד מוסיפה 2. <strong>ב-260 חיצוניים השורה החמישית נחתכת</strong> — זו שורת ההערכה האחרונה, בכרטיס החשוב במסך.</p>
+<p>שלושת הכרטיסים הקטנים אינם צפופים (96 − 2 מסגרת − 24 ריפוד = 70 לשתי שורות), <strong>ולכן הבעיה קיימת רק כאן.</strong></p></blockquote>
+<p><strong>88 הפיקסלים הם המקום של משפט ה&quot;אין סכום&quot;.</strong> וכל הציון נכנס במסך אחד — <strong>תלמיד לא אמור לגלול כדי לדעת מה מצבו.</strong></p>
+<h3>12.5 חמש שורות ההערכה הן גם לוח השנה</h3>
+<pre dir="ltr"><code>1 · שבוע 9      82    חלון חזרה נסגר בעוד 11 ימים   [חזרה]
+2 · שבוע 14     —     טרם התקיימה
+3 · שבוע 21     —     טרם התקיימה
+4 · שבוע 25     —     טרם התקיימה
+5 · שבוע 30     —     טרם התקיימה</code></pre>
+<p><strong>זה מה שפותר את המסך הריק.</strong> בשבוע 4 אין ולו ציון אחד — <strong>והמסך עדיין שימושי, כי הוא לוח המועדים.</strong> רכיב שאין לו ערך עדיין הוא לא רכיב ריק; הוא רכיב עם תאריך.</p>
+<h3>12.6 המסך הזה מחזיק את המודאל היחיד</h3>
+<p>§5.3 מגדיר שתי דרכי כניסה לחזרה — לוח שנה וכפתור כאן. <strong>וסעיף 5 קבע שהכניסה צורכת את הניסיון</strong>, ולכן היא מאושרת.</p>
+<p><strong>דיאלוג האישור שייך לכאן</strong>, כי זו הנקודה שבה התלמיד מחליט. הוא חייב לשאת שלושה דברים:</p>
+<pre dir="ltr"><code>זו החזרה היחידה על הערכה 1.
+הציון הקובע הוא הגבוה מבין השניים — 82 לא יירד.
+הגרסה שונה מזו שפתרת.</code></pre>
+<p><strong>השורה השנייה היא כל המנגנון.</strong> §5.3 בנוי על &quot;אין מה להפסיד&quot;, <strong>ותלמיד שלא רואה את זה ברגע ההכרעה פשוט לא ילחץ.</strong></p>
+<h3>12.7 כ-230 הפיקסלים הריקים בעמודה השמאלית — ריקים בכוונה</h3>
+<p>שני הכרטיסים הקבועים תופסים כ-280, המרווחים 32, <strong>והכרטיס השלישי מקבל כ-373 ומחזיק כ-145 של תוכן.</strong> נשארים <strong>כ-230 פיקסלים ריקים.</strong></p>
+<p><strong>זה לא מקום פנוי — זה מקום שמור.</strong></p>
+<blockquote><p>⚠️ <strong>על מסך ציונים, שטח ריק הוא בדיוק המקום שבו מישהו יוסיף ממוצע כיתתי או תחזית.</strong> שני אלה אסורים ב-12.8, <strong>ושניהם ייראו טבעיים דווקא שם.</strong></p>
+<p><strong>לרשום את הריק כהחלטה מגן עליו.</strong> אם יתמלא, שיתמלא בהסבר על רכיב — לא במספר על תלמידים אחרים.</p></blockquote>
+<h3>12.8 ההערכה אינה מוגבלת בזמן</h3>
+<p><strong>אין משך להערכה.</strong> מה שמייחד אותה הוא שאלעד אינו עוזר, לא שהשעון רץ — ראה סעיף 5.</p>
+<p><strong>זה נוגע למסך הזה ישירות</strong>, כי שורת ההערכה היא המקום היחיד שבו תלמיד היה מצפה לראות משך. <strong>היא מציגה שבוע וציון. לא דקות.</strong></p>
+<h3>12.9 מה שנעדר, ולמה זה קשה יותר כאן</h3>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>מקום בכיתה</strong></td><td><em>&quot;לא &#x27;המקום שלך בכיתה&#x27;, לא &#x27;5 המובילים&#x27;, לא אחוזון&quot;</em></td></tr><tr><td><strong>ממוצע כיתתי</strong></td><td>נראה תמים ואינו — <strong>הוא הופך כל ציון להשוואה</strong></td></tr><tr><td><strong>תחזית</strong></td><td>&quot;בקצב הזה תסיים עם 88&quot; — ניחוש שמוצג כעובדה</td></tr></tbody></table>
+<blockquote><p><strong>כאן זה קשה יותר מבכל מסך אחר</strong>, כי מסך ציונים הוא בדיוק המקום שבו הכלים האלה מתבקשים. <strong>הכלל שורד רק אם מחזיקים בו דווקא כאן.</strong></p></blockquote>
+<h3>12.10 מה שעדיין פתוח</h3>
+<p><strong>האם המסך מציג את הפנסיה בשקלים או באחוז מהציון.</strong> הצבירה היא סכום כסף; הרכיב הוא 20% מהציון. <strong>שני מספרים לאותו דבר, ו-SPEC אינו קובע איך ממירים.</strong></p>
+<p><strong>מתי נפתח רכיב הפרויקט.</strong> הוא נבנה מה-⭐ לאורך השנה ומורכב בשבועות 29–30. <strong>האם השורה מציגה התקדמות או שהיא נעולה עד 29 — לא הוכרע.</strong></p>
+<p><strong>המרת &quot;איכות ביקורת&quot; לניקוד.</strong> §5.2 קובע ניקוד על איכות בלבד, ואינו מגדיר סולם. <strong>מרחבית זו שורה אחת בכל מקרה</strong> — ולכן אינה חוסמת.</p>
+<hr>
+<h2>13. מסך התלוש</h2>
+<p><code>SPEC.md</code> §3. שבע פעמים בשנה, כל ארבעה שבועות.</p>
+<p><strong>וזה המסך היחיד שהתוכן שלו נכתב על ידי התלמיד.</strong> <code>week-04/meta.yml</code>:</p>
+<blockquote><p><strong>הכלי הראשון שנכנס לייצור.</strong> מרגע ההגשה המערכת מריצה את הקוד של התלמיד כדי לחשב את התלוש החודשי שלו. <strong>באג שלו = תלוש שגוי שהוא יראה במו עיניו.</strong></p></blockquote>
+<h3>13.1 רצועת הגרסה היא הכותרת, לא הערת שוליים</h3>
+<pre dir="ltr"><code>חושב על ידי מחשבון המשכורת שלך  ·  v1  ·  מס אחיד 15%  ·  שבוע 4</code></pre>
+<p><strong>44 פיקסלים בראש המסמך, מחוברים אליו בלי מרווח.</strong></p>
+<p><strong>בלי הרצועה הזאת זו קבלה.</strong> איתה זה <strong>פלט של תוכנית שהוא כתב</strong> — וזו כל ההבטחה של שבוע 1, שנפרעת כאן לראשונה.</p>
+<p><strong>היא מתחלפת ל-<code>v2 · מדורג</code> בשבוע 13</strong>, וזה הרגע שבו התלמיד רואה שהשדרוג שלו שינה מספר אמיתי.</p>
+<h3>13.2 תגמול הביצועים מפורט לארבע שורות</h3>
+<pre dir="ltr"><code>ברוטו
+  שכר בסיס · D1                          6,000
+  שבוע 1 · כל הטסטים + בזמן + איכות        800
+  שבוע 2 · כל הטסטים + בזמן + איכות        800
+  שבוע 3 · הוגש באיחור                     650
+  שבוע 4 · כל הטסטים + בזמן + איכות        800
+  בונוס · שירות לקוח                       550
+  ─────────────────────────────────────────────
+  סה&quot;כ ברוטו                             9,600</code></pre>
+<p><strong>תלוש אמיתי היה מסכם. כאן זה השיעור.</strong></p>
+<p><code>שבוע 3 · הוגש באיחור · 650</code> אומר לתלמיד <strong>בדיוק כמה עלה לו האיחור</strong> — 150 ₪, בשורה שהוא לא יכול לפספס. <strong>סיכום היה מוחק את ההוראה היחידה שיש כאן.</strong></p>
+<h3>13.3 הפנסיה היא השורה היחידה שאינה הפסד</h3>
+<pre dir="ltr"><code>ניכויים
+  מס הכנסה · 15%           1,440
+  ביטוח לאומי · 3.5%          336
+  פנסיה · 7%                  672
+  ─────────────────────────────────
+  סה&quot;כ ניכויים             2,448
+
+נטו                         7,152
+
+לפנסיה נכנס החודש:  672 שלך  +  1,008 מהבנק  =  1,680 ₪</code></pre>
+<p><strong>שורת הפנסיה מופיעה פעמיים בכוונה</strong> — פעם בניכויים, כי היא באמת יורדת מהנטו, ופעם למטה, <strong>כי מה שיצא ממנו הוא 672 ומה שנכנס לו הוא 1,680.</strong></p>
+<blockquote><p>⚠️ <strong>המספרים נבחרו כך שיסתדרו.</strong> ברוטו 9,600 מתחלק היטב ב-15%, ב-3.5% וב-7%, <strong>ואין שבר אחד במסמך.</strong> ב-9,500 ביטוח לאומי יוצא 332.50 והפרשת הבנק 997.50 — <strong>ואז השורות המוצגות לא מסתכמות לסכום המוצג.</strong></p>
+<p><strong>התלמיד יחסר את מה שהוא רואה.</strong> במסך שכל תכליתו &quot;המחשבון שלך הפיק את זה&quot;, פער של שקל קורא כמו באג בקוד שלו. <strong>זה כלל לכל מסך שמציג כסף.</strong></p></blockquote>
+<blockquote><p><strong>זו השורה שהתלוש קיים בשבילה.</strong> בכל שאר הניכויים הכסף הלך; כאן הוא <strong>גדל פי 2.5.</strong> בלי ההצגה הכפולה, ההפרשה נראית כמו עוד ניכוי — וזה בדיוק מה שגורם לאנשים לבחור 0%.</p></blockquote>
+<h3>13.4 התקציב האנכי — 684 בדיוק</h3>
+<pre dir="ltr"><code> 44   רצועת הגרסה  (צמודה, בלי מרווח)
+268   ברוטו · כותרת 36 + 6 שורות × 32 + סיכום 40
+172   ניכויים · 36 + 3 × 32 + 40
+ 80   נטו
+ 72   הפנסיה
+ 48   מרווחים · שלושה של 16
+━━━━
+684   מתוך 684</code></pre>
+<p><strong>אין שארית ואין מקום לשורה נוספת.</strong> בונוס שני בחודש דוחף את המסמך לגלילה — <strong>וזה מקובל, כי חודש עשיר הוא חדשות טובות.</strong></p>
+<p><code>border-box</code> — המסגרות נספרות (ראה 12.4).</p>
+<h3>13.5 הפריסה</h3>
+<pre dir="ltr"><code>┌────────────── סרגל · 52 ──────────────────┐
+│   התלוש 720          │  שבע המשכורות 380  │
+│     (ימין)           │      (שמאל)        │
+└───────────────────────────────────────────┘
+        720 + 32 + 380 = 1132, שוליים 117</code></pre>
+<p><strong>שמאל מחזיק את שבעת החודשים.</strong> ההשוואה בין תלוש לתלוש היא הלמידה — <strong>וזו השוואה של התלמיד לעצמו, שמותרת בכל מקום שבו השוואה לאחרים אסורה.</strong></p>
+<h3>13.6 מה קורה כשהקוד שלו שגוי — וזו שאלה חוסמת</h3>
+<p><code>meta.yml</code> מבטיח ש&quot;באג שלו = תלוש שגוי&quot;. <strong>אבל אם הקוד שלו גם קובע כמה נכנס לחשבון, באג עולה לו כסף — ודרך הפנסיה, גם 20% מהציון.</strong></p>
+<p><strong>ההמלצה שלי: הקוד שלו מציג, המערכת קובעת.</strong></p>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>מה שהקוד שלו מייצר</td><td><strong>התלוש שעל המסך</strong></td></tr><tr><td>מה שהמערכת מחשבת</td><td><strong>היתרה, הפנסיה, הציון</strong></td></tr></tbody></table>
+<p><strong>וכשהם נחלקים — זה הרגע שבו כל ההבטחה של ⭐ נפרעת:</strong></p>
+<pre dir="ltr"><code>נטו                    7,152   ←  המחשבון שלך
+נכנס לחשבון            6,900</code></pre>
+<p><strong>זה בדיוק הפיצול של בדיקות גלויות מול נסתרות</strong> (סעיף 4), על כסף במקום על טסטים. <strong>הוא רואה שטעה, ולא משלם על זה.</strong></p>
+<blockquote><p>⚠️ <strong>במצב הפער המסמך נגלל, ואין ברירה</strong> — התקציב מלא ב-684. <strong>זה מקובל:</strong> הפער נדיר, והוא הדבר שהכי ראוי לתשומת לב על המסך.</p></blockquote>
+<h3>13.7 ⚠️ ההבטחה של שבוע 13 מתהפכת מעל 8,000 ₪</h3>
+<p><strong>זה לא ליקוי פריסה — זה ליקוי בתוכן, והוא נמצא כאן כי כאן הוא נראה.</strong></p>
+<p><code>week-04/meta.yml</code> מבטיח: <em>&quot;בשבוע 13 התלמיד יחליף אותה במדרגות אמיתיות, המס על 6000 ירד ל-800, <strong>והנטו שלו יעלה</strong>.&quot;</em></p>
+<p><strong>זה נכון רק מתחת ל-8,000 ₪ ברוטו:</strong></p>
+<table><thead><tr><th>ברוטו</th><th>אחיד 15%</th><th>מדורג</th><th>הפרש</th></tr></thead><tbody><tr><td>6,000</td><td>900</td><td>800</td><td><strong>−100</strong></td></tr><tr><td><strong>8,000</strong></td><td><strong>1,200</strong></td><td><strong>1,200</strong></td><td><strong>0 — נקודת האיזון</strong></td></tr><tr><td>9,500</td><td>1,425</td><td>1,665</td><td><strong>+240</strong></td></tr><tr><td>11,200</td><td>1,680</td><td>2,192</td><td><strong>+512</strong></td></tr></tbody></table>
+<p><strong>ותלמיד D1 סביר כבר מעליה:</strong> 6,000 בסיס + ארבע משימות × 800 = <strong>9,200</strong>, לפני בונוסים. בשבוע 13 הוא כבר D2 — בסיס 8,000 — כלומר <strong>11,200 ומעלה.</strong></p>
+<blockquote><p><strong>כלומר לרוב הכיתה, השדרוג של שבוע 13 יוריד את הנטו.</strong> ההבטחה שאלעד נותן בשבוע 4 לא תתקיים, <strong>והתלמיד יראה את זה בתלוש.</strong></p></blockquote>
+<p><strong>שלוש דרכים, וההכרעה שלך:</strong></p>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>לשנות את ההבטחה</strong></td><td>אלעד אומר &quot;המס ייעשה <strong>נכון</strong>&quot;, לא &quot;יירד&quot;. הזול ביותר, והכן ביותר</td></tr><tr><td><strong>להוריד את מדרגות המשחק</strong></td><td>להרחיב את מדרגת ה-10% כך שהאיזון יעבור מעל השכר הטיפוסי</td></tr><tr><td><strong>להשאיר, וללמד את זה</strong></td><td><em>&quot;גילית שהמדרגות עולות לך כסף — זה בדיוק מה שקורה כשמרוויחים יותר.&quot;</em> <strong>החזק ביותר פדגוגית, והקשה ביותר לבן 16</strong></td></tr></tbody></table>
+<p><strong>ההמלצה שלי: הראשונה והשלישית יחד.</strong> לתקן את ההבטחה עכשיו, ולתת לאלעד את השיחה בשבוע 13.</p>
+<h3>13.8 מה שעדיין פתוח</h3>
+<p><strong>האם הקוד קובע או מציג.</strong> ראה 13.6. <strong>חוסם</strong> — הוא משנה מה המסך מציג ומה קורה לציון.</p>
+<p><strong>מה יש בתלוש הראשון של תלמיד שלא הגיש בשבוע 4.</strong> אין לו מחשבון בייצור. תלוש מהמערכת? בלי תלוש? <strong>לא הוכרע.</strong></p>
+<hr>
+<h2>14. מסך החנות</h2>
+<p><code>SPEC.md</code> §6. נפתח בשבוע 5, ומעומעם בסרגל מהשבוע הראשון.</p>
+<p><strong>המסך הזה נשען על עיקרון מספר 1 ברשימת &quot;החוקים שאסור לשבור&quot;:</strong></p>
+<blockquote><p><strong>כסף קונה נוחות, לא נכונות.</strong> שום פריט בחנות אינו משפיע על ציון השליטה בחומר או על הפרויקט.</p></blockquote>
+<h3>14.1 כותרות הקבוצות הן הכלל עצמו</h3>
+<p>§6 מנסח את ההיתר בשלוש מילים: <strong>&quot;כסף קונה זמן, נוחות ומראה.&quot;</strong> אלה גם שלוש הקבוצות במסך:</p>
+<table><thead><tr><th>קבוצה</th><th>פריטים</th><th>מחיר §6</th><th>מגבלה</th></tr></thead><tbody><tr><td><strong>זמן</strong></td><td>הארכת דדליין 48 שעות</td><td>750 ₪</td><td>3 בשנה</td></tr><tr><td></td><td>עבודה מהבית</td><td>2,000 ₪</td><td>2 בשנה · <strong>לא בשבוע ⭐</strong></td></tr><tr><td><strong>נוחות</strong></td><td>רמז בלי ניכוי</td><td>300 ₪</td><td>8 בשנה</td></tr><tr><td></td><td>הרצת הטסטים הנסתרים</td><td>600 ₪</td><td>5 בשנה</td></tr><tr><td></td><td>סטאז&#x27;ר · מעצב קוד</td><td>400 ₪</td><td><strong>קבוע — נקנה פעם אחת</strong></td></tr><tr><td><strong>מראה</strong></td><td>שדרוגי עמדה</td><td>300–1,500 ₪</td><td>קטגוריה</td></tr><tr><td></td><td>ערכות נושא</td><td>100–500 ₪</td><td>קטגוריה</td></tr></tbody></table>
+<blockquote><p>⚠️ <strong>המחירים אינם קישוט — הם האיזון.</strong> §6 אומר במפורש <em>&quot;תמחר אותו גבוה <strong>ותגביל אותו</strong>&quot;</em>. רמז ב-200 במקום 300 הופך אותו לפריט הזול במסך; עבודה מהבית ב-1,200 במקום 2,000 הופכת דילוג על משימה למשהו שנקנה פעמיים בחודש. <strong>המספרים האלה מזיזים כלכלה, לא טקסט.</strong></p>
+<p>⚠️ <strong>והסטאז&#x27;ר <code>קבוע</code>.</strong> לא 4 בשנה ולא מתכלה — <strong>קונים פעם אחת והוא נשאר.</strong> מעצב קוד שנגמר אחרי ארבע הרצות אינו כלי, הוא עוד מנה.</p></blockquote>
+<p><strong>חלוקה אחרת הייתה אפשרית — לפי מחיר, לפי מגבלה, לפי פופולריות.</strong> זו נבחרה כי <strong>היא מציגה את הכלל בכל פעם שהתלמיד פותח את המסך</strong>, בלי לומר לו דבר.</p>
+<p><strong>ומה שהכותרות אינן יכולות לומר יושב ברצועה בראש, 48px:</strong></p>
+<pre dir="ltr"><code>כסף קונה זמן, נוחות ומראה.  לעולם לא נכונות.</code></pre>
+<p><strong>החצי השני הוא החשוב</strong>, והוא לא נגזר משום כותרת.</p>
+<h3>14.2 שורת פריט · 68px</h3>
+<pre dir="ltr"><code>הארכת דדליין ב-48 שעות                          750 ₪
+נשארו 3 מתוך 3                                        [ קנייה ]</code></pre>
+<p><strong>המגבלה היא המידע, לא המחיר.</strong> מחיר הוא מספר; <strong>&quot;נשארו 2 מתוך 5&quot; הוא החלטה.</strong></p>
+<h3>14.3 שלושה מצבי אי-זמינות, ולכל אחד נימוק</h3>
+<table><thead><tr><th>מצב</th><th>מה מוצג</th></tr></thead><tbody><tr><td><strong>המגבלה נוצלה</strong></td><td><code>נוצל 3 מתוך 3 השנה</code></td></tr><tr><td><strong>אין מספיק יתרה</strong></td><td><code>750 ₪</code> — הכפתור מושבת, <strong>בלי נודניק</strong></td></tr><tr><td><strong>לא זמין השבוע</strong></td><td><code>לא זמין בשבוע ⭐</code> — עבודה מהבית, לפי §6</td></tr></tbody></table>
+<blockquote><p>⚠️ <strong>כפתור מושבת בלי סיבה הוא התלונה הכי נפוצה על כל ממשק.</strong> שלושת המצבים נראים זהים אם לא כותבים אותם, <strong>והשלישי בכלל לא ינוחש</strong> — תלמיד לא יידע לבד שדילוג אסור בשבוע ⭐.</p></blockquote>
+<p><strong>ובמצב &quot;אין מספיק יתרה&quot; אין &quot;חסרים לך 360 ₪&quot; ואין קישור להשלמה.</strong> המחיר מוצג, הכפתור מושבת, <strong>וזהו.</strong></p>
+<h3>14.4 היתרה אינה מוצגת בגדול</h3>
+<p>היא בסרגל, שם היא תמיד — <strong>וסעיף 7 קובע שהיא נשארת שם דווקא כי החנות מוציאה ממנה.</strong></p>
+<p><strong>חזרה עליה בגדול על מסך הקנייה היא דפוס של חנות</strong>, לא של כלי לימודי. <strong>המספר לא צריך להיות מודגש ברגע שבו הוא הכי משפיע.</strong></p>
+<h3>14.5 העמודה השמאלית · מה קניתי השנה</h3>
+<pre dir="ltr"><code>┌──────────── סרגל · 52 ──────────────────┐
+│   הפריטים 720      │  מה קניתי 380      │
+│     (ימין)         │     (שמאל)         │
+└─────────────────────────────────────────┘
+      720 + 32 + 380 = 1132, שוליים 117</code></pre>
+<p>רשימה כרונולוגית: מה, מתי, כמה. <strong>זו השוואה של התלמיד לעצמו — מותרת בכל מקום שבו השוואה לאחרים אסורה</strong> (סעיף 12.9).</p>
+<p><strong>והיא עושה את מה שהמסך צריך בלי להטיף:</strong> תלמיד שקנה שלוש הארכות עד שבוע 12 <strong>רואה את זה</strong>, בלי שאף אחד יעיר לו.</p>
+<h3>14.6 התקציב האנכי</h3>
+<pre dir="ltr"><code> 48   רצועת הכלל
+172   זמן    · כותרת 36 + 2 × 68
+240   נוחות  · כותרת 36 + 3 × 68
+172   מראה   · כותרת 36 + 2 × 68
+ 32   מרווחים · שניים של 16
+━━━━
+664   מתוך 684  →  שארית 20</code></pre>
+<p><strong><code>border-box</code>, ובלוקים שממלאים את עצמם בדיוק מקבלים <code>outline</code></strong> (ראה 12.4).</p>
+<h3>14.7 מה שנעדר — וכאן זה הכי קשה</h3>
+<p><strong>מסך חנות הוא המקום שבו כל דפוס אפל נראה טבעי:</strong></p>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>&quot;הפריט הפופולרי ביותר&quot;</strong></td><td>דירוג בין תלמידים בתחפושת</td></tr><tr><td><strong>מבצע / הנחה לזמן מוגבל</strong></td><td>לחץ מלאכותי על החלטה שאין בה דחיפות</td></tr><tr><td><strong>&quot;עוד 360 ₪ ותוכל לקנות&quot;</strong></td><td>הופך יתרה ליעד</td></tr><tr><td><strong>אנימציית רכישה / קונפטי</strong></td><td>תגמול על הוצאה</td></tr><tr><td><strong>המלצות</strong></td><td>המערכת אינה אמורה לרצות שהוא יקנה</td></tr></tbody></table>
+<blockquote><p><strong>אף אחד מאלה אינו אסור במפורש ב-SPEC</strong> — הם פשוט סותרים אותו. <strong>§0 עיקרון 5: &quot;כל מנגנון כלכלי במשחק הוא שיעור.&quot;</strong> מנגנון שמלמד לבזבז הוא שיעור, פשוט לא זה שהתכוונו אליו.</p></blockquote>
+<h3>14.8 הפריט המסוכן — הפריסה לא מוסיפה עליו כלום</h3>
+<p>§6 מסמן אותו בעצמו:</p>
+<blockquote><p><strong>הרצת הטסטים הנסתרים היא הפריט הכי מפתה והכי מסוכן לאיזון.</strong> אם מתברר שכולם קונים אותו — סימן שהטסטים הגלויים לא מספקים מספיק משוב, <strong>וזו בעיה בתוכן ולא בכלכלה.</strong></p></blockquote>
+<p><strong>ולכן אין כאן אזהרה, אין דיאלוג אישור, ואין ניסוח מיוחד.</strong> הוא שורה ככל השורות, במחיר 600 ובמגבלה 5.</p>
+<p><strong>המגבלה היא החיכוך.</strong> והתרופה שSPEC נותן לקנייה מוגזמת היא <strong>לתקן את התוכן</strong> — לא להציק לתלמיד ברגע הקנייה.</p>
+<blockquote><p>⚠️ <strong>אבל זה מייצר דרישה שאין לה מקום:</strong> SPEC אומר &quot;אם מתברר שכולם קונים אותו&quot; — <strong>ומי אמור לגלות?</strong> קצב הרכישות של הפריט הזה הוא <strong>אבחון תוכן</strong>, והוא שייך למסך המורה. <strong>בסעיף 11 אין לו עמודה ואין לו שורה בדוח היומי.</strong> ראה 14.9.</p></blockquote>
+<h3>14.9 מה שעדיין פתוח</h3>
+<p><strong>איפה המורה רואה את קצב הרכישות.</strong> §6 מגדיר אותו כאות אזהרה על התוכן, <strong>ולמסך המורה אין משטח שמציג אותו.</strong> לא בטבלה — היא לפי תלמיד, וזה נתון כיתתי. <strong>קרוב לוודאי שורה בדוח היומי:</strong> <em>&quot;תשעה תלמידים קנו הרצת נסתרות השבוע.&quot;</em></p>
+<p><strong>האם קנייה הפיכה.</strong> תלמיד שקנה הארכה ולא השתמש בה — האם היא חוזרת? §6 אינו קובע. <strong>מרחבית זו אותה שורה</strong>, ולכן אינה חוסמת.</p>
+<p><strong>טווחי המחירים הקוסמטיים.</strong> §6 נותן 300–1,500 ו-100–500 בלי לפרט פריטים.</p>
+<p><strong>עד שיוגדרו, שתי השורות מציגות טווח ואין להן כפתור קנייה</strong> — <code>300–1,500 ₪</code> בעמודת המחיר, ובמקום הכפתור <code>בקרוב</code>. <strong>אי אפשר לקנות קטגוריה</strong>, ומחיר יחיד לשורה שאומרת &quot;טרם הוגדרו פריטים&quot; הוא סתירה בתוך אותה שורה.</p>
+<p><strong>וכשהפריטים יוגדרו, &quot;מראה&quot; תגדל ותידחוף את התקציב</strong> — 20 הפיקסלים שנשארו אינם מספיקים לשורה נוספת.</p>
+<hr>
+<h2>15. מסך מעבר השבוע</h2>
+<p><strong>המסך היחיד שאינו מקום אלא רגע</strong> — ולכן ההכרעה הראשונה עליו היא <strong>מתי הוא לא מופיע.</strong></p>
+<h3>15.1 הוא מופיע 13 פעמים, לא 30</h3>
+<p>ספרתי מה קורה בכל שבוע לפי <code>SPEC.md</code> §2, §3 ו-§8:</p>
+<pre dir="ltr"><code>שבוע  4   משכורת
+שבוע  5   נפתחה החנות
+שבוע  8   משכורת
+שבוע  9   קידום → D2 · הערכה 1
+שבוע 12   משכורת
+שבוע 14   קידום → D3 · נפתחה ביקורת עמיתים · הערכה 2
+שבוע 16   משכורת
+שבוע 20   משכורת
+שבוע 21   קידום → D4 · הערכה 3
+שבוע 24   משכורת
+שבוע 25   קידום → D5 · הערכה 4
+שבוע 28   משכורת
+שבוע 30   הערכה 5</code></pre>
+<p><strong>13 שבועות. בשבעה־עשר הנותרים לא קרה דבר</strong> — משימה חדשה, וזהו.</p>
+<blockquote><p>⚠️ <strong>טקס שמופיע 30 פעם אינו טקס.</strong> מסך שנפתח כל שבוע ואומר &quot;שבוע 7 מתחיל&quot; מלמד את התלמיד לדלג עליו, <strong>ואז הוא ידלג גם על השבוע שבו באמת עלה בדרגה.</strong></p>
+<p><strong>בשבועות השקטים נכנסים ישר לעבודה.</strong> אין מסך, אין הודעה, אין &quot;המשך&quot;.</p></blockquote>
+<h3>15.2 מה שמצדיק רגע</h3>
+<p><strong>שלושה סוגי אירוע בלבד:</strong></p>
+<table><thead><tr><th></th><th>למה זה מצדיק מסך</th></tr></thead><tbody><tr><td><strong>משכורת נכנסה</strong></td><td>היתרה השתנתה, ויש מסמך לקרוא</td></tr><tr><td><strong>קידום</strong></td><td><strong>המעמד השתנה</strong> — שכר הבסיס, ולפעמים גם מה שמותר לו לעשות</td></tr><tr><td><strong>נפתח משהו</strong></td><td>החנות, ביקורת עמיתים. <strong>פריט שהיה מעומעם חודשים ועכשיו לא</strong></td></tr></tbody></table>
+<p><strong>מה שאינו מצדיק:</strong> XP שנצבר, משימה שהוגשה, טסטים שעברו. <strong>אלה קורים כל שבוע, והם כבר גלויים במקום שבו הם קרו.</strong></p>
+<h3>15.3 אלעד מוסר, המסך מחזיק</h3>
+<p><strong>זו הפעם השלישית שהכלל הזה חוזר</strong> — דוח התקלה ב-on-call (סעיף 5), הצהרת הפישוט בעמודת המשימה (סעיף 3), וכאן.</p>
+<p><strong>אלעד אומר את הקידום כראש צוות</strong>, כי זה מה שראש צוות עושה. <strong>המסך מחזיק את מה שהשתנה בפועל</strong>, כי הודעה נגללת ושכר בסיס חדש הוא מספר שצריך לחזור אליו.</p>
+<blockquote><p><strong>זה כבר לא דפוס — זה כלל.</strong> כל הודעה של אלעד שיש לה תוצאה מתמשכת מקבלת משטח קבוע. <strong>הוא הקול; הוא לא הארכיון.</strong></p></blockquote>
+<h3>15.4 הפריסה — עמודה אחת, ממורכזת</h3>
+<pre dir="ltr"><code>┌──────────── סרגל · 52 ────────────────┐
+│                                       │
+│         ┌── 620, ממורכז ──┐           │
+│         │  שבוע 14        │  80       │
+│         │  קידום          │  96       │
+│         │  נפתח           │  96       │
+│         │  משכורת         │  96       │
+│         │  [ למשימה ]     │  56       │
+│         └─────────────────┘           │
+└───────────────────────────────────────┘</code></pre>
+<p><strong>620px, ממורכז, שוליים 373 לכל צד.</strong></p>
+<p><strong>זה המסך היחיד עם שוליים כאלה, וזו הנקודה.</strong> מסך העבודה ממלא 1,334; הציונים 1,172; התלוש 1,132. <strong>כאן הרוחב הצר הוא האות שזה לא מקום עבודה</strong> — אין כאן מה לעשות חוץ מלקרוא ולהמשיך.</p>
+<h3>15.5 התקציב האנכי — משתנה, וזה נכון</h3>
+<blockquote><p>⚠️ <strong>המקסימום אינו שלושה בלוקים — הוא שניים, וזו טעות שהייתה לי.</strong> משכורות נופלות בשבועות 4, 8, 12, 16, 20, 24, 28; קידומים ב-9, 14, 21, 25. <strong>החיתוך ריק.</strong> <strong>משכורת וקידום לעולם אינם נפגשים</strong>, ולכן שלושה בלוקים אינם מצב שקיים.</p></blockquote>
+<pre dir="ltr"><code>שבוע 14 · המקסימום האמיתי   80 + 2×96 + 16 + 48 + 56 = 392
+                             קידום → D3  +  נפתחה ביקורת עמיתים
+
+שבוע 8  · משכורת בלבד        80 + 1×96 +  0 + 48 + 56 = 280</code></pre>
+<p><strong>392 מתוך 684 — 57%, וזה התקרה.</strong></p>
+<p><strong>המסך אינו ממלא את 684, ואסור לו.</strong> אזור שנשאר ריק בשבוע רגיל היה מזמין למלא אותו — <strong>ומה שממלאים מסך מעבר הוא בדיוק הגיימיפיקציה שהתדריך שולל.</strong></p>
+<p><strong>הבלוקים מרוכזים אנכית</strong>, כך שהמסך נראה מכוון בין אם יש בו אחד ובין אם שלושה.</p>
+<h3>15.6 שלושת הבלוקים</h3>
+<pre dir="ltr"><code>קידום                                      D1 → D2
+מפתח · שכר בסיס 8,000 ₪ במקום 6,000   ← §3.1</code></pre>
+<pre dir="ltr"><code>נפתח                                          החנות
+כסף קונה זמן, נוחות ומראה. לעולם לא נכונות.</code></pre>
+<pre dir="ltr"><code>משכורת · חודש 2                            7,152 ₪
+נכנס לפנסיה 1,680 ₪  ·  התלוש שלי ←</code></pre>
+<p><strong>שלושת הבלוקים אינם מופיעים יחד לעולם</strong> — ראה 15.5. <strong>בלוק המשכורת לבדו בשבועות 4, 8, 12, 16, 20, 24, 28; קידום לבדו ב-9, 21, 25; ובשבוע 14 בלבד — קידום ופתיחה.</strong></p>
+<p><strong>בלוק הקידום נושא את מה שהשתנה בפועל, לא את הכותרת.</strong> &quot;D2 · מפתח&quot; הוא תג; <strong>&quot;שכר בסיס 8,000 במקום 6,000&quot; הוא מה שקרה.</strong></p>
+<p><strong>ובקידום ל-D3 נוסף מה שנפתח</strong> — ביקורת עמיתים, ואיתה חמשת האחוזים שהיו נעולים במסך הציונים מהשבוע הראשון. <strong>הרגע שבו תקרת 95 מפסיקה לחול.</strong></p>
+<h3>15.7 מה שנעדר — וזה מסך שבנוי מפיתויים</h3>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>קונפטי · אנימציית עלייה</strong></td><td>התדריך: <em>&quot;גיימיפיקציה רועשת — נקודות שקופצות, קונפטי, אימוג&#x27;י — הורסת את זה&quot;</em></td></tr><tr><td><strong>&quot;XP: 750 השבוע!&quot;</strong></td><td>XP הוא מנגנון פנימי. <strong>הדרגה היא מה שהתלמיד רואה, וזה מספיק</strong></td></tr><tr><td><strong>סרגל התקדמות לדרגה הבאה</strong></td><td>הופך שנה לפס טעינה, <strong>ומודד את התלמיד מול יעד במקום מול עצמו</strong></td></tr><tr><td><strong>&quot;כל הכבוד!&quot;</strong></td><td>אלעד הוא ראש צוות. <strong>§persona: <code>approve</code> נדיר</strong></td></tr></tbody></table>
+<blockquote><p><strong>המדד מהתדריך: אם זה נראה כמו Duolingo — יותר מדי. אם זה נראה כמו Jira — יותר מדי.</strong></p>
+<p><strong>מסך מעבר הוא בדיוק המקום שבו נופלים לצד הראשון.</strong></p></blockquote>
+<h3>15.8 חוק האנטי-נעילה נראה כאן, בשלילה</h3>
+<p>§2: <strong>&quot;XP לעולם לא יורד. אין ירידה בדרגה בשום מצב.&quot;</strong></p>
+<p><strong>כלומר אין מסך מעבר של ירידה.</strong> תלמיד שנכשל בהערכה <strong>אינו רואה כלום</strong> — הדרגה מתעכבת, לא נלקחת.</p>
+<p><strong>וזה אומר שהמסך הזה טוב בלבד.</strong> אין לו וריאנט שלילי, ולכן <strong>אין סיכון שהוא ייקרא כנזיפה</strong> — מה שהתדריך מזהיר מפניו במפורש: <em>&quot;תלמיד בן 15 שנכשל שבע פעמים ברצף צריך משהו שלא מרגיש כמו נזיפה.&quot;</em></p>
+<h3>15.9 מה שעדיין פתוח</h3>
+<p><strong>האם המסך חוסם או נדחה.</strong> תלמיד שנכנס בשבוע 14 — האם הוא רואה אותו לפני העבודה, או שהוא מחכה לו בסרגל? <strong>החסימה מבטיחה שיראה; הדחייה מכבדת את מי שבא לעבוד.</strong> נוטה לחסימה, <strong>בגלל שזה קורה 13 פעם בשנה ולא 30.</strong></p>
+<p><strong>איפה נראה קידום שקרה באמצע שבוע.</strong> הדרגה נקבעת לפי XP וסף, <strong>ושניהם יכולים להיחצות ביום שלישי.</strong> האם המעבר מחכה לתחילת השבוע הבא? <code>SPEC</code> אינו קובע, <strong>ומרחבית זה אותו מסך</strong> — רק שאלה של מתי.</p>
+<p><strong>שבוע 30.</strong> הוא לא רק שבוע מעבר — הוא <strong>&quot;פרישה ותרגום הפנסיה לציון&quot;</strong> (§8). <strong>קרוב לוודאי שאינו המסך הזה אלא משטח משלו</strong>, והוא היחיד שנשאר.</p>
+<hr>
+<h2>16. מסך הכניסה</h2>
+<p><strong>הדלת. וההכרעה היחידה עליו היא כמה מעט הוא עושה.</strong></p>
+<h3>16.1 אין בורר תפקיד</h3>
+<p>מפתה לשים &quot;אני תלמיד / אני מורה&quot;. <strong>לא.</strong></p>
+<p><strong>החשבון יודע מי אתה.</strong> בורר תפקיד הוא מקור לטעות — תלמיד שילחץ &quot;מורה&quot; יקבל שגיאה שנראית כמו תקלה, <strong>ולעולם לא יבין למה.</strong></p>
+<blockquote><p><strong>וזה גם אומר שהדלת אחת ומאחוריה שני מוצרים.</strong> מסך העבודה ומסך הטריאז&#x27; אינם וריאנטים של אותו דבר (סעיף 11) — <strong>והכניסה היא המקום היחיד שבו הפיצול קורה, בלי שאיש בוחר בו.</strong></p></blockquote>
+<h3>16.2 ואין ניווט — המערכת יודעת לאן</h3>
+<p><strong>המסך הזה אינו שואל &quot;לאן&quot;.</strong></p>
+<table><thead><tr><th>מצב</th><th>לאן</th></tr></thead><tbody><tr><td>תלמיד, פתיחה ראשונה אי-פעם</td><td><strong>שיחת הקליטה</strong> (סעיף 10)</td></tr><tr><td>תלמיד, שיחת קליטה שנקטעה</td><td><strong>בחזרה לשלב שנעצר</strong>, עם כל מה שנאמר</td></tr><tr><td>תלמיד, הערכה שנקטעה</td><td><strong>בחזרה לאמצע ההערכה</strong></td></tr><tr><td>תלמיד, שבוע רגיל</td><td>מסך העבודה</td></tr><tr><td>מורה</td><td>מסך הטריאז&#x27;</td></tr></tbody></table>
+<p><strong>זה נגזר מ-SPEC §11.1</strong> — מושב שנקטע חוזר בדיוק מנקודת העצירה. <strong>כלומר הכניסה אינה תפריט, היא המשך.</strong></p>
+<h3>16.3 הפריסה · 400px, ממורכז</h3>
+<pre dir="ltr"><code> 80   שם המערכת
+ 72   מזהה
+ 72   סיסמה
+ 24   שורת שגיאה — המקום שמור תמיד
+ 56   כניסה
+ 48   מרווחים
+━━━━
+352   מתוך 684  ·  שוליים 483 לכל צד</code></pre>
+<p><strong>400px ולא 620 כמו מסך המעבר.</strong> טופס כניסה ברוחב 620 נראה כמו טופס הרשמה — <strong>והרוחב הוא מה שאומר &quot;שני שדות, לא יותר&quot;.</strong></p>
+<p><strong>24 הפיקסלים של שורת השגיאה שמורים תמיד</strong>, גם כשאין שגיאה. <strong>אחרת הכפתור קופץ למטה בדיוק כשהמשתמש טעה</strong> — ברגע שבו הוא הכי צריך יציבות.</p>
+<p><strong>אין סרגל עליון.</strong> אין שבוע, אין דרגה, אין יתרה — <strong>כמו בשיחת הקליטה</strong> (סעיף 10.3).</p>
+<h3>16.4 מה שנעדר</h3>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>&quot;ברוכים הבאים ל-FinTech Academy!&quot;</strong></td><td>זו דלת, לא דף נחיתה</td></tr><tr><td><strong>תצוגה מקדימה של מה שבפנים</strong></td><td>התלמיד ייכנס בעוד שתי שניות</td></tr><tr><td><strong>&quot;זכור אותי&quot;</strong></td><td>מחשב בית ספר משותף. <strong>זו תקלת פרטיות שנראית כמו נוחות</strong></td></tr><tr><td><strong>התחברות דרך Google</strong></td><td>סביבה סגורה, אין CDN ואין OAuth חיצוני</td></tr><tr><td><strong>&quot;שכחת סיסמה?&quot;</strong></td><td>אין כאן דוא&quot;ל לשלוח אליו. <strong>המורה מאפס</strong></td></tr></tbody></table>
+<hr>
+<h2>17. שבוע 30 — הסיום</h2>
+<p><code>SPEC.md</code> §8: <strong>&quot;פרישה ותרגום הפנסיה לציון.&quot;</strong></p>
+<p><strong>אינו מסך מעבר</strong> (סעיף 15). הוא <strong>המשטח שבו השנה נסגרת</strong>, והוא נושא שלושה דברים שאין להם מקום אחר.</p>
+<h3>17.1 שני חלקים, והראשון הוא שיחת הקליטה שוב</h3>
+<p><strong>חלק א&#x27; — שש השאלות, בפריסה של סעיף 10.</strong> אותו מסך, אותו אלעד, אותו רוחב.</p>
+<p><code>onboarding.yml</code> קובע שהניסוח <strong>זהה מילה במילה</strong> לשבוע 1. <strong>וזו כל הסיבה שהמסך חוזר ולא נבנה חדש</strong> — אם המסגרת משתנה, ההשוואה נחלשת.</p>
+<p><strong>חלק ב&#x27; — הגילוי.</strong> משטח משלו, ואליו כל השאר.</p>
+<h3>17.2 הדלתא מוצגת כתנועה, לא כציון</h3>
+<pre dir="ltr"><code>ברוטו ונטו · נלמד בשבוע 1
+בשבוע 1 אמרת    &quot;6,000&quot;
+עכשיו            &quot;פחות. יורד מס וביטוח לאומי&quot;</code></pre>
+<p><strong>בלי ✓, בלי ✗, ובלי מונה &quot;4 מתוך 6&quot;.</strong></p>
+<blockquote><p>⚠️ <strong>וזה נגזר ישירות מ-<code>never_judge</code> של שבוע 1.</strong> שם אלעד לא אמר נכון או לא נכון <strong>כדי שהתלמיד לא ירגיש שנבחן.</strong> להפוך את אותן שש שאלות לציון בשבוע 30 <strong>הוא בדיוק מה שהשלב נבנה כדי למנוע</strong> — רק שנה מאוחר יותר.</p>
+<p><strong>ולשאלה שלא זזה — שתי התשובות מוצגות בלי פסק דין.</strong> הקורא רואה. <strong>זה מספיק.</strong></p></blockquote>
+<p><strong>וזה גם מה שהופך את המסך לשמיש מול הפיקוח</strong>, שזו הסיבה ש-<code>onboarding.yml</code> נותן לשש השאלות:</p>
+<blockquote><p><strong>הדלתא היא הראיה היחידה שיש לך שהחינוך הפיננסי עבד.</strong></p></blockquote>
+<h3>17.3 הפריסה · זהה למסך הציונים</h3>
+<pre dir="ltr"><code>┌──────────── סרגל · 52 ─────────────────────┐
+│   שש השאלות 760      │  הסגירה 380         │
+└────────────────────────────────────────────┘
+        760 + 32 + 380 = 1172, שוליים 97</code></pre>
+<p><strong>אותם מספרים בדיוק כמו סעיף 12, ובכוונה.</strong> שבוע 30 <strong>הוא</strong> רגע הציון — ומסך שנראה כמו מסך הציונים אומר את זה בלי לכתוב.</p>
+<pre dir="ltr"><code> 40   כותרת
+384   שש שורות × 64
+━━━━
+424
+
+684 − 424 − 16 = 244  לסגירה</code></pre>
+<h3>17.4 העמודה השמאלית · הפנסיה הופכת לציון</h3>
+<pre dir="ltr"><code>הפנסיה
+צברת            14,280 ₪
+מזה שלך          5,712 ₪
+מהבנק            8,568 ₪
+─────────────────────────
+20% מהציון</code></pre>
+<p><strong>זה הרגע שכל המנגנון קיים בשבילו</strong> — והמספר שהבנק הוסיף גדול משלו.</p>
+<blockquote><p>⚠️ <strong>וכאן נסגרת השאלה הפתוחה מ-12.9:</strong> &quot;שקלים או אחוז&quot;. <strong>התשובה היא שניהם, וכאן בלבד</strong> — לאורך השנה מוצגים שקלים, <strong>ורק בשבוע 30 מתבצעת ההמרה.</strong> המרה שמוצגת כל השנה הופכת את הפנסיה למד ציון; <strong>המרה בסוף הופכת אותה לתוצאה.</strong></p></blockquote>
+<p><strong>ולתלמיד שבחר 0%</strong> — הבלוק מציג אפס, בלי הערה ובלי ניסוח מרכך. <strong>§5.1 קובע שהרכיב מוצהר מהיום הראשון</strong>, ומי שבחר לא להפריש <strong>בחר.</strong></p>
+<h3>17.5 ואם שוק ההשקעות ייכנס</h3>
+<p><a href="market-proposal.md"><code>market-proposal.md</code></a> שם את הגילוי כאן:</p>
+<pre dir="ltr"><code>הפסדת 53 ₪ בדמי ניהול, ולא הרגשת.
+זה בדיוק למה זה עובד.
+
+אותה בחירה על 20 שנה:   307,000  מול  224,000</code></pre>
+<p><strong>זה נכנס לעמודה השמאלית, מתחת לפנסיה</strong> — 244 הפיקסלים של הסגירה. <strong>אם השוק לא ייכנס, המקום נשאר ריק, וזה בסדר.</strong></p>
+<h3>17.6 מה שנעדר, וזה המסך שהכי מפתה למלא</h3>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>הציון הסופי בגדול</strong></td><td>הוא לא נקבע כאן. <strong>75% ממנו הוכרעו לפני שבועות</strong></td></tr><tr><td><strong>&quot;סיימת את השנה!&quot; · תעודה · קונפטי</strong></td><td>סעיף 15.7. <strong>המדד לא השתנה כי זה השבוע האחרון</strong></td></tr><tr><td><strong>השוואה לכיתה</strong></td><td>סעיף 12.8. <strong>דווקא כאן, כשהכול נגמר, זה הכי מפתה והכי אסור</strong></td></tr><tr><td><strong>&quot;בשנה הבאה תלמד...&quot;</strong></td><td>פרק 5 נדחה ליא&#x27; (<code>README</code>), <strong>אבל זה לא הרגע לומר את זה</strong></td></tr></tbody></table>
+<blockquote><p><strong>המסך הזה מסכם, לא חוגג.</strong> התלמיד עבד שנה; <strong>מה שמכבד אותו הוא שהמספרים יהיו מדויקים, לא שהמסך יריע.</strong></p></blockquote>
+<h3>17.7 מה שעדיין פתוח</h3>
+<p><strong>האם המסך חוסם.</strong> שבוע 30 הוא האחרון — <strong>אין אחריו &quot;למשימה&quot;.</strong> מה הכפתור בסוף? נוטה ל<strong>&quot;סיום&quot;</strong> שסוגר את השנה, ואחריו המערכת לקריאה בלבד.</p>
+<p><strong>הארכיון.</strong> האם התלמיד יכול לחזור למסכים אחרי שהשנה נסגרה — לתלוש, לציונים, לקוד שכתב. <strong>מרחבית זה מצב &quot;לקריאה בלבד&quot; של מסכים קיימים</strong> (סעיף 5), ולכן אינו חוסם — <strong>אבל זו הכרעה על מה שקורה לעבודה של תלמיד אחרי שהקורס נגמר.</strong></p>
+<hr>
+<h2>18. מה שנשאר — ואינו פריסה</h2>
+<p><strong>כל תשעת המשטחים פרוסים.</strong></p>
+<table><thead><tr><th></th><th>סעיף</th></tr></thead><tbody><tr><td>מסך העבודה · שבעה מצבים</td><td>1–9</td></tr><tr><td>שיחת הקליטה</td><td>10</td></tr><tr><td>מסך המורה</td><td>11</td></tr><tr><td>מסך הציונים</td><td>12</td></tr><tr><td>מסך התלוש</td><td>13</td></tr><tr><td>מסך החנות</td><td>14</td></tr><tr><td>מעבר השבוע</td><td>15</td></tr><tr><td>מסך הכניסה</td><td>16</td></tr><tr><td>שבוע 30</td><td>17</td></tr></tbody></table>
+<p><strong>ושתי הכרעות שאינן מרחביות וחוסמות מימוש:</strong></p>
+<table><thead><tr><th></th><th>סעיף</th><th>מה תלוי בה</th></tr></thead><tbody><tr><td><strong>מדיניות הגשה חוזרת למשימה שבועית</strong></td><td>4</td><td><strong>מתי</strong> נפתח הטאב הרביעי — לא איפה</td></tr><tr><td><strong>הקוד של התלמיד — קובע או מציג</strong></td><td>13.6</td><td>מה מסך התלוש מציג, <strong>ומה קורה לציון כשיש באג</strong></td></tr></tbody></table>
+<p><strong>והחלטה אחת ממתינה:</strong> <a href="market-proposal.md"><code>market-proposal.md</code></a> — שוק ההשקעות. <strong>אם ייכנס, הוא מוסיף משטח אחד</strong> (טאב בחנות) <strong>ותוכן לסעיף 17.5.</strong></p>
+  </div>
+</div>
+
+<div class="part">
+  <div class="part-title">חלק ג' · ויירפריים גס</div>
+</div>
+
+
+
+
+
+<!-- ============================== מסך כניסה ============================== -->
+<section class="screen" id="login">
+<h2 class="screen-title">1 · מסך כניסה</h2>
+<div class="frame" style="min-height:520px; max-width:900px; align-items:center; justify-content:center;">
+
+  <div class="box" style="width:380px;">
+    <span class="tag">כרטיס כניסה</span>
+    <div class="stack">
+      <div class="box" style="text-align:center; padding:18px;">
+        <span class="tag">לוגו + שם</span>
+        <div class="ph">FinTech Academy</div>
+      </div>
+
+      <div class="field">שם משתמש / מספר תלמיד</div>
+      <div class="field">סיסמה</div>
+
+      <div class="row">
+        <div class="btn primary" style="flex:1; text-align:center;">כניסה</div>
+      </div>
+
+      <div class="box">
+        <span class="tag">בחירת תפקיד</span>
+        <span class="chip">תלמיד</span>
+        <span class="chip">מורה</span>
+        <div class="note">אולי מיותר — אפשר להסיק מהחשבון. להחלטה.</div>
+      </div>
+
+      <div class="ph" style="text-align:center;">שכחתי סיסמה · פנייה למורה</div>
+    </div>
+  </div>
+
+  <div class="box" style="width:380px; margin-top:14px;">
+    <span class="tag">הערה</span>
+    <div class="note" style="font-style:normal;">
+      פתיחה ראשונה של תלמיד מובילה ישירות לשיחת הקליטה עם אלעד,
+      לא למסך התלמיד. ראה <code>content/_shared/onboarding.yml</code>.
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+<!-- ============================== מסך תלמיד ============================== -->
+<section class="screen" id="student">
+<h2 class="screen-title">2 · מסך תלמיד</h2>
+<div class="frame">
+
+  <!-- סרגל עליון -->
+  <div class="topbar box" style="border-style:solid;">
+    <span class="tag">סרגל עליון</span>
+    <span class="logo">FinTech Academy</span>
+    <span class="chip">שבוע 4 · מחשבון המשכורת</span>
+    <span class="chip">דרגה D1 · מפתח זוטר</span>
+    <span class="chip">יתרה 4,890 ₪</span>
+    <span class="chip">דדליין: עוד 3 ימים</span>
+    <span class="spacer"></span>
+    <span class="btn">חנות</span>
+    <span class="btn">התלוש שלי</span>
+    <span class="btn">☰ תפריט</span>
+  </div>
+
+  <!-- גוף: שלוש עמודות -->
+  <div class="row" style="flex:1; padding:10px; gap:10px;">
+
+    <!-- ימין: אלעד -->
+    <div class="box stack" style="width:300px;">
+      <span class="tag">אלעד — פאנל קבוע</span>
+      <div class="avatar">אווטאר · מצב משתנה<br>(9 מצבים)</div>
+      <div class="stack" style="flex:1;">
+        <div class="bubble">הודעה מאלעד</div>
+        <div class="bubble me">תשובת התלמיד</div>
+        <div class="bubble">הודעה מאלעד</div>
+      </div>
+      <div class="field">כתוב לאלעד…</div>
+      <div class="note">
+        אווטאר אחד קבוע שמחליף מצב — לא אחד לכל הודעה.
+        רקע לבן, דעיכה בתחתית.
+      </div>
+    </div>
+
+    <!-- מרכז: קוד -->
+    <div class="stack" style="flex:1;">
+      <div class="tabs">
+        <div class="tab on">הקוד שלי</div>
+        <div class="tab">קוד פתיחה</div>
+      </div>
+      <div class="box" style="flex:1; min-height:280px;">
+        <span class="tag">עורך קוד</span>
+        <div class="ph" dir="ltr" style="font-family:Consolas,monospace;">
+          gross_salary = 6000<br>
+          tax_rate = 0.15<br>
+          …
+        </div>
+      </div>
+      <div class="row">
+        <span class="btn primary">▶ הרצה</span>
+        <span class="btn">בדיקות</span>
+        <span class="btn">איפוס</span>
+        <span class="spacer"></span>
+        <span class="btn primary">הגשה</span>
+      </div>
+      <div class="box" style="min-height:120px;">
+        <span class="tag">פלט</span>
+        <div class="ph" dir="ltr" style="font-family:Consolas,monospace;">
+          === תלוש משכורת ===<br>ברוטו: 6000
+        </div>
+      </div>
+    </div>
+
+    <!-- שמאל: משימה ובדיקות -->
+    <div class="stack" style="width:290px;">
+      <div class="box" style="flex:1;">
+        <span class="tag">המשימה</span>
+        <div class="ph">
+          כותרת, נתונים, חלקים א'–ג'.<br><br>
+          גלילה. תמיד גלוי — לא טאב.
+        </div>
+      </div>
+      <div class="box">
+        <span class="tag">בדיקות גלויות</span>
+        <div class="ph">
+          ✓ המשתנים קיימים<br>
+          ✓ השיעורים עשרוניים<br>
+          ✗ הנטו אינו נכון
+        </div>
+        <div class="note">הנסתרות לא מוצגות</div>
+      </div>
+      <div class="box">
+        <span class="tag">התקדמות</span>
+        <div class="ph">XP · פנסיה · שבועות שהושלמו</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="box" style="margin:0 10px 10px;">
+    <span class="tag">הערות פריסה</span>
+    <div class="note" style="font-style:normal;">
+      · שלוש עמודות דורשות 1280px. מתחת לזה — עמודת המשימה מתקפלת לטאב.<br>
+      · המצב נשמר בשרת: קוד שלא הוגש, השיחה, ושלב הרמז. חזרה מהבית ממשיכה מאותה נקודה.<br>
+      · "חנות" נפתחת רק משבוע 5.
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+<!-- ============================== מסך מורה ============================== -->
+<section class="screen" id="teacher">
+<h2 class="screen-title">3 · מסך מורה</h2>
+<div class="frame">
+
+  <div class="topbar box" style="border-style:solid;">
+    <span class="tag">סרגל עליון</span>
+    <span class="logo">FinTech Academy · מורה</span>
+    <span class="chip">כיתה י'2</span>
+    <span class="chip">שבוע 4 ▾</span>
+    <span class="spacer"></span>
+    <span class="btn">דוח יומי</span>
+    <span class="btn">ציונים</span>
+    <span class="btn">מדידת בסיס</span>
+    <span class="btn">☰ תפריט</span>
+  </div>
+
+  <div class="row" style="flex:1; padding:10px; gap:10px;">
+
+    <!-- ימין: רשימת כיתה -->
+    <div class="box stack" style="width:250px;">
+      <span class="tag">רשימת תלמידים</span>
+      <div class="field">חיפוש</div>
+      <div class="ph">
+        ● רותם — הגיש<br>
+        ● דניאל — בעבודה<br>
+        ▲ נועה — תקוע (רמז 5)<br>
+        ○ יובל — לא פתח<br>
+        ● עמית — הגיש<br>
+      </div>
+      <div class="note">מיון: סטטוס · שם · דרגה</div>
+    </div>
+
+    <!-- מרכז: לוח -->
+    <div class="stack" style="flex:1;">
+
+      <div class="row">
+        <div class="box" style="flex:1; text-align:center;">
+          <span class="tag">הגישו</span><div class="ph" style="font-size:22px;">18/24</div>
+        </div>
+        <div class="box" style="flex:1; text-align:center;">
+          <span class="tag">תקועים</span><div class="ph" style="font-size:22px;">3</div>
+        </div>
+        <div class="box" style="flex:1; text-align:center;">
+          <span class="tag">לא פתחו</span><div class="ph" style="font-size:22px;">3</div>
+        </div>
+        <div class="box" style="flex:1; text-align:center;">
+          <span class="tag">זמן חציוני</span><div class="ph" style="font-size:22px;">47 דק'</div>
+        </div>
+      </div>
+
+      <div class="box">
+        <span class="tag">דוח יומי — מה שדורש התערבות</span>
+        <div class="ph">
+          · 3 תלמידים הגיעו לשלב 5 בסולם הרמזים, כולם על אותו דבר: המרת אחוזים<br>
+          · תפיסה שגויה חוזרת אצל 5 תלמידים: 0.4% נכתב כ-0.4<br>
+          · תלמיד אחד ניסה לחלץ פתרון מאלעד שלוש פעמים<br>
+          · יובל לא נכנס למערכת השבוע
+        </div>
+        <div class="note">נבנה מהשיחות. לא כולל הערכה איכותית ולא השוואה בין תלמידים.</div>
+      </div>
+
+      <div class="box" style="flex:1;">
+        <span class="tag">טבלת מצב — שבוע 4</span>
+        <table>
+          <tr><th>תלמיד</th><th>סטטוס</th><th>טסטים</th><th>רמז מרבי</th><th>דרגה</th><th>פנסיה</th></tr>
+          <tr><td>רותם</td><td>הגיש</td><td>15/15</td><td>2</td><td>D1</td><td>7%</td></tr>
+          <tr><td>נועה</td><td>תקוע</td><td>9/15</td><td>5</td><td>D1</td><td>3%</td></tr>
+          <tr><td>יובל</td><td>לא פתח</td><td>—</td><td>—</td><td>D1</td><td>0%</td></tr>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- שמאל: תלמיד נבחר -->
+    <div class="box stack" style="width:280px;">
+      <span class="tag">תלמיד נבחר · נועה</span>
+      <div class="box">
+        <span class="tag">מצב נוכחי</span>
+        <div class="ph">שבוע 4 · 9/15 טסטים · רמז 5</div>
+      </div>
+      <div class="box" style="flex:1;">
+        <span class="tag">השיחה עם אלעד</span>
+        <div class="ph">תמליל מלא, לקריאה בלבד</div>
+      </div>
+      <div class="box">
+        <span class="tag">מדידת בסיס</span>
+        <div class="ph">3/6 · הפער: דמי ניהול, ריבית דריבית</div>
+      </div>
+      <div class="row">
+        <span class="btn">הארכת דדליין</span>
+        <span class="btn">סימון להתערבות</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="box" style="margin:0 10px 10px;">
+    <span class="tag">שאלות פתוחות</span>
+    <div class="note" style="font-style:normal;">
+      · האם המורה רואה תמליל שיחה מלא? יש כאן שיקול פרטיות מול ערך פדגוגי.<br>
+      · האם "הארכת דדליין" של המורה נפרדת מהפריט בחנות? (כן — התאמות הן זכות, לא רכישה)<br>
+      · טבלת השכר לא מופיעה כאן במכוון. שכר הוא פרטי.
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+</body>
+</html>

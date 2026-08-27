@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FinTech Academy · שבוע 1</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ══ הסרגל · 52px · זהה בכל המסכים, רק הפריט הפעיל משתנה (layout.md §7) ══ -->
+<header class="topbar">
+  <span class="brand">FinTech Academy</span>
+  <span class="sep"></span>
+  <span id="tb-week" class="tb">שבוע 1</span>
+  <span class="sep"></span>
+  <span class="tb">D1 · מפתח זוטר</span>
+  <span class="sep"></span>
+  <span class="tb num">0 ₪</span>
+  <span class="sep"></span>
+  <span class="tb">עוד 5 ימים</span>
+  <nav class="nav">
+    <span class="tb dim">חנות · שבוע 5</span>
+    <span class="tb">התלוש שלי</span>
+    <span class="tb">הציונים</span>
+    <span class="tb menu">☰</span>
+  </nav>
+</header>
+
+<main class="work">
+
+  <!-- ══ אלעד · 360px · לעולם אינו מתקפל (§3) ══ -->
+  <section class="panel elad" aria-label="אלעד">
+    <div class="avatar" id="avatar" data-state="presenting">
+      <div class="avatar-ph">
+        <div class="ph-head"></div><div class="ph-body"></div>
+      </div>
+      <span class="avatar-note">240px · חיתוך ייעודי · presenting</span>
+    </div>
+    <div class="chat" id="chat"></div>
+    <form class="chat-input" id="chat-form" autocomplete="off">
+      <input id="chat-text" type="text" placeholder="כתוב לאלעד…" aria-label="כתוב לאלעד">
+      <button type="submit" aria-label="שלח">←</button>
+    </form>
+  </section>
+
+  <!-- ══ העורך · גמיש · עורך + ידית + תוצאות + כפתורים ══ -->
+  <section class="editor-col">
+
+    <div class="editor" id="editor-block">
+      <div class="tabs">
+        <button class="tab is-active" data-tab="mine">הקוד שלי</button>
+        <button class="tab" data-tab="starter">קוד פתיחה</button>
+        <span class="saved" id="saved">נשמר אוטומטית</span>
+      </div>
+      <div class="code-wrap">
+        <div class="gutter" id="gutter" aria-hidden="true"></div>
+        <textarea id="code" spellcheck="false" dir="ltr" aria-label="עורך הקוד"></textarea>
+      </div>
+    </div>
+
+    <!-- ידית גרירה — לא קו הפרדה (§3) -->
+    <div class="handle" id="handle" role="separator" aria-orientation="horizontal"
+         aria-label="גרור לשינוי גובה אזור התוצאות" tabindex="0">
+      <span class="grip"></span>
+    </div>
+
+    <div class="results" id="results">
+      <div class="rtabs">
+        <button class="rtab is-active" data-rtab="tests">בדיקות גלויות · <span id="tests-count">—</span></button>
+        <button class="rtab" data-rtab="out">פלט</button>
+        <span class="rhint" id="rhint">הרצה → פלט · בדיקות → בדיקות</span>
+      </div>
+      <div class="rbody" id="rb-tests"></div>
+      <pre class="rbody out" id="rb-out" dir="ltr"></pre>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="btn-submit">הגשה</button>
+      <button class="btn" id="btn-reset">איפוס</button>
+      <button class="btn" id="btn-tests">בדיקות</button>
+      <button class="btn run" id="btn-run"><span class="tri">▶</span> הרצה</button>
+      <span class="hint-counter" id="hint-counter" hidden></span>
+    </div>
+
+  </section>
+
+  <!-- ══ המשימה · 296px · גלויה תמיד (§3) ══ -->
+  <aside class="panel task" aria-label="המשימה">
+    <div class="task-head">
+      <span class="kicker">המשימה השבועית</span>
+      <h1 id="task-title">—</h1>
+    </div>
+    <div class="task-body" id="task-body"></div>
+    <div class="task-foot">
+      <div class="tf-row"><span>מועד</span><b>עוד 5 ימים</b></div>
+      <div class="tf-row"><span>שכר</span><b>עד 800 ₪</b></div>
+      <div class="tf-row locked">
+        <span>פריטי השבוע</span><b class="dim">נפתח אחרי ההגשה</b>
+      </div>
+    </div>
+  </aside>
+
+</main>
+
+<!-- מד הפריסה — כלי פיתוח, לא חלק מהמוצר -->
+<div class="probe" id="probe" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

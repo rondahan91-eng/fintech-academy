@@ -1,0 +1,96 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>שבוע 2 · מודול הליבה</title><style>
+:root { --ink:#1a1a1a; --muted:#5a5a5a; --line:#d8d8d8; --accent:#1e5aa8;
+        --soft:#f4f6f9; --warn:#fff8e6; --warn-line:#e0a800; }
+* { box-sizing:border-box; }
+body { direction:rtl; font-family:"Segoe UI","Arial",sans-serif;
+       color:var(--ink); line-height:1.65; max-width:19cm;
+       margin:0 auto; padding:1.5cm 1.2cm; font-size:11.5pt; }
+h1 { font-size:22pt; border-bottom:3px solid var(--accent); padding-bottom:.3em;
+     margin:0 0 .6em; }
+h2 { font-size:15pt; color:var(--accent); margin:1.6em 0 .5em;
+     border-bottom:1px solid var(--line); padding-bottom:.2em; }
+h3 { font-size:12.5pt; margin:1.2em 0 .4em; }
+h4 { font-size:11.5pt; color:var(--muted); margin:1em 0 .3em; }
+p { margin:.5em 0; }
+ul,ol { margin:.5em 0; padding-inline-start:1.5em; }
+li { margin:.25em 0; }
+code { direction:ltr; unicode-bidi:embed; font-family:Consolas,monospace;
+       background:var(--soft); padding:.1em .35em; border-radius:3px;
+       font-size:.9em; }
+pre { direction:ltr; text-align:left; background:var(--soft);
+      border:1px solid var(--line); border-inline-start:3px solid var(--accent);
+      padding:.7em .9em; border-radius:4px; overflow-x:auto; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; width:100%; margin:.8em 0; font-size:10.5pt; }
+th,td { border:1px solid var(--line); padding:.45em .6em; text-align:right;
+        vertical-align:top; }
+th { background:var(--soft); font-weight:600; }
+tr:nth-child(even) td { background:#fafbfc; }
+blockquote { background:var(--warn); border-inline-start:4px solid var(--warn-line);
+             margin:.9em 0; padding:.6em .9em; border-radius:0 4px 4px 0; }
+blockquote p { margin:.3em 0; }
+hr { border:none; border-top:1px solid var(--line); margin:1.6em 0; }
+a { color:var(--accent); }
+.box { display:inline-block; width:.95em; height:.95em; border:1.5px solid var(--muted);
+       border-radius:2px; margin-inline-end:.5em; vertical-align:-2px;
+       text-align:center; line-height:.9em; font-size:.8em; }
+.checklist { list-style:none; padding-inline-start:.2em; }
+.doc-head { color:var(--muted); font-size:10pt; margin-bottom:1.5em;
+            padding-bottom:.6em; border-bottom:1px solid var(--line); }
+.section-label { background:var(--accent); color:#fff; display:inline-block;
+                 padding:.25em .9em; border-radius:3px; font-size:10pt;
+                 margin:2.5em 0 .8em; }
+@media print {
+  body { padding:0; max-width:none; font-size:10.5pt; }
+  @page { margin:1.6cm 1.4cm; }
+  h1,h2,h3 { break-after:avoid; }
+  table,blockquote,pre { break-inside:avoid; }
+  .page-break { break-before:page; }
+  a { color:var(--ink); text-decoration:none; }
+}
+</style></head><body><div class="doc-head">FinTech Academy · חומרי מורה</div><div><span class="section-label">המשימה כפי שהתלמיד רואה אותה</span>
+<h1>שבוע 2 · מודול הליבה</h1>
+<p>יום שני. אתמול הדפסת טקסט; היום אתה נוגע במערכת עצמה.</p>
+<p>זה <code>Account</code> — המודול שמנהל כל חשבון בבנק. <strong>לא תכתוב אותו.</strong> מישהו כתב אותו לפני שנים, הוא עובד, ואתה תשתמש בו. ככה זה בעבודה — רוב הקוד שתיגע בו לא נכתב על ידך, והמיומנות הראשונה היא <strong>לקרוא ממשק ולהבין מה הוא נותן לך</strong>.</p>
+<hr>
+<h2>הממשק</h2>
+<p>כדי לפתוח חשבון:</p>
+<pre dir="ltr"><code>acc = Account(owner=&quot;שם הלקוח&quot;, balance=1000)</code></pre>
+<p><code>acc</code> הוא <strong>עצם</strong> — חשבון אחד, קונקרטי. יש לו יתרה משלו והיסטוריה משלו.</p>
+<p><strong>פעולות ששואלות</strong> — מחזירות לך ערך ולא משנות כלום:</p>
+<table><thead><tr><th>פעולה</th><th>מחזירה</th></tr></thead><tbody><tr><td><code>acc.owner()</code></td><td>שם בעל החשבון</td></tr><tr><td><code>acc.balance()</code></td><td>היתרה הנוכחית</td></tr><tr><td><code>acc.is_overdrawn()</code></td><td><code>True</code> אם היתרה שלילית, אחרת <code>False</code></td></tr><tr><td><code>acc.statement()</code></td><td>תדפיס חשבון מלא, כטקסט</td></tr></tbody></table>
+<p><strong>פעולות שמשנות</strong> — עושות משהו לחשבון ולא מחזירות כלום:</p>
+<table><thead><tr><th>פעולה</th><th>מה עושה</th></tr></thead><tbody><tr><td><code>acc.deposit(500)</code></td><td>מפקידה 500</td></tr><tr><td><code>acc.withdraw(200)</code></td><td>מושכת 200</td></tr><tr><td><code>acc.transfer_to(other, 50)</code></td><td>מעבירה 50 לחשבון אחר</td></tr></tbody></table>
+<blockquote><p>שים לב להבדל. <code>acc.balance()</code> <strong>שואלת</strong> — אפשר להדפיס את התוצאה. <code>acc.deposit(500)</code> <strong>פועלת</strong> — אין מה להדפיס, היא פשוט קורית.</p></blockquote>
+<hr>
+<h2>מה לבנות</h2>
+<p><strong>חלק א&#x27; — החשבון של דנה</strong></p>
+<p>פתח חשבון על שם <code>דנה כהן</code> ביתרת פתיחה <code>2500</code>. אחר כך:</p>
+<ol><li>הפקד <code>400</code> (המשכורת נכנסה)</li><li>משוך <code>120</code></li><li>הדפס את שם בעל החשבון ואת היתרה</li></ol>
+<p><strong>חלק ב&#x27; — יואב, והעברה</strong></p>
+<p>פתח חשבון שני על שם <code>יואב לוי</code> ביתרת פתיחה <code>100</code>. העבר <code>50</code> <strong>מדנה ליואב</strong>, והדפס את היתרה של שניהם.</p>
+<p><strong>חלק ג&#x27; — מה קורה כשמושכים יותר מדי</strong></p>
+<p>משוך <code>3000</code> מהחשבון של יואב. אחר כך הדפס:</p>
+<ul><li>את היתרה שלו</li><li>את התוצאה של <code>is_overdrawn()</code></li><li>את התדפיס המלא שלו: <code>print(yoav.statement())</code></li></ul>
+<hr>
+<h2>מה נבדק</h2>
+<ul><li>שני החשבונות נפתחו על השמות הנכונים</li><li>היתרות נכונות בכל שלב</li><li>התדפיס המלא של יואב הודפס</li></ul>
+<p><strong>אין בדף הזה אף תוצאה.</strong> לא כתוב כמה יהיה בחשבון של דנה בסוף — זה מה שהתוכנית שלך אמורה לגלות. אל תחשב בראש ותדפיס מספר; תן למחלקה לעבוד.</p>
+<hr>
+<h2>מותר להיעזר</h2>
+<ul><li><strong>באלעד.</strong> במיוחד השבוע — אם לא ברור לך מה זה &quot;עצם&quot;, זו בדיוק השאלה לשאול.</li><li>בטבלאות הממשק למעלה. פתוחות, זו לא בחינה בעל פה.</li><li>בכפתור &quot;הרץ בדיקות&quot;, כמה פעמים שתרצה.</li></ul>
+<p><strong>שאלה לחשוב עליה תוך כדי</strong> — ותשאל את אלעד מה התשובה: יש לך שני חשבונות, ושניהם נוצרו מאותה מחלקה <code>Account</code>. איך יכול להיות שלכל אחד יתרה אחרת?</p>
+</div>
+<div class="page-break"><span class="section-label">רובריקת איכות קוד</span>
+<h1>רובריקת איכות קוד — שבוע 2</h1>
+<p>הרכיב השלישי בתגמול הביצועים (150 ₪). נבדק <strong>רק אחרי</strong> שכל הטסטים הנסתרים עברו.</p>
+<p>השבוע נכנס הקריטריון הראשון שיישאר עד סוף השנה: <strong>שמות משתנים</strong>. זו הפעם הראשונה שהתלמיד בוחר שם בעצמו.</p>
+<h2>מזכה ב-150 ₪</h2>
+<table><thead><tr><th>קריטריון</th><th>מה מחפשים</th></tr></thead><tbody><tr><td>שמות משתנים</td><td><code>dana</code> ו-<code>yoav</code>, או <code>dana_account</code>. <strong>לא</strong> <code>a</code> ו-<code>b</code>, ולא <code>x1</code></td></tr><tr><td>התאמה לתוכן</td><td>שם המשתנה מתאים לבעל החשבון. <code>dana</code> שמחזיק את החשבון של יואב — נכשל</td></tr><tr><td>מבנה</td><td>שלושת החלקים מופרדים — שורה ריקה או הערה קצרה ביניהם</td></tr><tr><td>פלט קריא</td><td>ברור מה כל מספר. <code>print(dana.balance())</code> לבדו מדפיס מספר מרחף; <code>print(&quot;היתרה של דנה:&quot;, dana.balance())</code> עדיף</td></tr></tbody></table>
+<h2>לא מזכה</h2>
+<ul><li>שמות באות בודדת</li><li>שלושת החלקים בגוש אחד רצוף</li><li>שאריות מקוד הפתיחה: הערות שהמקום שמתחתן כבר מולא</li><li>פלט שהוא רצף מספרים בלי הקשר</li></ul>
+<h2>לא נבדק השבוע</h2>
+<p>כפילות קוד (בלתי נמנעת — שני חשבונות עוברים אותן פעולות), יעילות, פונקציות, הערות משלו.</p>
+<hr>
+<blockquote><p><strong>למורה:</strong> שני קריטריונים כאן הם חדשים ביחס לשבוע 1 — שמות והקשר בפלט. אם יותר משליש מהכיתה מפספס את &quot;הפלט הקריא&quot;, זו לא בעיה של התלמידים אלא סימן שהמשימה לא ביקשה את זה מספיק במפורש. עדכן את <code>task.md</code> ולא את הציונים.</p></blockquote>
+</div></body></html>

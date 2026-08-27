@@ -1,0 +1,270 @@
+/* ══════════════════════════════════════════════════════════════
+   FinTech Academy · פרוסה אנכית של שבוע 1
+   כל מספר כאן נגזר מ-design/layout.md. כל צבע מ-design/system.
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* צבע — design-system.md */
+  --primary:      #3D6FE5;
+  --accent-end:   #8B5CF6;
+  --green:        #16A34A;
+  --gold:         #B8860B;
+  --sand:         #F4EBE4;   /* בדיקה שטרם עברה — לא אדום, וזו הכרעה */
+  --sand-ink:     #7A6A5E;
+  --red:          #E24C4C;   /* ערכים שליליים בכסף בלבד */
+  --slate:        #4A5568;
+  --surface:      #FFFFFF;
+  --canvas:       #F8F9FD;
+  --navy:         #1E2A38;
+  --line:         #E3E6EF;
+
+  /* פריסה — layout.md §1–§3 */
+  --topbar:       52px;
+  --pad:          16px;
+  --panel-elad:  360px;
+  --panel-task:  296px;
+  --gap:          16px;
+
+  --editor-h:    420px;   /* §2 · בסיס */
+  --results-h:   196px;   /* §2 · בסיס, נגרר 196–376 */
+
+  --radius-sm:     8px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+
+  --glow: 0 12px 32px -10px rgba(89,71,235,.16), 0 2px 8px rgba(20,20,40,.04);
+
+  /* עברית — letter-spacing אפס לאורך כל הסולם. ראה design-system.md */
+  --ui: "Assistant", "Heebo", "Segoe UI", Arial, sans-serif;
+  --mono: Consolas, "Courier New", ui-monospace, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font: 400 15px/1.55 var(--ui);
+  letter-spacing: 0;
+  color: #22262F;
+  background: var(--canvas);
+  min-height: 100dvh;
+  overflow: hidden;            /* המסך אינו נגלל — §2 */
+}
+
+/* משטח קוד / פלט — LTR מבודד בתוך עברית */
+.ltr, [dir="ltr"] { direction: ltr; unicode-bidi: embed; text-align: left; }
+
+/* ══ הסרגל ══ */
+.topbar {
+  height: var(--topbar);
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 var(--pad);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.brand {
+  font-weight: 700; font-size: 15px;
+  background: linear-gradient(135deg, var(--primary), var(--accent-end));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.sep { width: 1px; height: 18px; background: var(--line); }
+.tb { font-size: 13px; color: var(--slate); }
+.tb.num { font-family: var(--mono); color: #22262F; font-weight: 600; }
+.tb.dim { color: #B6BCCB; }
+.tb.menu { color: #97A0B3; cursor: default; }
+.nav { margin-inline-start: auto; display: flex; align-items: center; gap: 14px; }
+
+/* ══ הפריסה · שלוש עמודות, סדר קבוע ══ */
+.work {
+  height: calc(100dvh - var(--topbar));
+  display: flex; gap: var(--gap);
+  padding: var(--pad);
+  min-height: 0;
+}
+/* ‏outline ולא border — הפאנלים ממלאים בדיוק 684, ומסגרת הייתה גונבת 2px
+   מתקציב התוכן. נמדד: עם border פאנל אלעד נתן 342 לשיחה במקום 344. */
+.panel {
+  background: var(--surface);
+  outline: 1px solid var(--line); outline-offset: -1px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glow);
+}
+
+/* ══ אלעד · 360 · אווטאר 240 + שיחה + שדה 44 ══ */
+.elad {
+  width: var(--panel-elad); flex: none;
+  display: flex; flex-direction: column; gap: 12px;
+  padding: var(--pad);
+  min-height: 0;
+}
+.avatar {
+  height: 240px; flex: none;
+  background: var(--surface);          /* לבן חובה — האווטאר שקוף */
+  border-radius: var(--radius-md);
+  position: relative; overflow: hidden;
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.avatar::after {                        /* דעיכה 48px בתחתית */
+  content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 48px;
+  background: linear-gradient(to top, #fff, transparent); pointer-events: none;
+}
+.avatar-ph { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ph-head { width: 88px; height: 88px; border-radius: 50%;
+  background: linear-gradient(160deg, #C7D2F5, #9DA9E8); }
+.ph-body { width: 168px; height: 104px; border-radius: 84px 84px 0 0;
+  background: linear-gradient(160deg, #C7D2F5, #9DA9E8); }
+.avatar-note {
+  position: absolute; top: 8px; inset-inline-start: 10px;
+  font: 500 10px/1 var(--mono); color: #B6BCCB; direction: ltr;
+}
+.chat { flex: 1; min-height: 0; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 10px; padding-inline-end: 4px; }
+.who { font-size: 12px; font-weight: 600; color: var(--slate); }
+.bubble {
+  background: #F2F5FD; border-radius: 14px; padding: 10px 12px;
+  font-size: 13.5px; line-height: 1.6;
+}
+.bubble.me { background: #EDEFF5; margin-inline-start: 40px; }
+.chat-input { height: 44px; flex: none; display: flex; gap: 8px; }
+.chat-input input {
+  flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 999px;
+  padding: 0 16px; font: 400 13.5px var(--ui); background: var(--surface);
+}
+.chat-input input:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+.chat-input button {
+  width: 44px; flex: none; border: 0; border-radius: 999px; cursor: pointer;
+  background: linear-gradient(135deg, var(--primary), var(--accent-end));
+  color: #fff; font-size: 15px;
+}
+
+/* ══ עמודת העורך ══ */
+.editor-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+/* גובה העורך אינו קבוע: הוא **השארית**. §2 — "מסך פחות 720".
+   התוצאות מחזיקות גובה מוצהר, והעורך בולע את מה שנשאר, עם רצפה. */
+.editor {
+  flex: 1; min-height: 240px;
+  background: var(--navy);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  display: flex; flex-direction: column; overflow: hidden;
+  position: relative;
+}
+.editor::before {                        /* הקו המדורג בקצה העליון */
+  content: ""; position: absolute; inset-inline: 0; top: 0; height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent-end));
+}
+.tabs { height: 36px; flex: none; display: flex; align-items: center; gap: 4px;
+  padding: 3px 12px 0; }
+.tab {
+  border: 0; background: transparent; cursor: pointer;
+  font: 500 13px var(--ui); color: #8C99B4; padding: 6px 10px; border-radius: 8px;
+}
+.tab.is-active { color: #EAF0FF; background: rgba(255,255,255,.07); }
+.saved { margin-inline-start: auto; font-size: 11.5px; color: #6B7897; }
+
+.code-wrap { flex: 1; min-height: 0; display: flex; direction: ltr; }
+.gutter {
+  flex: none; width: 44px; padding: 8px 8px 8px 0;
+  font: 400 13px/1.6 var(--mono); color: #4A5B78; text-align: right;
+  user-select: none; overflow: hidden;
+}
+#code {
+  flex: 1; min-width: 0; resize: none; border: 0; outline: 0;
+  background: transparent; color: #DDE6F7; caret-color: #8B5CF6;
+  font: 400 13px/1.6 var(--mono);
+  padding: 8px 14px 8px 0; direction: ltr; text-align: left;
+  overflow-y: auto;
+}
+
+/* ══ הידית · 8px פגיעה, גריפ נראה — לא קו ══ */
+.handle {
+  height: 12px; flex: none; cursor: row-resize;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--canvas);
+}
+.handle .grip { width: 32px; height: 4px; border-radius: 2px; background: #C4CBDB; }
+.handle:hover .grip, .handle:focus-visible .grip { background: var(--primary); }
+.handle:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+
+/* ══ אזור התוצאות ══ */
+.results {
+  height: var(--results-h); flex: none;
+  background: var(--surface); border: 1px solid var(--line); border-top: 0;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.rtabs { height: 36px; flex: none; display: flex; align-items: center; gap: 4px;
+  padding: 0 12px; border-bottom: 1px solid var(--line); }
+.rtab { border: 0; background: transparent; cursor: pointer;
+  font: 500 13px var(--ui); color: var(--slate); padding: 6px 8px; }
+.rtab.is-active { color: #22262F; font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--primary); }
+.rhint { margin-inline-start: auto; font-size: 11px; color: #A9B1C4; }
+.rbody { flex: 1; min-height: 0; overflow-y: auto; padding: 8px 12px; }
+.rbody.out { font: 400 13px/1.6 var(--mono); color: #2B3244;
+  white-space: pre-wrap; direction: ltr; text-align: left; }
+.rbody[hidden] { display: none; }
+
+/* שורת בדיקה — שתי צורות (§4) */
+.tr { display: flex; align-items: flex-start; gap: 10px; padding: 7px 4px;
+  border-bottom: 1px solid #F1F3F8; font-size: 13.5px; }
+.tr:last-child { border-bottom: 0; }
+.tr .mark { flex: none; width: 16px; text-align: center; font-size: 12px; }
+.tr.pass .mark { color: var(--green); }
+.tr.pend .mark { color: var(--sand-ink); }
+.tr .label { flex: 1; min-width: 0; }
+.tr .cmp { flex: none; font: 400 12.5px var(--mono); color: var(--slate); }
+.tr.pend { background: var(--sand); border-radius: 6px; }
+.tr .why { display: block; margin-top: 3px; font-size: 12.5px;
+  color: var(--sand-ink); line-height: 1.5; }
+
+/* ══ שורת הכפתורים · 44 ══ */
+.actions {
+  height: 44px; flex: none; margin-top: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.btn {
+  height: 40px; padding: 0 18px; border-radius: var(--radius-md);
+  border: 1.5px solid #CBD2E0; background: var(--surface);
+  color: var(--primary); font: 600 13.5px var(--ui); cursor: pointer;
+}
+.btn:hover { background: #F4F6FC; }
+.btn.primary {
+  border: 0; color: #fff; border-radius: 999px; padding: 0 26px;
+  background: linear-gradient(135deg, var(--primary), var(--accent-end));
+  box-shadow: 0 6px 18px -6px rgba(89,71,235,.5);
+}
+.btn.primary:active { transform: translateY(-1px); }
+.btn.run { margin-inline-start: auto; }
+.btn .tri { font-size: 10px; }
+.btn[disabled] { opacity: .5; cursor: default; }
+.hint-counter { font-size: 12.5px; color: var(--slate); }
+
+/* ══ עמודת המשימה · 296 ══ */
+.task {
+  width: var(--panel-task); flex: none;
+  display: flex; flex-direction: column; padding: var(--pad); min-height: 0;
+}
+.task-head { flex: none; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.kicker { font: 600 11px/1 var(--ui); color: var(--primary);
+  text-transform: none; }
+.task h1 { font: 600 19px/1.3 var(--ui); margin-top: 7px; }
+.task-body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 0;
+  font-size: 13.5px; line-height: 1.6; color: #333A48; }
+.task-body h2 { font: 600 13px var(--ui); color: var(--slate); margin: 12px 0 6px; }
+.task-body h2:first-child { margin-top: 0; }
+.req { display: flex; justify-content: space-between; gap: 10px;
+  padding: 5px 0; border-bottom: 1px solid #F1F3F8; }
+.req b { font-family: var(--mono); font-size: 12.5px; font-weight: 600; }
+.task-foot { flex: none; padding-top: 12px; border-top: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 7px; font-size: 13px; }
+.tf-row { display: flex; justify-content: space-between; }
+.tf-row span { color: var(--slate); }
+.tf-row .dim { color: #A9B1C4; font-weight: 400; }
+.tf-row.locked b::before { content: "🔒"; }   /* יוחלף באייקון — ראה design-system */
+
+/* ══ מד הפריסה · כלי פיתוח ══ */
+.probe {
+  position: fixed; inset-block-end: 8px; inset-inline-start: 8px; z-index: 500;
+  background: #22262F; color: #CFE0FF; border-radius: 8px;
+  padding: 7px 11px; font: 400 11px/1.6 var(--mono); direction: ltr;
+  white-space: pre; pointer-events: none; opacity: .92;
+}
