@@ -107,14 +107,16 @@ body {
   content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 48px;
   background: linear-gradient(to top, #fff, transparent); pointer-events: none;
 }
-.avatar-ph { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.ph-head { width: 88px; height: 88px; border-radius: 50%;
-  background: linear-gradient(160deg, #C7D2F5, #9DA9E8); }
-.ph-body { width: 168px; height: 104px; border-radius: 84px 84px 0 0;
-  background: linear-gradient(160deg, #C7D2F5, #9DA9E8); }
+/* ‏contain + bottom: הראש נשאר בגובה קבוע כשהמצב מתחלף, גם אם הקנבסים
+   לא מנורמלים לגמרי. ‏manifest.yml → display_requirements.normalized_baseline */
+#avatar-img, .avatar-fallback {
+  height: 100%; width: 100%; object-fit: contain; object-position: bottom;
+}
+#avatar-img[hidden], .avatar-fallback[hidden] { display: none; }
 .avatar-note {
   position: absolute; top: 8px; inset-inline-start: 10px;
-  font: 500 10px/1 var(--mono); color: #B6BCCB; direction: ltr;
+  font: 500 10px/1.4 var(--mono); color: #B6BCCB; direction: ltr;
+  max-width: 300px; white-space: pre-line;
 }
 .chat { flex: 1; min-height: 0; overflow-y: auto;
   display: flex; flex-direction: column; gap: 10px; padding-inline-end: 4px; }
@@ -159,13 +161,19 @@ body {
   font: 500 13px var(--ui); color: #8C99B4; padding: 6px 10px; border-radius: 8px;
 }
 .tab.is-active { color: #EAF0FF; background: rgba(255,255,255,.07); }
-.saved { margin-inline-start: auto; font-size: 11.5px; color: #6B7897; }
+.saved { margin-inline-start: auto; font-size: 11.5px; color: #8D9AB8; }
 
-.code-wrap { flex: 1; min-height: 0; display: flex; direction: ltr; }
+.code-wrap { flex: 1; min-height: 0; display: flex; direction: ltr;
+  position: relative; }
+
+/* ⚠️ ‏white-space: pre חובה. בלעדיו הדפדפן מכווץ את השורות החדשות
+   שב-textContent, וכל המספרים מתמזגים לפסקה אחת עטופה. */
 .gutter {
   flex: none; width: 44px; padding: 8px 8px 8px 0;
-  font: 400 13px/1.6 var(--mono); color: #4A5B78; text-align: right;
-  user-select: none; overflow: hidden;
+  /* ‏#4A5B78 על הכהה נותן יחס ניגודיות 2.1:1 — המספרים היו כמעט
+     בלתי נראים. ‏#8797B5 נותן 5.0:1 ועדיין נסוג מאחורי הקוד. */
+  font: 400 13px/1.6 var(--mono); color: #8797B5; text-align: right;
+  white-space: pre; user-select: none; overflow: hidden;
 }
 #code {
   flex: 1; min-width: 0; resize: none; border: 0; outline: 0;
@@ -174,6 +182,26 @@ body {
   padding: 8px 14px 8px 0; direction: ltr; text-align: left;
   overflow-y: auto;
 }
+
+/* מודד כמה שורות מסך תופסת כל שורה לוגית אחרי שבירה. §2 קובע ששבירה
+   מופעלת מתחת ל-1220, ולכן מונה שורות תמים היה מוצג לא מיושר. */
+.code-mirror {
+  position: absolute; top: 0; left: 44px; visibility: hidden;
+  pointer-events: none; z-index: -1;
+  font: 400 13px/1.6 var(--mono);
+  padding: 8px 14px 8px 0;
+  white-space: pre-wrap; overflow-wrap: break-word;
+}
+
+/* קוד הפתיחה — תצוגה בלבד, ולא נוגע ב-textarea של התלמיד */
+.starter-view {
+  position: absolute; inset: 0; margin: 0; overflow: auto;
+  background: var(--navy); color: #9FB0CE;
+  font: 400 13px/1.6 var(--mono);
+  padding: 8px 14px 8px 52px;
+  direction: ltr; text-align: left; white-space: pre-wrap;
+}
+.starter-view[hidden] { display: none; }
 
 /* ══ הידית · 8px פגיעה, גריפ נראה — לא קו ══ */
 .handle {

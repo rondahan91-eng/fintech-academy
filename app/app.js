@@ -22,7 +22,15 @@ const el = {
   btnReset: $('btn-reset'), btnSubmit: $('btn-submit'),
   taskTitle: $('task-title'), taskBody: $('task-body'),
   tbWeek: $('tb-week'), probe: $('probe'),
+  avatar: $('avatar'), avatarImg: $('avatar-img'),
+  avatarFallback: $('avatar-fallback'), avatarNote: $('avatar-note'),
+  mirror: $('mirror'), starterView: $('starter-view'),
 };
+
+// כל טקסט שמגיע מהתלמיד או מקובץ תוכן עובר כאן לפני innerHTML.
+const esc = (s) => String(s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 const STORE = `fintech:week-${WEEK.week}:code`;
 
@@ -32,11 +40,41 @@ el.tbWeek.textContent = `שבוע ${WEEK.week}`;
 el.taskTitle.textContent = WEEK.title;
 
 el.taskBody.innerHTML = WEEK.requirements.map((sec) => `
-  <h2>${sec.section}</h2>
+  <h2>${esc(sec.section)}</h2>
   ${sec.items.map((it) => `
-    <div class="req"><span>${it.label}</span><b dir="auto">${it.value}</b></div>
+    <div class="req"><span>${esc(it.label)}</span><b dir="auto">${esc(it.value)}</b></div>
   `).join('')}
 `).join('');
+
+// ══ האווטאר ═══════════════════════════════════════════════════════════
+// המצבים מגיעים מ-assets/persona/manifest.yml דרך סקריפט הבנייה.
+// ⚠️ תשעת קובצי ה-PNG מעולם לא נשמרו לריפו. ברגע שיונחו ב-assets/persona/
+//    בשמות שב-manifest, זה נדלק בלי שינוי קוד.
+
+const AVATARS = new Map((WEEK.avatars || []).map((a) => [a.id, a.file]));
+const AVATAR_DEFAULT = (WEEK.avatars || []).find((a) => a.default)?.id ?? 'neutral';
+
+function setAvatar(state) {
+  const file = AVATARS.get(state) ?? AVATARS.get(AVATAR_DEFAULT);
+  if (!file) return;
+  el.avatar.dataset.state = state;
+  el.avatarImg.src = `../assets/persona/${file}`;
+}
+
+el.avatarImg.addEventListener('load', () => {
+  el.avatarImg.hidden = false;
+  el.avatarFallback.hidden = true;
+  el.avatarNote.textContent = '';
+});
+el.avatarImg.addEventListener('error', () => {
+  el.avatarImg.hidden = true;
+  el.avatarFallback.hidden = false;
+  el.avatarNote.textContent =
+    `חסר: assets/persona/${AVATARS.get(el.avatar.dataset.state) ?? '?'}\n` +
+    `${AVATARS.size} מצבים רשומים ב-manifest`;
+});
+
+setAvatar('presenting');   // מסירת המשימה — manifest.yml → presenting.use_for
 
 // ══ אלעד ══════════════════════════════════════════════════════════════
 // בפרוסה אין LLM. הטקסט כאן הוא **stub** שמחזיק את המקום ומראה את
@@ -48,11 +86,22 @@ const OPENING = [
   'תתחיל. נדבר תוך כדי.',
 ];
 
+// השם מופיע רק כשהדובר מתחלף. שלוש הודעות רצופות של אלעד עם השם שלו
+// מעל כל אחת קוראות כשלושה אנשים, ובפאנל של 344 זה גם בזבוז שליש.
+let lastSpeaker = null;
+
 function say(text, who = 'אלעד') {
-  const wrap = document.createElement('div');
-  wrap.innerHTML = `<div class="who">${who}</div>
-                    <div class="bubble${who === 'אתה' ? ' me' : ''}">${text}</div>`;
-  el.chat.append(...wrap.children);
+  if (who !== lastSpeaker) {
+    const name = document.createElement('div');
+    name.className = 'who';
+    name.textContent = who;
+    el.chat.append(name);
+    lastSpeaker = who;
+  }
+  const bubble = document.createElement('div');
+  bubble.className = who === 'אתה' ? 'bubble me' : 'bubble';
+  bubble.textContent = text;               // ולא innerHTML — התלמיד מקליד לכאן
+  el.chat.append(bubble);
   el.chat.scrollTop = el.chat.scrollHeight;
 }
 
@@ -71,23 +120,54 @@ el.chatForm.addEventListener('submit', (e) => {
 
 el.code.value = localStorage.getItem(STORE) ?? WEEK.starter;
 
+// ── מונה השורות ───────────────────────────────────────────────────────
+// שורה לוגית אחת יכולה לתפוס כמה שורות מסך: §2 קובע ששבירת שורות
+// מופעלת מתחת ל-1220. ‏1..N נאיבי היה מוצג מוסט כלפי מעלה מהשורה 20
+// והלאה בדיוק במסכים הצרים. המראה מודדת, ומספר מקבל את הרווח שלו.
 function drawGutter() {
-  const n = el.code.value.split('\n').length;
-  el.gutter.textContent = Array.from({ length: n }, (_, i) => i + 1).join('\n');
+  const lines = el.code.value.split('\n');
+
+  el.mirror.style.width = `${el.code.clientWidth}px`;
+  el.mirror.textContent = '';
+  const probes = lines.map((ln) => {
+    const d = document.createElement('div');
+    d.textContent = ln || ' ';     // שורה ריקה עדיין תופסת שורה אחת
+    el.mirror.append(d);
+    return d;
+  });
+
+  const lh = parseFloat(getComputedStyle(el.code).lineHeight);
+  let out = '';
+  probes.forEach((d, i) => {
+    const rows = Math.max(1, Math.round(d.offsetHeight / lh));
+    out += `${i + 1}${'\n'.repeat(rows)}`;
+  });
+  el.gutter.textContent = out;
   el.gutter.scrollTop = el.code.scrollTop;
 }
 
+// ── שמירה ─────────────────────────────────────────────────────────────
+// ⚠️ ‏saveNow חייב לקרוא את el.code.value **ברגע הקריאה**. טיימר שנשאר
+//    תלוי אחרי שהערך הוחלף היה כותב את הערך החדש על העבודה של התלמיד.
 let saveTimer;
+function saveNow() {
+  clearTimeout(saveTimer);
+  saveTimer = undefined;
+  localStorage.setItem(STORE, el.code.value);
+  el.saved.textContent = 'נשמר אוטומטית';
+}
+
 el.code.addEventListener('input', () => {
   drawGutter();
   el.saved.textContent = 'שומר…';
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    localStorage.setItem(STORE, el.code.value);
-    el.saved.textContent = 'נשמר אוטומטית';
-  }, 400);
+  saveTimer = setTimeout(saveNow, 400);
 });
+el.code.addEventListener('blur', () => { if (saveTimer) saveNow(); });
+addEventListener('pagehide', () => { if (saveTimer) saveNow(); });
+
 el.code.addEventListener('scroll', () => { el.gutter.scrollTop = el.code.scrollTop; });
+addEventListener('resize', drawGutter);     // שינוי רוחב משנה את השבירה
 
 // Tab מזיז פוקוס בדפדפן. בעורך הוא צריך להזיח. ‏4 רווחים — PEP 8.
 el.code.addEventListener('keydown', (e) => {
@@ -104,7 +184,7 @@ drawGutter();
 el.btnReset.addEventListener('click', () => {
   if (!confirm('לאפס לקוד הפתיחה? מה שכתבת יימחק.')) return;
   el.code.value = WEEK.starter;
-  localStorage.setItem(STORE, el.code.value);
+  saveNow();
   drawGutter();
 });
 
@@ -120,18 +200,19 @@ document.querySelectorAll('.rtab').forEach((b) =>
   b.addEventListener('click', () => showTab(b.dataset.rtab)));
 showTab('tests');
 
+// ⚠️ הטאב **אינו נוגע** ב-textarea. הגרסה הקודמת דרסה את הערך שלו
+//    ושמה readOnly בלי שום סימן על המסך — התלמיד ראה קוד, הקליד,
+//    ושום דבר לא קרה. וגרוע מזה: טיימר שמירה תלוי היה כותב את קוד
+//    הפתיחה על העבודה שלו. קוד הפתיחה מקבל משטח משלו.
 document.querySelectorAll('.tab').forEach((b) =>
   b.addEventListener('click', () => {
+    const starter = b.dataset.tab === 'starter';
     document.querySelectorAll('.tab').forEach((x) =>
       x.classList.toggle('is-active', x === b));
-    if (b.dataset.tab === 'starter') {
-      el.code.value = WEEK.starter;
-      el.code.readOnly = true;
-    } else {
-      el.code.value = localStorage.getItem(STORE) ?? WEEK.starter;
-      el.code.readOnly = false;
-    }
-    drawGutter();
+    el.starterView.textContent = starter ? WEEK.starter : '';
+    el.starterView.hidden = !starter;
+    el.saved.textContent = starter ? 'לקריאה בלבד' : 'נשמר אוטומטית';
+    if (!starter) el.code.focus();
   }));
 
 // ══ הידית · 196–376 ═══════════════════════════════════════════════════
@@ -279,7 +360,7 @@ el.btnTests.addEventListener('click', () => {
   el.rbTests.innerHTML = r.tests.map((t) => `
     <div class="tr ${t.ok ? 'pass' : 'pend'}">
       <span class="mark">${t.ok ? '✓' : '■'}</span>
-      <span class="label">${t.label}${t.ok ? '' : `<span class="why">${t.why}</span>`}</span>
+      <span class="label">${esc(t.label)}${t.ok ? '' : `<span class="why">${esc(t.why)}</span>`}</span>
     </div>`).join('');
 
   showTab('tests');

@@ -31,11 +31,18 @@
 
   <!-- ══ אלעד · 360px · לעולם אינו מתקפל (§3) ══ -->
   <section class="panel elad" aria-label="אלעד">
+    <!-- ‏figure-on-white · manifest.yml → display.model. בלי מסגרת, דעיכה בתחתית.
+         ה-img הוא האמיתי; ה-svg נכנס רק אם הקובץ חסר. -->
     <div class="avatar" id="avatar" data-state="presenting">
-      <div class="avatar-ph">
-        <div class="ph-head"></div><div class="ph-body"></div>
-      </div>
-      <span class="avatar-note">240px · חיתוך ייעודי · presenting</span>
+      <img id="avatar-img" alt="אלעד שגב" hidden>
+      <svg id="avatar-fallback" class="avatar-fallback" viewBox="0 0 200 240"
+           role="img" aria-label="מקום לאווטאר של אלעד שגב">
+        <ellipse cx="100" cy="66" rx="34" ry="39" fill="#D8DEF0"/>
+        <path d="M100 108c-30 0-52 17-58 42l-6 26h128l-6-26c-6-25-28-42-58-42z" fill="#C3CBE6"/>
+        <path d="M42 176h116" stroke="#AAB4D6" stroke-width="3" stroke-linecap="round"/>
+        <rect x="18" y="182" width="164" height="7" rx="3.5" fill="#B9C2DE"/>
+      </svg>
+      <span class="avatar-note" id="avatar-note"></span>
     </div>
     <div class="chat" id="chat"></div>
     <form class="chat-input" id="chat-form" autocomplete="off">
@@ -56,6 +63,10 @@
       <div class="code-wrap">
         <div class="gutter" id="gutter" aria-hidden="true"></div>
         <textarea id="code" spellcheck="false" dir="ltr" aria-label="עורך הקוד"></textarea>
+        <!-- מודד את גובה כל שורה לוגית אחרי שבירה. מחוץ למסך, לא נקרא. -->
+        <div class="code-mirror" id="mirror" aria-hidden="true"></div>
+        <!-- קוד הפתיחה מוצג לצד הקוד של התלמיד, ולא במקומו. -->
+        <pre class="starter-view" id="starter-view" dir="ltr" hidden></pre>
       </div>
     </div>
 

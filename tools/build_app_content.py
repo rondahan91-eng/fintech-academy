@@ -63,6 +63,25 @@ def parse_manager_opening(yml: str) -> list:
     return msgs
 
 
+def parse_avatar_states(yml: str) -> list:
+    """מצבי האווטאר מ-assets/persona/manifest.yml — id, קובץ, וברירת המחדל.
+
+    ⚠️ תשעת קובצי ה-PNG עצמם מעולם לא נשמרו לריפו. המניפסט מתאר אותם,
+    והאפליקציה נופלת לגרפיקת מקום כשהקובץ חסר.
+    """
+    states = []
+    for block in re.split(r"\n  - id: ", "\n" + yml)[1:]:
+        sid = block.split("\n", 1)[0].strip()
+        m = re.search(r"^\s{4}file:\s*(\S+)", block, re.M)
+        if not m:
+            continue
+        state = {"id": sid, "file": m.group(1).strip()}
+        if re.search(r"^\s{4}default:\s*true", block, re.M):
+            state["default"] = True
+        states.append(state)
+    return states
+
+
 def main() -> int:
     if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
         sys.stdout.reconfigure(encoding="utf-8")
@@ -85,6 +104,7 @@ def main() -> int:
         "testsVisible": read(d / "tests_visible.py"),
         "reference": read(d / "reference.py"),
         "manager": parse_manager_opening(read(d / "manager.yml")),
+        "avatars": parse_avatar_states(read(ROOT / "assets/persona/manifest.yml")),
     }
 
     out = ROOT / "app" / "content.js"
@@ -100,6 +120,12 @@ def main() -> int:
     print(f"נוצר: {out.relative_to(ROOT)}")
     print(f"  שבוע {payload['week']} · {payload['title']}")
     print(f"  {n_tests} בדיקות גלויות · starter {len(payload['starter'].splitlines())} שורות")
+
+    missing = [a["file"] for a in payload["avatars"]
+               if not (ROOT / "assets/persona" / a["file"]).is_file()]
+    if missing:
+        print(f"  ⚠️ {len(missing)} מתוך {len(payload['avatars'])} אווטארים חסרים "
+              f"ב-assets/persona/ — הפאנל יציג גרפיקת מקום")
     return 0
 
 
