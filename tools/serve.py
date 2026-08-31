@@ -95,9 +95,24 @@ def main() -> int:
     if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
         sys.stdout.reconfigure(encoding="utf-8")
 
-    if not (ROOT / "app" / "config.js").is_file():
-        print("⚠️  אין app/config.js — אין כתובת שרת, ואין כניסה.")
-        print("    cp app/config.example.js app/config.js  ואז מלא את ENDPOINT\n")
+    # שני הקבצים האלה **אינם בגיט** — האחד נוצר, השני סודי. שכפול נקי
+    # מגיע בלעדיהם, ובלי הבדיקה הזאת זה מתגלה רק מול הכיתה.
+    problems = []
+    if not (ROOT / "app" / "content.js").is_file():
+        problems.append("אין app/content.js  →  py tools/build_app_content.py 1")
+    cfg = ROOT / "app" / "config.js"
+    if not cfg.is_file():
+        problems.append("אין app/config.js  →  cp app/config.example.js app/config.js")
+    elif "FINTECH_ENDPOINT = ''" in cfg.read_text(encoding="utf-8"):
+        problems.append("app/config.js ריק  →  הדבק את כתובת ה-Apps Script")
+    if not (ROOT / "app/vendor/pyodide/pyodide.asm.wasm").is_file():
+        problems.append("אין app/vendor/pyodide  →  פייתון לא יעלה")
+
+    if problems:
+        print("\n⚠️  לא מוכן:")
+        for p in problems:
+            print("    " + p)
+        print()
 
     url = f"http://{lan_ip()}:{PORT}/app/login.html"
     print("═" * 58)

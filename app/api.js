@@ -6,7 +6,11 @@
 //     הוא כישלון גרוע יותר מעבודה שלא הסתנכרנה.
 // ══════════════════════════════════════════════════════════════════════
 
-import { ENDPOINT } from './config.js';
+// ⚠️ **לא `import` מ-config.js.** ‏config.js אינו בגיט — הכתובת היא
+//    בפועל המפתח לשרת — ובשכפול נקי הוא פשוט לא קיים. ‏import סטטי
+//    שנכשל הורג את כל המודול לפני שנרשם מאזין אחד, והמסך נראה תקין
+//    ולא מגיב לכלום. תג script רגיל שנכשל הוא 404 בקונסולה, וזהו.
+const ENDPOINT = (globalThis.FINTECH_ENDPOINT || '').trim();
 
 const TOKEN_KEY = 'fintech:token';
 const STUDENT_KEY = 'fintech:student';
