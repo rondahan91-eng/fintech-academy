@@ -25,6 +25,7 @@ const el = {
   avatar: $('avatar'), avatarImg: $('avatar-img'),
   avatarFallback: $('avatar-fallback'), avatarNote: $('avatar-note'),
   mirror: $('mirror'), starterView: $('starter-view'),
+  btnFocus: $('btn-focus'), focusLabel: $('focus-label'), focusPip: $('focus-pip'),
 };
 
 // כל טקסט שמגיע מהתלמיד או מקובץ תוכן עובר כאן לפני innerHTML.
@@ -113,6 +114,11 @@ function say(text, who = 'אלעד') {
   bubble.textContent = text;               // ולא innerHTML — התלמיד מקליד לכאן
   el.chat.append(bubble);
   el.chat.scrollTop = el.chat.scrollHeight;
+
+  // אלעד דיבר והפאנל מקופל — נקודה על הכפתור. לא מודאל, לא צליל.
+  if (who === 'אלעד' && document.body.classList.contains('focus')) {
+    el.focusPip.hidden = false;
+  }
 }
 
 OPENING.forEach((t) => say(t));
@@ -217,6 +223,35 @@ el.code.addEventListener('keydown', (e) => {
 
 drawGutter();
 
+// ══ מסך מלא לעריכה ════════════════════════════════════════════════════
+// ‏§3 קובע שאלעד אינו מתקפל ושהמשימה גלויה תמיד, **וזה נשאר ברירת
+// המחדל.** ההבדל הוא מי מקפל: קיפול אוטומטי מסתיר מהתלמיד דברים
+// שהוא לא ביקש להסתיר; קיפול יזום הוא בחירה שלו, והוא יודע לבטל.
+//
+// ⚠️ ואלעד הוא ערוץ ההוראה (SPEC §7). להסתיר אותו בלי סימן פירושו
+//    שתלמיד יפספס הסבר. לכן הכפתור נושא נקודה כשנאמר משהו בזמן קיפול.
+const FOCUS_KEY = 'fintech:focus';
+let focused = false;
+
+function setFocus(on) {
+  focused = on;
+  document.body.classList.toggle('focus', on);
+  el.focusLabel.textContent = on ? '⤡ יציאה · Esc' : '⤢ מסך מלא';
+  el.btnFocus.title = on ? 'חזרה לתצוגה מלאה (Esc)' : 'מסך מלא לעריכה';
+  if (!on) el.focusPip.hidden = true;
+  try { localStorage.setItem(FOCUS_KEY, on ? '1' : ''); } catch { /* מצב פרטי */ }
+  drawGutter();          // הרוחב השתנה — השבירה, ולכן גם מונה השורות
+  probe();
+}
+
+el.btnFocus.addEventListener('click', () => setFocus(!focused));
+
+addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && focused) { setFocus(false); el.code.focus(); }
+});
+
+try { if (localStorage.getItem(FOCUS_KEY)) setFocus(true); } catch { /* מצב פרטי */ }
+
 el.btnReset.addEventListener('click', () => {
   if (!confirm('לאפס לקוד הפתיחה? מה שכתבת יימחק.')) return;
   el.code.value = WEEK.starter;
@@ -253,15 +288,29 @@ document.querySelectorAll('.tab').forEach((b) =>
 
 // ══ הידית · 196–376 ═══════════════════════════════════════════════════
 
-const R_MIN = 196, R_MAX = 376;
-let resultsH = R_MIN, autoOpened = false;
+// ‏R_TAB — רצועת הטאבים בלבד: 36 של הרצועה + 1 הגבול שלה + 1 הגבול
+// התחתון של .results. פחות מזה, והרצועה עצמה נחתכת.
+const R_TAB = 38, R_MIN = 196, R_MAX = 376;
+let resultsH = R_TAB, opened = false, autoOpened = false;
 
+// ⚠️ **הרצפה מותנית.** לפני ההרצה הראשונה אזור התוצאות מקופל לרצועה,
+//    כי אין בו כלום — ‏196 פיקסלים של לובן שגוזלים שבע שורות קוד
+//    בדיוק ברגע שבו התלמיד רק מתחיל לכתוב. מרגע שיש מה להראות
+//    הרצפה עולה ל-196 ולא יורדת עוד.
 function setResults(h) {
-  resultsH = Math.max(R_MIN, Math.min(R_MAX, Math.round(h)));
+  const floor = opened ? R_MIN : R_TAB;
+  resultsH = Math.max(floor, Math.min(R_MAX, Math.round(h)));
   el.results.style.height = `${resultsH}px`;
   probe();
 }
-setResults(R_MIN);
+
+function openResults() {
+  if (opened) return;
+  opened = true;
+  setResults(R_MIN);
+}
+
+setResults(R_TAB);
 
 let dragging = null;
 el.handle.addEventListener('pointerdown', (e) => {
@@ -270,6 +319,7 @@ el.handle.addEventListener('pointerdown', (e) => {
 });
 el.handle.addEventListener('pointermove', (e) => {
   if (!dragging) return;
+  opened = true;              // גרירה פותחת גם לפני ההרצה הראשונה
   setResults(dragging.h - (e.clientY - dragging.y));  // גרירה למעלה = הגדלה
   autoOpened = true;                                  // התלמיד בחר — לא נתערב
 });
@@ -278,6 +328,7 @@ el.handle.addEventListener('keydown', (e) => {
   const step = { ArrowUp: 24, ArrowDown: -24 }[e.key];
   if (step === undefined) return;
   e.preventDefault();
+  opened = true;
   setResults(resultsH + step);
   autoOpened = true;
 });
@@ -377,6 +428,7 @@ function execute(withTests) {
 el.btnRun.addEventListener('click', () => {
   const r = execute(false);
   el.rbOut.textContent = r.error ? `${r.output}\n${r.error}` : (r.output || '(אין פלט)');
+  openResults();       // יש מה להראות — הרצועה נפרשת
   showTab('out');
   openOnce();          // אחרי showTab — הפאנל הנמדד חייב להיות הגלוי
 });
@@ -386,6 +438,7 @@ el.btnRun.addEventListener('click', () => {
 el.btnTests.addEventListener('click', () => {
   const r = execute(true);
   el.rbOut.textContent = r.error ? `${r.output}\n${r.error}` : (r.output || '(אין פלט)');
+  openResults();
 
   if (r.error) {
     el.rbTests.innerHTML =
