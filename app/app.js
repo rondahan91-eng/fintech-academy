@@ -4,8 +4,8 @@
 //  מה יש כאן:  Pyodide · עורך · הרצה · בדיקות גלויות · פאנל אלעד
 //  מה אין:     LLM · שרת · הגשה · חנות · ציונים · שאר 29 השבועות
 //
-//  ⚠️ Pyodide נטען כאן מ-CDN. **בייצור זה אסור** — רשת בית ספר סגורה.
-//     הפרוסה מוכיחה שהמנגנון עובד; האריזה המקומית היא משימה נפרדת.
+//  ‏Pyodide נטען מ-vendor/pyodide/ המקומי. אפס תלות ברשת חיצונית.
+//     ‏עדכון גרסה = החלפת חמשת הקבצים שם + שינוי המספר ב-README.
 // ══════════════════════════════════════════════════════════════════════
 
 import { WEEK } from './content.js';
@@ -435,7 +435,13 @@ let py = null;
 async function boot() {
   el.btnRun.disabled = el.btnTests.disabled = true;
   el.rhint.textContent = 'טוען את פייתון…';
-  py = await loadPyodide({ stdin: () => '' });
+  // ‏indexURL מוחלט ביחס לעמוד — משם Pyodide שולף בעצמו את
+  // ‏pyodide.asm.js · pyodide.asm.wasm · python_stdlib.zip · pyodide-lock.json.
+  // ‏חייב להסתיים בלוכסן.
+  py = await loadPyodide({
+    indexURL: new URL('vendor/pyodide/', document.baseURI).href,
+    stdin: () => '',
+  });
   py.runPython(HARNESS);
   el.btnRun.disabled = el.btnTests.disabled = false;
   el.rhint.textContent = 'הרצה → פלט · בדיקות → בדיקות';
