@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FinTech Academy</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+
+<!-- ‏layout.md §16 · 400px ממורכז · אין סרגל עליון · אין ניווט -->
+<main class="login">
+  <h1 class="login-brand">FinTech Academy</h1>
+
+  <form id="login-form" autocomplete="off">
+    <label class="field">
+      <span>שם</span>
+      <input id="f-name" type="text" required autocomplete="off"
+             placeholder="כפי שמופיע ברשימת הכיתה">
+    </label>
+
+    <label class="field">
+      <span>קוד</span>
+      <input id="f-code" type="text" required inputmode="numeric"
+             autocomplete="off" placeholder="שש ספרות">
+    </label>
+
+    <!-- §16.3 · 24px שמורים תמיד. אחרת הכפתור קופץ בדיוק כשטעית -->
+    <div class="login-error" id="err" role="alert"></div>
+
+    <button class="btn primary login-go" id="go" type="submit">כניסה</button>
+  </form>
+</main>
+
+<script type="module" src="login.js"></script>
+</body>
+</html>

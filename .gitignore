@@ -1,3 +1,4 @@
 app/content.js
+app/config.js
 content/week-*/handout.html
 node_modules/

@@ -324,6 +324,48 @@ body.focus .task { display: none; }
 .tf-row .dim { color: #A9B1C4; font-weight: 400; }
 .tf-row.locked b::before { content: "🔒"; }   /* יוחלף באייקון — ראה design-system */
 
+/* ══ מסך הכניסה · layout.md §16 ══════════════════════════════════════
+      80  שם המערכת
+      72  שם
+      72  קוד
+      24  שורת שגיאה — שמורה תמיד
+      56  כניסה
+      48  מרווחים
+   ─────
+     352  מתוך 684 · ממורכז                                        */
+.login-page { display: grid; place-items: center; height: 100dvh; }
+.login { width: 400px; }
+.login-brand {
+  height: 80px; display: flex; align-items: center; justify-content: center;
+  font: 700 26px var(--ui);
+  background: linear-gradient(135deg, var(--primary), var(--accent-end));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.field { display: block; height: 72px; }
+.field span { display: block; font-size: 13px; color: var(--slate); margin-bottom: 6px; }
+.field input {
+  width: 100%; height: 44px; padding: 0 14px;
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  font: 400 15px var(--ui); background: var(--surface);
+}
+.field input:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+/* §16.3 · הגובה שמור גם כשאין שגיאה. אחרת הכפתור קופץ למטה בדיוק
+   ברגע שבו המשתמש טעה — כשהוא הכי צריך יציבות. */
+.login-error {
+  height: 24px; display: flex; align-items: center;
+  font-size: 13px; color: var(--red);
+}
+.login-go { width: 100%; height: 56px; margin-top: 24px; font-size: 15px; }
+
+/* ══ מצב חיבור · לא חלק מ-§16, נדרש בכיתה ══ */
+.offline {
+  position: fixed; inset-block-start: 0; inset-inline: 0; z-index: 900;
+  background: var(--sand); color: var(--sand-ink);
+  font: 600 13px var(--ui); text-align: center; padding: 7px;
+}
+.offline[hidden] { display: none; }
+
 /* ══ מד הפריסה · כלי פיתוח ══ */
 .probe {
   position: fixed; inset-block-end: 8px; inset-inline-start: 8px; z-index: 500;

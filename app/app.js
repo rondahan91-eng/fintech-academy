@@ -9,6 +9,10 @@
 // ══════════════════════════════════════════════════════════════════════
 
 import { WEEK } from './content.js';
+import { api, session, health, onHealthChange, saveOnExit } from './api.js';
+
+// §16.2 — הכניסה אינה תפריט, היא המשך. בלי אסימון אין מסך עבודה.
+if (!session.token) location.replace('login.html');
 
 const $ = (id) => document.getElementById(id);
 
@@ -91,6 +95,8 @@ el.avatar.addEventListener('click', () => {
 // בפרוסה אין LLM. הטקסט כאן הוא **stub** שמחזיק את המקום ומראה את
 // הפריסה. בייצור הוא נוצר מ-manager.yml + persona.yml דרך המודל.
 
+// הודעת הפתיחה נאמרת פעם אחת, כשאין עדיין שיחה. משם והלאה אלעד עונה
+// מהשרת, שמחזיק את הפרומפט ואת המפתח. **המפתח לעולם לא מגיע לכאן.**
 const OPENING = [
   'הכרטיס והתלוש. שני חלקים, ובכל אחד כמה שורות — כל פרט בשורה משלו.',
   'את הנטו אתה מחשב בעצמך ומקליד. בשבוע 4 המחשב יעשה את זה במקומך.',
@@ -121,20 +127,91 @@ function say(text, who = 'אלעד') {
   }
 }
 
-OPENING.forEach((t) => say(t));
-
-el.chatForm.addEventListener('submit', (e) => {
+el.chatForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const t = el.chatText.value.trim();
   if (!t) return;
   say(t, 'אתה');
   el.chatText.value = '';
-  say('בפרוסה הזאת אני עוד לא באמת עונה — אין כאן מודל. הפריסה עובדת.');
+
+  const input = el.chatText;
+  input.disabled = true;
+  input.placeholder = 'אלעד כותב…';
+  setAvatar('thinking');
+  try {
+    const { reply } = await api.chat(WEEK.week, t);
+    say(reply);
+    setAvatar('neutral');
+  } catch (err) {
+    // ההודעה של התלמיד כבר על המסך. לא מוחקים אותה ולא מעמידים פנים.
+    say(/fetch|Failed|NetworkError|abort/i.test(err.message)
+      ? 'אין לי חיבור כרגע. תמשיך לעבוד — הקוד שלך נשמר. קרא למורה אם זה נמשך.'
+      : err.message);
+    setAvatar('concerned');
+  } finally {
+    input.disabled = false;
+    input.placeholder = 'כתוב לאלעד…';
+    input.focus();
+  }
 });
 
-// ══ העורך ═════════════════════════════════════════════════════════════
+// ══ אתחול · מקומי קודם, שרת אחר כך ════════════════════════════════════
+//
+// **הכלל: מה שיש במחשב הזה מנצח.** התלמיד יכול היה להקליד כאן דקה
+// לפני שהרשת נפלה, ולמשוך מהשרת אחרי זה היה דורס את זה. השרת נכנס
+// רק כשאין כלום מקומית — וזה בדיוק המקרה של מחשב חדש, שהוא הסיבה
+// שיש שרת מלכתחילה.
 
-el.code.value = localStorage.getItem(STORE) ?? WEEK.starter;
+function takeBoot() {
+  try {
+    const raw = sessionStorage.getItem('fintech:boot');
+    if (!raw) return null;
+    sessionStorage.removeItem('fintech:boot');
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function restoreChat(turns) {
+  turns.forEach((t) => say(String(t.text), t.role === 'elad' ? 'אלעד' : 'אתה'));
+}
+
+function applyState(state, { force = false } = {}) {
+  if (!state) return false;
+  const localCode = localStorage.getItem(STORE);
+  if (state.code && (force || !localCode)) {
+    el.code.value = state.code;
+    localStorage.setItem(STORE, state.code);
+    drawGutter();
+  }
+  if (state.chat && state.chat.length && !el.chat.children.length) {
+    restoreChat(state.chat);
+    return true;
+  }
+  return false;
+}
+
+// ‏bootState ולא boot — ‏boot() היא כבר פונקציית העלייה של Pyodide
+const bootState = takeBoot();
+el.code.value = localStorage.getItem(STORE) ?? (bootState && bootState.code) ?? WEEK.starter;
+
+const student = session.student;
+if (student && student.name) {
+  const chip = document.createElement('span');
+  chip.className = 'tb';
+  chip.textContent = student.name;
+  el.tbWeek.after(chip, Object.assign(document.createElement('span'), { className: 'sep' }));
+}
+
+if (!(bootState && applyState(bootState))) OPENING.forEach((t) => say(t));
+
+// מחשב חדש בלי היסטוריה מקומית — מושכים מהשרת
+if (!bootState) {
+  api.state()
+    .then(({ state }) => applyState(state))
+    .catch(() => { /* השרת אופציונלי. הבאנר כבר יודיע */ });
+}
+
+// ══ העורך ═════════════════════════════════════════════════════════════
 
 // ── מונה השורות ───────────────────────────────────────────────────────
 // שורה לוגית אחת יכולה לתפוס כמה שורות מסך: §2 קובע ששבירת שורות
@@ -171,7 +248,29 @@ function saveNow() {
   saveTimer = undefined;
   localStorage.setItem(STORE, el.code.value);
   el.saved.textContent = 'נשמר אוטומטית';
+  dirty = true;
 }
+
+// ── סנכרון לשרת ───────────────────────────────────────────────────────
+//
+// ⚠️ **לא על כל הקשה.** שלושים תלמידים שכותבים בו-זמנית היו מייצרים
+//    מאות קריאות בדקה, ו-Apps Script מגביל הרצות מקבילות הרבה לפני
+//    שהגיליון נחנק. מקומי הוא רציף; השרת מקבל תמונת מצב כל 30 שניות,
+//    וגם ביציאה מהעורך ובהגשה.
+let dirty = false;
+
+async function pushToServer() {
+  if (!dirty) return;
+  const code = el.code.value;
+  try {
+    await api.save(WEEK.week, code);
+    dirty = false;
+  } catch { /* נשאר dirty, ננסה בסבב הבא */ }
+}
+
+setInterval(pushToServer, 30000);
+el.code.addEventListener('blur', pushToServer);
+addEventListener('pagehide', () => { if (dirty) saveOnExit(WEEK.week, el.code.value); });
 
 el.code.addEventListener('input', () => {
   drawGutter();
@@ -499,9 +598,50 @@ el.btnTests.addEventListener('click', () => {
   else openOnce();
 });
 
-el.btnSubmit.addEventListener('click', () => {
-  alert('הגשה אינה חלק מהפרוסה. הטסטים הנסתרים רצים בשרת, ואין כאן שרת.');
+// ══ הגשה ══════════════════════════════════════════════════════════════
+//
+// ⚠️ **ההגשה אינה מציגה ציון, כי אין ציון עדיין.** הטסטים הנסתרים
+//    קובעים אותו, והם לא כאן ולא בשרת — הם רצים אצל המורה אחרי
+//    השיעור, עם tools/run_week.py על ההגשות מהגיליון. ‏SPEC §7:
+//    הטסטים קובעים, לא המודל. שרת שמריץ קוד של תלמידים הוא בעיה
+//    בפני עצמה, ולא פותרים אותה בשני ימים.
+
+el.btnSubmit.addEventListener('click', async () => {
+  const r = execute(true);
+  if (r.error) {
+    alert('הקוד לא רץ, ולכן אי אפשר להגיש.\nתקן את השגיאה ונסה שוב.');
+    document.querySelector('[data-rtab="out"]').click();
+    return;
+  }
+  const pass = r.tests.filter((t) => t.ok).length;
+  if (!confirm(`להגיש? ${pass} מתוך ${r.tests.length} בדיקות גלויות עוברות.\n` +
+               'אפשר להגיש שוב עד סוף השיעור.')) return;
+
+  el.btnSubmit.disabled = true;
+  el.btnSubmit.textContent = 'מגיש…';
+  try {
+    await api.submit(WEEK.week, el.code.value, pass, r.tests.length);
+    dirty = false;
+    say('קיבלתי. תודה.');
+    el.btnSubmit.textContent = 'הוגש ✓';
+    setTimeout(() => { el.btnSubmit.textContent = 'הגשה'; el.btnSubmit.disabled = false; }, 4000);
+  } catch (err) {
+    el.btnSubmit.disabled = false;
+    el.btnSubmit.textContent = 'הגשה';
+    alert('ההגשה לא נשלחה: ' + err.message +
+          '\n\nהקוד שלך שמור במחשב. קרא למורה.');
+  }
 });
+
+// ══ מצב חיבור ═════════════════════════════════════════════════════════
+// באנר, לא מודאל. התלמיד ממשיך לעבוד — הקוד נשמר מקומית בכל מקרה.
+
+const banner = document.createElement('div');
+banner.className = 'offline';
+banner.hidden = true;
+banner.textContent = 'אין חיבור לשרת. העבודה נשמרת במחשב הזה בלבד — קרא למורה.';
+document.body.prepend(banner);
+onHealthChange((h) => { banner.hidden = h.online; });
 
 // ══ מד הפריסה ═════════════════════════════════════════════════════════
 // כלי פיתוח. קיים כדי לבדוק טענה אחת מ-layout.md §2: "20 שורות קוד".
