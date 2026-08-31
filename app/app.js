@@ -268,7 +268,14 @@ function showTab(which) {
   el.rbOut.hidden = which !== 'out';
 }
 document.querySelectorAll('.rtab').forEach((b) =>
-  b.addEventListener('click', () => showTab(b.dataset.rtab)));
+  b.addEventListener('click', () => {
+    showTab(b.dataset.rtab);
+    if (isCollapsed()) setResults(lastOpenH);   // הרצועה היא גם הידית
+  }));
+// הרמז עצמו לחיץ — הוא זה שאומר "לחץ לפתיחה"
+el.rhint.addEventListener('click', () => {
+  if (isCollapsed()) setResults(lastOpenH);
+});
 showTab('tests');
 
 // ⚠️ הטאב **אינו נוגע** ב-textarea. הגרסה הקודמת דרסה את הערך שלו
@@ -290,17 +297,27 @@ document.querySelectorAll('.tab').forEach((b) =>
 
 // ‏R_TAB — רצועת הטאבים בלבד: 36 של הרצועה + 1 הגבול שלה + 1 הגבול
 // התחתון של .results. פחות מזה, והרצועה עצמה נחתכת.
-const R_TAB = 38, R_MIN = 196, R_MAX = 376;
+// ‏R_TAB היא הרצפה **תמיד**, גם אחרי שנפתח. ‏R_MIN הוא ברירת המחדל
+// שאליה נפתחים, לא גבול תחתון.
+//
+// ⚠️ גרסה קודמת העלתה את הרצפה ל-196 ברגע שהיה מה להראות, ומאותו
+//    רגע התלמיד לא יכול היה להחזיר את האזור לרצועה. **במסך מלא זה
+//    בדיוק הפוך מהכוונה** — מי שביקש את כל הרוחב לעריכה רוצה גם את
+//    כל הגובה. המיקום הוא של התלמיד, ולכן גם הקיפול.
+const R_TAB = 38, R_FLOOR = 76, R_MIN = 196, R_MAX = 376;
 let resultsH = R_TAB, opened = false, autoOpened = false;
+let lastOpenH = R_MIN;                 // לאן לחזור כשפותחים מחדש
 
-// ⚠️ **הרצפה מותנית.** לפני ההרצה הראשונה אזור התוצאות מקופל לרצועה,
-//    כי אין בו כלום — ‏196 פיקסלים של לובן שגוזלים שבע שורות קוד
-//    בדיוק ברגע שבו התלמיד רק מתחיל לכתוב. מרגע שיש מה להראות
-//    הרצפה עולה ל-196 ולא יורדת עוד.
+const isCollapsed = () => resultsH <= R_TAB;
+
 function setResults(h) {
-  const floor = opened ? R_MIN : R_TAB;
-  resultsH = Math.max(floor, Math.min(R_MAX, Math.round(h)));
+  const v = Math.round(h);
+  // מתחת ל-76 אין מה להציג בכל מקרה — נצמד לרצועה במקום להשאיר חריץ
+  resultsH = v < R_FLOOR ? R_TAB : Math.max(R_FLOOR, Math.min(R_MAX, v));
+  if (resultsH > R_TAB) lastOpenH = resultsH;
   el.results.style.height = `${resultsH}px`;
+  el.results.classList.toggle('is-collapsed', isCollapsed());
+  if (!isCollapsed()) markFresh(false);
   probe();
 }
 
@@ -308,6 +325,15 @@ function openResults() {
   if (opened) return;
   opened = true;
   setResults(R_MIN);
+}
+
+// פלט חדש נכתב בזמן שהאזור מקופל. **לא פותחים בכוח** — המיקום שלו.
+// אבל הוא חייב לדעת שיש שם משהו, אחרת "הרצה" נראית כאילו לא עשתה כלום.
+function markFresh(on) {
+  el.results.classList.toggle('has-fresh', on);
+  el.rhint.textContent = on
+    ? 'יש פלט חדש — לחץ לפתיחה'
+    : 'הרצה → פלט · בדיקות → בדיקות';
 }
 
 setResults(R_TAB);
@@ -428,9 +454,10 @@ function execute(withTests) {
 el.btnRun.addEventListener('click', () => {
   const r = execute(false);
   el.rbOut.textContent = r.error ? `${r.output}\n${r.error}` : (r.output || '(אין פלט)');
-  openResults();       // יש מה להראות — הרצועה נפרשת
+  openResults();       // בפעם הראשונה בלבד — הרצועה נפרשת ל-196
   showTab('out');
-  openOnce();          // אחרי showTab — הפאנל הנמדד חייב להיות הגלוי
+  if (isCollapsed()) markFresh(true);   // התלמיד קיפל. מסמנים, לא פותחים
+  else openOnce();     // אחרי showTab — הפאנל הנמדד חייב להיות הגלוי
 });
 
 // ══ בדיקות ════════════════════════════════════════════════════════════
@@ -448,7 +475,8 @@ el.btnTests.addEventListener('click', () => {
          </span></div>`;
     el.testsCount.textContent = '—';
     showTab('tests');
-    openOnce();
+    if (isCollapsed()) markFresh(true);
+    else openOnce();
     return;
   }
 
@@ -461,7 +489,8 @@ el.btnTests.addEventListener('click', () => {
     </div>`).join('');
 
   showTab('tests');
-  openOnce();
+  if (isCollapsed()) markFresh(true);
+  else openOnce();
 });
 
 el.btnSubmit.addEventListener('click', () => {
