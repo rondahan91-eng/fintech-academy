@@ -37,7 +37,19 @@ const esc = (s) => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
-const STORE = `fintech:week-${WEEK.week}:code`;
+// ⚠️ **המפתח חייב לשאת את מזהה התלמיד.** הגרסה הקודמת הייתה
+//    `fintech:week-1:code` — גלובלי. במעבדה עם פרופיל Chrome משותף
+//    התלמיד של שיעור שלישי היה פותח ורואה את הקוד של השיעור השני,
+//    מתחיל לערוך, והשמירה האוטומטית הייתה דורסת אותו לתמיד.
+const STORE = `fintech:${session.student?.id ?? 'anon'}:week-${WEEK.week}:code`;
+
+// ⚠️ **כל גישה ל-localStorage עטופה.** מדיניות ארגונית שחוסמת אחסון
+//    אתרים גורמת ל-getItem לזרוק — והמודול היה מת בשורה הזאת, לפני
+//    שנרשם ולו מאזין אחד. המסך היה נראה תקין ולא מגיב לכלום.
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); return true; } catch { return false; } },
+};
 
 // ══ המשימה · עמודה ימנית ══════════════════════════════════════════════
 
@@ -177,10 +189,10 @@ function restoreChat(turns) {
 
 function applyState(state, { force = false } = {}) {
   if (!state) return false;
-  const localCode = localStorage.getItem(STORE);
+  const localCode = store.get(STORE);
   if (state.code && (force || !localCode)) {
     el.code.value = state.code;
-    localStorage.setItem(STORE, state.code);
+    store.set(STORE, state.code);
     drawGutter();
   }
   if (state.chat && state.chat.length && !el.chat.children.length) {
@@ -192,7 +204,7 @@ function applyState(state, { force = false } = {}) {
 
 // ‏bootState ולא boot — ‏boot() היא כבר פונקציית העלייה של Pyodide
 const bootState = takeBoot();
-el.code.value = localStorage.getItem(STORE) ?? (bootState && bootState.code) ?? WEEK.starter;
+el.code.value = store.get(STORE) ?? (bootState && bootState.code) ?? WEEK.starter;
 
 const student = session.student;
 if (student && student.name) {
@@ -246,8 +258,10 @@ let saveTimer;
 function saveNow() {
   clearTimeout(saveTimer);
   saveTimer = undefined;
-  localStorage.setItem(STORE, el.code.value);
-  el.saved.textContent = 'נשמר אוטומטית';
+  // ⚠️ QuotaExceededError היה משאיר את הסטטוס על "שומר…" לנצח,
+  //    והתלמיד היה מאמין שהעבודה נשמרת.
+  el.saved.textContent = store.set(STORE, el.code.value)
+    ? 'נשמר אוטומטית' : '⚠ לא נשמר במחשב';
   dirty = true;
 }
 
@@ -338,7 +352,7 @@ function setFocus(on) {
   el.focusLabel.textContent = on ? '⤡ יציאה · Esc' : '⤢ מסך מלא';
   el.btnFocus.title = on ? 'חזרה לתצוגה מלאה (Esc)' : 'מסך מלא לעריכה';
   if (!on) el.focusPip.hidden = true;
-  try { localStorage.setItem(FOCUS_KEY, on ? '1' : ''); } catch { /* מצב פרטי */ }
+  store.set(FOCUS_KEY, on ? '1' : '');
   drawGutter();          // הרוחב השתנה — השבירה, ולכן גם מונה השורות
   probe();
 }
@@ -349,7 +363,7 @@ addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && focused) { setFocus(false); el.code.focus(); }
 });
 
-try { if (localStorage.getItem(FOCUS_KEY)) setFocus(true); } catch { /* מצב פרטי */ }
+if (store.get(FOCUS_KEY)) setFocus(true);
 
 el.btnReset.addEventListener('click', () => {
   if (!confirm('לאפס לקוד הפתיחה? מה שכתבת יימחק.')) return;
@@ -478,7 +492,7 @@ function openOnce() {
 // שם הקובץ הפיקטיבי נשאר לטיני בכוונה — הודעת השגיאה היא בלוק LTR,
 // ושם עברי בתוכה מתהפך ומבלבל. ‏expected_friction של שבוע 1 מזהיר מזה.
 const HARNESS = `
-import sys, io, json, traceback
+import sys, io, json, time, traceback
 
 FILE = "your_code.py"
 
@@ -495,15 +509,44 @@ def _fintech_error(e):
     head = f'File "{FILE}", line {line}\\n' if line else ""
     return f'{head}{type(e).__name__}: {e}'
 
+# ⚠️ **לולאה אינsופית מקפיאה את הלשונית לצמיתות.** הקוד רץ על החוט
+#    הראשי, ולכן while True: מביא את Chrome ל-"הדף אינו מגיב", התלמיד
+#    לוחץ "המתן" כי זה הכפתור המרגיע, והלשונית אבודה.
+#    בשבוע 1 אין לולאות; **משבוע 6 זה כמעט ודאי בכל שיעור.**
+#    ‏settrace עולה בערך פי 2 בזמן ריצה, וזה לא משנה למשימות האלה.
+LIMIT_SECONDS = 5
+OUTPUT_CAP = 200000
+
+class _Capped(io.StringIO):
+    """‏while True: print(x) היה מנפח זיכרון עד שהלשונית נהרגת."""
+    def write(self, s):
+        if self.tell() > OUTPUT_CAP:
+            raise KeyboardInterrupt(
+                "התוכנית הדפיסה יותר מדי והופסקה. אולי יש לולאה שלא נגמרת?")
+        return io.StringIO.write(self, s)
+
+def _deadline_tracer(deadline):
+    def local(frame, event, arg):
+        if time.monotonic() > deadline:
+            raise KeyboardInterrupt(
+                "הקוד רץ יותר מ-%d שניות והופסק. אולי יש לולאה אינסופית?"
+                % LIMIT_SECONDS)
+        return local
+    def top(frame, event, arg):
+        return local
+    return top
+
 def _fintech_run(src, tests_src):
-    buf, old = io.StringIO(), sys.stdout
+    buf, old = _Capped(), sys.stdout
     sys.stdout = buf
     ns, err = {"__name__": "__main__"}, None
     try:
+        sys.settrace(_deadline_tracer(time.monotonic() + LIMIT_SECONDS))
         exec(compile(src, FILE, "exec"), ns)
     except BaseException as e:
         err = _fintech_error(e)
     finally:
+        sys.settrace(None)
         sys.stdout = old
 
     out = buf.getvalue()
@@ -531,17 +574,35 @@ def _fintech_run(src, tests_src):
 
 let py = null;
 
+// ⚠️ **עלייה שנכשלת חייבת להגיד את זה.** בלי ה-catch, כל תקלה — קובץ
+//    vendor חסר, ‏MIME שגוי שחוסם את המודול, זיכרון — משאירה את
+//    הכפתורים מנוטרלים ואת הרמז על "טוען את פייתון…" **לנצח.**
+//    שלושים תלמידים אומרים למורה "זה עוד נטען", ואי אפשר להבחין בין
+//    איטי למת. **קוד השגיאה הוא העיקר** — הוא מה שמאפשר למורה לאבחן
+//    מקדמת הכיתה במקום ללכת ממסך למסך.
 async function boot() {
   el.btnRun.disabled = el.btnTests.disabled = true;
   el.rhint.textContent = 'טוען את פייתון…';
-  // ‏indexURL מוחלט ביחס לעמוד — משם Pyodide שולף בעצמו את
-  // ‏pyodide.asm.js · pyodide.asm.wasm · python_stdlib.zip · pyodide-lock.json.
-  // ‏חייב להסתיים בלוכסן.
-  py = await loadPyodide({
-    indexURL: new URL('vendor/pyodide/', document.baseURI).href,
-    stdin: () => '',
-  });
-  py.runPython(HARNESS);
+  try {
+    if (typeof loadPyodide !== 'function') throw new Error('הקובץ vendor/pyodide/pyodide.js לא נטען');
+    // ‏indexURL מוחלט ביחס לעמוד — משם Pyodide שולף בעצמו את
+    // ‏pyodide.asm.js · pyodide.asm.wasm · python_stdlib.zip · pyodide-lock.json.
+    // ‏חייב להסתיים בלוכסן.
+    py = await loadPyodide({
+      indexURL: new URL('vendor/pyodide/', document.baseURI).href,
+      stdin: () => '',
+    });
+    py.runPython(HARNESS);
+  } catch (err) {
+    const code = typeof loadPyodide !== 'function' ? 'PYO-1' : 'PYO-2';
+    el.rhint.textContent = `פייתון לא נטען · ${code}`;
+    el.rbOut.textContent =
+      `פייתון לא עלה במחשב הזה.\n\n${code}\n${err.message}\n\n` +
+      `קרא למורה. מה שכתבת נשמר ולא ילך לאיבוד.`;
+    showTab('out');
+    openResults();
+    return;                       // הכפתורים נשארים מנוטרלים, וזה נכון
+  }
   el.btnRun.disabled = el.btnTests.disabled = false;
   el.rhint.textContent = 'הרצה → פלט · בדיקות → בדיקות';
   probe();
