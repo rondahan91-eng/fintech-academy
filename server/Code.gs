@@ -29,6 +29,9 @@ var SHEETS = {
   //    שהחינוך הפיננסי עבד — ולכן זה הגיליון שאסור למחוק.
   baseline: ['ts', 'id', 'name', 'q', 'answer', 'matched', 'note'],
   onboard: ['ts', 'id', 'role', 'text'],
+  // נגזרת בלבד — נבנה מחדש מהתפריט. מחיקתו לא מוחקת דבר.
+  dashboard: ['id', 'שם', 'קליטה', 'בסיס', 'הגשות', 'בדיקות', 'שיחות',
+              'פעילות אחרונה', 'מצב'],
 };
 
 // ═══ נקודת הכניסה ═════════════════════════════════════════════════════
@@ -418,10 +421,97 @@ function prop(k) {
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('FinTech')
+    .addItem('רענן לוח מעקב', 'rebuildDashboard')
+    .addSeparator()
     .addItem('הכן את הגיליונות', 'setupSheets')
     .addItem('צור קודים לתלמידים חדשים', 'generateCodes')
     .addItem('בדוק שהמפתח עובד', 'testKey')
     .addToUi();
+}
+
+// ═══ לוח המעקב ════════════════════════════════════════════════════════
+//
+// שורה לתלמיד, נבנית מחדש מהגיליונות האחרים. **אפשר למחוק אותו בכל
+// רגע** — הוא נגזרת, לא מקור.
+//
+// ⚠️ העמודה שבאמת שווה משהו היא **"מצב"**. השאר הוא ספירה; היא
+//    התשובה לשאלה היחידה שמעניינת אותך תוך כדי שיעור — מי תקוע.
+
+var DASH = ['id', 'שם', 'קליטה', 'בסיס', 'הגשות', 'בדיקות', 'שיחות',
+            'פעילות אחרונה', 'מצב'];
+
+function rebuildDashboard() {
+  var roster = table('roster');
+  var prog = index(table('progress'), 'id');
+  var subs = table('submissions');
+  var chats = table('chat');
+  var base = table('baseline');
+  var onb = table('onboard');
+
+  var rows = roster.filter(function (r) { return String(r.name).trim(); })
+    .map(function (r) {
+      var id = String(r.id);
+      var p = prog[id];
+      var mySubs = subs.filter(function (s) { return String(s.id) === id; });
+      var last = mySubs[mySubs.length - 1];
+      var myBase = base.filter(function (b) { return String(b.id) === id; });
+      var matched = myBase.filter(function (b) {
+        return String(b.matched) === 'yes';
+      }).length;
+      var talk = chats.filter(function (c) {
+        return String(c.id) === id && c.role === 'student';
+      }).length;
+
+      var seen = p && p.updated ? new Date(p.updated) : null;
+      var obDone = p && String(p.onboarded) === 'yes';
+      var started = onb.some(function (o) { return String(o.id) === id; });
+
+      return [
+        id, r.name,
+        obDone ? '✓' : (started ? 'באמצע' : '—'),
+        myBase.length ? matched + '/' + myBase.length : '—',
+        mySubs.length,
+        last ? last.visiblePass + '/' + last.visibleTotal : '—',
+        talk,
+        seen || '',
+        statusOf({ obDone: obDone, started: started, subs: mySubs.length,
+                   last: last, talk: talk, seen: seen }),
+      ];
+    });
+
+  var sh = sheet('dashboard');
+  sh.clear();
+  sh.appendRow(DASH);
+  sh.setFrozenRows(1);
+  if (rows.length) sh.getRange(2, 1, rows.length, DASH.length).setValues(rows);
+  sh.getRange(2, 8, Math.max(rows.length, 1), 1).setNumberFormat('HH:mm');
+  sh.autoResizeColumns(1, DASH.length);
+
+  SpreadsheetApp.getUi().alert(rows.length + ' תלמידים. הלוח מעודכן.');
+}
+
+/**
+ * ⚠️ **"תקוע" הוא לא "לא הגיש".** תלמיד שעובד בשקט ולא הגיש עדיין הוא
+ *    תלמיד שעובד. מה שמסמן מצוקה הוא **הרבה שאלות בלי התקדמות**, או
+ *    שקט ממושך אחרי שהתחיל.
+ */
+function statusOf(x) {
+  if (!x.started) return 'לא נכנס';
+  if (!x.obDone) return 'בשיחת קליטה';
+
+  var quietMin = x.seen ? (Date.now() - x.seen.getTime()) / 60000 : 999;
+
+  if (x.last && x.last.visiblePass === x.last.visibleTotal) return '✓ הגיש, הכול עובר';
+  if (x.subs) return 'הגיש · ' + x.last.visiblePass + '/' + x.last.visibleTotal;
+  if (x.talk >= 6) return '⚠ הרבה שאלות, לא הגיש';
+  if (quietMin > 20) return '⚠ שקט ' + Math.round(quietMin) + ' דק׳';
+  return 'עובד';
+}
+
+function index(rows, key) {
+  var m = {};
+  for (var i = 0; i < rows.length; i++) m[String(rows[i][key])] = rows[i];
+  return m;
 }
 
 function setupSheets() {
