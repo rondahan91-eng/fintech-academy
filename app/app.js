@@ -219,7 +219,11 @@ if (!(bootState && applyState(bootState))) OPENING.forEach((t) => say(t));
 // מחשב חדש בלי היסטוריה מקומית — מושכים מהשרת
 if (!bootState) {
   api.state()
-    .then(({ state }) => applyState(state))
+    .then(({ state }) => {
+      // סימנייה ישירה למסך העבודה לא מדלגת על הקליטה
+      if (!state.onboarded) { location.replace('onboarding.html'); return; }
+      applyState(state);
+    })
     .catch(() => { /* השרת אופציונלי. הבאנר כבר יודיע */ });
 }
 

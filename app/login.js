@@ -29,7 +29,10 @@ form.addEventListener('submit', async (e) => {
     session.student = res.student;
     // המצב שהתקבל נשמר כדי שמסך העבודה לא יבקש אותו שוב מיד
     sessionStorage.setItem('fintech:boot', JSON.stringify(res.state));
-    location.replace('index.html');
+
+    // §16.2 — הכניסה אינה תפריט, היא המשך. **המערכת יודעת לאן**,
+    // ואיש לא בוחר: מי שטרם עבר קליטה הולך לשם, וזה קורה פעם אחת.
+    location.replace(res.state.onboarded ? 'index.html' : 'onboarding.html');
   } catch (e2) {
     // הודעה מהשרת מוצגת כמות שהיא; תקלת רשת מקבלת ניסוח משלה
     fail(/fetch|Failed|NetworkError|abort/i.test(e2.message)

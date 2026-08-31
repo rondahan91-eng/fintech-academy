@@ -32,14 +32,34 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "assets" / "persona"
-OUT = SRC / "panel"
 
-# הקופסה באפליקציה היא 328×240 (רוחב הפאנל פחות ריפוד). פי 2 לצפיפות גבוהה.
-OUT_W, OUT_H = 656, 480
+# ⚠️ **חצי הרוחב הוא האילוץ, לא היחס.** ‏presenting מושיט יד עד 1166
+#    פיקסלים ממרכז הראש ו-explaining פורש ידיים ל-978. חלון צר מזה
+#    חותך בדיוק את מה שמבדיל בין המצבים — האזהרה שכתובה במניפסט.
+#    כל מסגור נגזר מ-HALF_W, ומה שלא מסתדר מרופד בלבן.
+HALF_W = 1180
 
-HEAD_H = 175      # גובה הראש ביעד. ‏36% מהגובה — משאיר מקום לידיים
-HEAD_TOP = 34     # כמה לבן מעל הקודקוד
-HALF_W = 1180     # חצי רוחב החלון במקור, ביחידות של headH=630
+# ‏head_top_frac — איפה יושב קודקוד הראש כשבר מגובה הפלט.
+CROPS = {
+    # מסך העבודה: הקופסה 328×240, לרוחב. פי 2 לצפיפות.
+    "panel": {"w": 656, "h": 480, "head_top_frac": 0.071},
+    # שיחת הקליטה: layout.md §10, פורטרט לצד השיחה. פי 2.
+    "talk":  {"w": 1080, "h": 1040, "head_top_frac": 0.20},
+}
+
+
+def head_target(out_w: int, min_head: int) -> int:
+    """גובה הראש ביעד — **נגזר, לא נבחר.**
+
+    הנרמול הוא לפי גובה הראש, ולכן חלון המקור רחב `out_w·headH/HEAD_H`.
+    ככל שהראש ביעד גדול יותר, החלון צר יותר. הראש הקטן ביותר בסט הוא
+    המקרה הגרוע, והוא זה שקובע את התקרה:
+
+        out_w · min_head / HEAD_H  ≥  2·HALF_W
+
+    ‏98% כדי להשאיר שוליים לעיגול.
+    """
+    return int(out_w * min_head / (2 * HALF_W) * 0.98)
 
 WHITE_SUM = 720   # סכום RGB שמעליו פיקסל נחשב רקע
 
@@ -67,23 +87,25 @@ def landmarks(path: Path) -> dict:
             "size": (a.shape[1], a.shape[0])}
 
 
-def crop(path: Path, lm: dict) -> Image.Image:
-    s = HEAD_H / lm["headH"]                 # קנה מידה שמיישר את גובה הראש
-    w_src = round(OUT_W / s)
-    h_src = round(OUT_H / s)
+def crop(path: Path, lm: dict, spec: dict, head_h: int) -> Image.Image:
+    """מנרמל לפי גובה הראש, ומרפד בלבן את מה שחורג מהמקור."""
+    s = head_h / lm["headH"]                 # קנה המידה שמיישר את הראשים
+    w_src = round(spec["w"] / s)
+    h_src = round(spec["h"] / s)
     x0 = lm["cx"] - w_src // 2
-    y0 = lm["top"] - round(HEAD_TOP / s)
+    y0 = lm["top"] - round(spec["head_top_frac"] * h_src)
 
-    # החלון חורג מהמקור למעלה ולמטה. הרקע לבן ממילא, אז מרפדים בלבן
-    # ולא נותנים ל-PIL למלא בשחור.
+    # החלון חורג מהמקור. הרקע לבן ממילא — מרפדים בלבן ולא נותנים
+    # ל-PIL למלא בשחור.
     canvas = Image.new("RGB", (w_src, h_src), "white")
     src = Image.open(path).convert("RGB")
     sx0, sy0 = max(0, x0), max(0, y0)
     sx1 = min(src.width, x0 + w_src)
     sy1 = min(src.height, y0 + h_src)
-    canvas.paste(src.crop((sx0, sy0, sx1, sy1)), (sx0 - x0, sy0 - y0))
+    if sx1 > sx0 and sy1 > sy0:
+        canvas.paste(src.crop((sx0, sy0, sx1, sy1)), (sx0 - x0, sy0 - y0))
 
-    return canvas.resize((OUT_W, OUT_H), Image.LANCZOS)
+    return canvas.resize((spec["w"], spec["h"]), Image.LANCZOS)
 
 
 def main() -> int:
@@ -95,22 +117,31 @@ def main() -> int:
         print(f"אין מקורות ב-{SRC}")
         return 1
 
-    OUT.mkdir(exist_ok=True)
     lms = {p: landmarks(p) for p in masters}
-
     heads = [lm["headH"] for lm in lms.values()]
-    print(f"{len(masters)} מצבים · גובה ראש במקור {min(heads)}–{max(heads)} "
-          f"→ מנורמל ל-{HEAD_H}\n")
+    reach = max(max(lm["cx"] - 0, 0) for lm in lms.values())  # לתיעוד בלבד
+    print(f"{len(masters)} מצבים · גובה ראש במקור {min(heads)}–{max(heads)}\n")
 
-    for p, lm in lms.items():
-        img = crop(p, lm)
-        dest = OUT / p.name
-        img.save(dest, optimize=True)
-        kb = dest.stat().st_size // 1024
-        print(f"  {p.name[5:-4]:14s} headH={lm['headH']:4d} cx={lm['cx']:5d} "
-              f"→ {OUT_W}×{OUT_H}  {kb:4d} KB")
+    for name, spec in CROPS.items():
+        out = SRC / name
+        out.mkdir(exist_ok=True)
+        head_h = head_target(spec["w"], min(heads))
+        print(f"  {name}  {spec['w']}×{spec['h']} · ראש {head_h}px "
+              f"({head_h * 100 // spec['h']}% מהגובה)")
 
-    print(f"\nנוצר: {OUT.relative_to(ROOT)}")
+        for p, lm in lms.items():
+            img = crop(p, lm, spec, head_h)
+            dest = out / p.name
+            img.save(dest, optimize=True)
+
+            # אימות: החלון באמת מכיל את המחווה הרחבה ביותר?
+            half = round(spec["w"] / (head_h / lm["headH"])) // 2
+            flag = "" if half >= HALF_W else f"  ⚠ צר ב-{HALF_W - half}px"
+            print(f"    {p.name[5:-4]:14s} חצי חלון {half:5d}"
+                  f"  {dest.stat().st_size // 1024:4d} KB{flag}")
+        print()
+
+    print(f"נוצר: {', '.join('assets/persona/' + n for n in CROPS)}")
     return 0
 
 

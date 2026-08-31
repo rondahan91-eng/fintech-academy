@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FinTech Academy</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="onboard-page">
+
+<!-- ‏layout.md §10 · שתי עמודות · **אין סרגל עליון**
+     אין שבוע, אין דרגה, אין יתרה — התלמיד לא הרוויח דבר ולא ראה דבר.
+     הדבר הראשון שהוא רואה במערכת צריך להיות אדם, לא כרום. -->
+<main class="onboard">
+
+  <!-- ══ אלעד · 540 · האווטאר המלא, בלי הקטנה (§10.2) ══ -->
+  <aside class="ob-elad">
+    <div class="ob-progress" id="ob-progress">
+      <div class="ob-steps">
+        <div class="ob-step" data-stage="arrival"><span></span>הכרות</div>
+        <div class="ob-step" data-stage="role"><span></span>התפקיד</div>
+        <div class="ob-step" data-stage="baseline"><span></span>כמה שאלות</div>
+        <div class="ob-step" data-stage="handoff"><span></span>המשימה</div>
+      </div>
+    </div>
+    <div class="ob-avatar" id="ob-avatar" data-state="neutral">
+      <img id="ob-img" alt="אלעד שגב" hidden>
+    </div>
+  </aside>
+
+  <!-- ══ השיחה · 620 ≈ 71 תווים בשורה ══ -->
+  <section class="ob-talk">
+    <div class="ob-history" id="ob-history"></div>
+    <form class="ob-input" id="ob-form" autocomplete="off">
+      <input id="ob-text" type="text" autocomplete="off"
+             placeholder="כתוב לאלעד…" aria-label="כתוב לאלעד" disabled>
+      <button type="submit" aria-label="שלח" id="ob-send" disabled>←</button>
+    </form>
+  </section>
+
+</main>
+
+<!-- כתובת השרת. תג רגיל ולא מודול — היעדרו הוא 404, לא מוות שקט. -->
+<script src="config.js"></script>
+<script type="module" src="onboarding.js"></script>
+</body>
+</html>

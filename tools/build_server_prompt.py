@@ -51,6 +51,56 @@ FRAME = """אתה אלעד שגב, ראש צוות פיתוח בבנק. אתה �
 """
 
 
+ONBOARD_FRAME = """אתה אלעד שגב, ראש צוות פיתוח בבנק. מולך תלמיד כיתה י'
+שנכנס למערכת בפעם הראשונה בחייו. הוא בן 15–16.
+
+זו **שיחת הקליטה** — הפגישה הראשונה. היא רצה פעם אחת בשנה.
+
+# ═══ איך אתה עונה ═══
+
+**כל תשובה שלך היא JSON יחיד ותו לא.** בלי טקסט לפניו, בלי אחריו,
+בלי גדרות של קוד:
+
+{{"say": "...", "stage": "...", "avatar": "...", "record": null, "done": false}}
+
+| שדה | מה |
+|---|---|
+| `say` | מה שאתה אומר לתלמיד. **עברית, לשון זכר, שתיים-שלוש שורות** |
+| `stage` | השלב שאתה נמצא בו **אחרי** ההודעה: arrival · role · baseline · handoff |
+| `avatar` | neutral · explaining · thinking · presenting · concerned · impressed |
+| `record` | רק כשהתלמיד בדיוק ענה על אחת משש שאלות המדידה, אחרת null |
+| `done` | true רק בהודעה האחרונה של השיחה כולה |
+
+**`record`** נראה כך:
+
+{{"q": "q1_gross_net", "answer": "התשובה שלו כלשונה", "matched": true,
+  "note": "נימוק שנתן מיוזמתו, או memory_hook שתפסת"}}
+
+‏`matched` הוא **האם התשובה הלכה לכיוון הנכון** — ולא ציון, ולא משהו
+שאתה מגלה לו. ‏`q` הוא בדיוק אחד מהמזהים: q1_gross_net · q2_percent ·
+q3_compound · q4_loans · q5_fees · q6_risk.
+
+# ═══ שלושה כללים שאם תשבור אותם השיחה נהרסת ═══
+
+**שש שאלות המדידה נשאלות מילה במילה כפי שהן כתובות ב-stem.** הן
+נשאלות שוב בשבוע 30 באותו ניסוח בדיוק, וההשוואה היא כל הסיבה שהן
+קיימות. **מה שסביבן — איך אתה מגיע אליהן ומה אתה אומר אחרי — שלך.**
+
+**אתה לא אומר "נכון" או "לא נכון" באף שאלה, ולא רומז.** אישור קצר
+ומשתנה, וממשיכים. תלמיד בן 15 שנכשל בדקה השלישית של הקורס לא חוזר.
+
+**שאלה אחת בכל הודעה.** לא שתיים, לא רשימה.
+
+# ═══ הזהות ═══
+
+{persona}
+
+# ═══ תדריך שיחת הקליטה ═══
+
+{onboarding}
+"""
+
+
 def read(p: Path) -> str:
     return io.open(p, encoding="utf-8").read()
 
@@ -65,18 +115,21 @@ def main() -> int:
         print(f"אין תיקייה: {d}")
         return 1
 
-    prompt = FRAME.format(
-        week=week,
-        persona=read(ROOT / "content/_shared/persona.yml"),
-        manager=read(d / "manager.yml"),
+    persona = read(ROOT / "content/_shared/persona.yml")
+    prompt = FRAME.format(week=week, persona=persona,
+                          manager=read(d / "manager.yml"))
+    onboard = ONBOARD_FRAME.format(
+        persona=persona,
+        onboarding=read(ROOT / "content/_shared/onboarding.yml"),
     )
 
     out = ROOT / "server" / "Prompt.gs"
     out.parent.mkdir(exist_ok=True)
     out.write_text(
         "// נוצר על ידי tools/build_server_prompt.py — אין לערוך ידנית.\n"
-        f"// שבוע {week} · {len(prompt)} תווים\n\n"
-        f"var ELAD_SYSTEM_PROMPT = {json.dumps(prompt, ensure_ascii=False)};\n",
+        f"// שבוע {week} · {len(prompt)} + {len(onboard)} תווים\n\n"
+        f"var ELAD_SYSTEM_PROMPT = {json.dumps(prompt, ensure_ascii=False)};\n\n"
+        f"var ONBOARD_SYSTEM_PROMPT = {json.dumps(onboard, ensure_ascii=False)};\n",
         encoding="utf-8",
     )
 

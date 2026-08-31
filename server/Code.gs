@@ -22,9 +22,13 @@ var TOKEN_TTL_HOURS = 14;    // יום לימודים אחד ועוד שוליי
 
 var SHEETS = {
   roster: ['id', 'name', 'code', 'class', 'active'],
-  progress: ['id', 'week', 'code', 'updated'],
+  progress: ['id', 'week', 'code', 'updated', 'onboarded'],
   submissions: ['ts', 'id', 'name', 'week', 'visiblePass', 'visibleTotal', 'code'],
   chat: ['ts', 'id', 'week', 'role', 'text'],
+  // ⚠️ שש שאלות הבסיס. **הדלתא מול שבוע 30 היא הראיה היחידה שיש**
+  //    שהחינוך הפיננסי עבד — ולכן זה הגיליון שאסור למחוק.
+  baseline: ['ts', 'id', 'name', 'q', 'answer', 'matched', 'note'],
+  onboard: ['ts', 'id', 'role', 'text'],
 };
 
 // ═══ נקודת הכניסה ═════════════════════════════════════════════════════
@@ -55,6 +59,7 @@ var ACTIONS = {
   save: doSave,
   submit: doSubmit,
   chat: doChat,
+  onboard: doOnboard,
 };
 
 function json(obj) {
@@ -131,8 +136,23 @@ function loadState(id) {
     week: mine ? Number(mine.week) : 1,
     code: mine ? String(mine.code) : '',
     updated: mine ? mine.updated : null,
+    // ⚠️ **הדגל הזה הוא מה שמנתב.** ‏layout.md §16.2: הכניסה אינה
+    //    תפריט אלא המשך — היא יודעת לאן, ואיש לא בוחר.
+    onboarded: !!(mine && String(mine.onboarded) === 'yes'),
+    onboardTurns: onboardTurns(id),
     chat: loadChat(id),
   };
+}
+
+function onboardTurns(id) {
+  var rows = table('onboard');
+  var mine = [];
+  for (var i = 0; i < rows.length; i++) {
+    if (String(rows[i].id) === String(id)) {
+      mine.push({ role: rows[i].role, text: String(rows[i].text) });
+    }
+  }
+  return mine;
 }
 
 function loadChat(id) {
@@ -253,6 +273,106 @@ function doChat(req) {
 
 function logChat(id, week, role, text) {
   sheet('chat').appendRow([new Date(), id, week, role, text]);
+}
+
+// ═══ שיחת הקליטה ══════════════════════════════════════════════════════
+//
+// רצה **פעם אחת בחיים**. ‏SPEC §11.1: מושב שנקטע חוזר מנקודת העצירה —
+// ולכן כל תור נשמר, והשיחה נבנית מחדש מהגיליון בכל טעינה.
+//
+// ⚠️ המודל מחזיר JSON ולא טקסט. ‏`record` הוא מה שהופך את השיחה
+//    למדידה: שש תשובות שנשמרות **כלשונן**, ונשאלות שוב בשבוע 30.
+
+function doOnboard(req) {
+  var id = readToken(req.token);
+  var key = prop('ANTHROPIC_API_KEY');
+  if (!key) return { error: 'לא הוגדר מפתח API. ראה server/README.md' };
+
+  var turns = onboardTurns(id);
+  var text = String(req.message || '').trim();
+
+  // הודעה ריקה = פתיחת השיחה. אלעד מתחיל.
+  var history = turns.map(function (t) {
+    return { role: t.role === 'elad' ? 'assistant' : 'user', content: t.text };
+  });
+  if (text) history.push({ role: 'user', content: text });
+  if (!history.length) history.push({ role: 'user', content: '(התלמיד נכנס)' });
+
+  var res = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    payload: JSON.stringify({
+      model: MODEL,
+      max_tokens: MAX_TOKENS,
+      output_config: { effort: 'medium' },   // שיחה, לא רמז. שווה קצת יותר
+      system: [{ type: 'text', text: ONBOARD_SYSTEM_PROMPT,
+                 cache_control: { type: 'ephemeral' } }],
+      messages: history,
+    }),
+    muteHttpExceptions: true,
+  });
+
+  if (res.getResponseCode() !== 200) {
+    return { error: 'אלעד לא זמין כרגע (' + res.getResponseCode() + ')' };
+  }
+
+  var raw = '';
+  var content = JSON.parse(res.getContentText()).content;
+  for (var i = 0; i < content.length; i++) {
+    if (content[i].type === 'text') raw += content[i].text;
+  }
+
+  var out = parseOnboard(raw);
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    if (text) sheet('onboard').appendRow([new Date(), id, 'student', text]);
+    sheet('onboard').appendRow([new Date(), id, 'elad', out.say]);
+
+    if (out.record && out.record.q) {
+      sheet('baseline').appendRow([
+        new Date(), id, nameOf(id), out.record.q,
+        String(out.record.answer || ''),
+        out.record.matched === true ? 'yes' : 'no',
+        String(out.record.note || ''),
+      ]);
+    }
+    if (out.done) markOnboarded(id);
+  } finally {
+    lock.releaseLock();
+  }
+  return out;
+}
+
+/** המודל אמור להחזיר JSON. אם לא — לא מפילים שיחה על עיצוב. */
+function parseOnboard(raw) {
+  var t = String(raw).trim().replace(/^```(?:json)?/, '').replace(/```$/, '').trim();
+  try {
+    var o = JSON.parse(t);
+    return {
+      say: String(o.say || '').trim(),
+      stage: String(o.stage || 'arrival'),
+      avatar: String(o.avatar || 'neutral'),
+      record: o.record || null,
+      done: o.done === true,
+    };
+  } catch (e) {
+    return { say: t, stage: 'arrival', avatar: 'neutral', record: null, done: false };
+  }
+}
+
+function markOnboarded(id) {
+  var sh = sheet('progress');
+  var last = sh.getLastRow();
+  var ids = last > 1 ? sh.getRange(2, 1, last - 1, 1).getValues() : [];
+  for (var i = 0; i < ids.length; i++) {
+    if (String(ids[i][0]) === String(id)) {
+      sh.getRange(i + 2, 5).setValue('yes');
+      return;
+    }
+  }
+  sh.appendRow([id, 1, '', new Date(), 'yes']);
 }
 
 // ═══ גיליון ═══════════════════════════════════════════════════════════
