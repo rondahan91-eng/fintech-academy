@@ -141,7 +141,14 @@ function loadState(id) {
     updated: mine ? mine.updated : null,
     // ⚠️ **הדגל הזה הוא מה שמנתב.** ‏layout.md §16.2: הכניסה אינה
     //    תפריט אלא המשך — היא יודעת לאן, ואיש לא בוחר.
-    onboarded: !!(mine && String(mine.onboarded) === 'yes'),
+    //
+    //    ⛔ **וזו גם חסימה קשה.** שיחת הקליטה חייבת להסתיים כדי
+    //       שהתלמיד יגיע למשימה, והיא מסתיימת רק דרך המודל. אם
+    //       המפתח חסר או שה-API נופל באמצע שיעור — **כל הכיתה
+    //       תקועה במסך אחד ואי אפשר להתקדם.** מתג החירום למטה
+    //       הוא מה שמונע ששיעור יאבד בגלל זה.
+    onboarded: bypassOnboarding() ||
+               !!(mine && String(mine.onboarded) === 'yes'),
     onboardTurns: onboardTurns(id),
     chat: loadChat(id),
   };
@@ -416,6 +423,36 @@ function prop(k) {
   return PropertiesService.getScriptProperties().getProperty(k);
 }
 
+// ═══ מתג החירום ═══════════════════════════════════════════════════════
+//
+// ⚠️ **להדליק רק כששיחת הקליטה לא עובדת ויש כיתה בחדר.**
+//    כשהוא דלוק כולם עוברים ישר למשימה — **ושש שאלות הבסיס לא
+//    נשאלות.** זה מוחק את נקודת ההשוואה מול שבוע 30, וזו הראיה
+//    היחידה שיש שהחינוך הפיננסי עבד. **שיעור עדיף על ראיה, אבל
+//    לכבות מיד אחר כך.**
+
+function bypassOnboarding() {
+  return prop('SKIP_ONBOARDING') === 'yes';
+}
+
+function toggleBypass() {
+  var ui = SpreadsheetApp.getUi();
+  var on = bypassOnboarding();
+  if (!on) {
+    var ok = ui.alert(
+      'לדלג על שיחת הקליטה?',
+      'כל התלמידים יעברו ישר למשימה, ושש שאלות הבסיס לא יישאלו.\n\n' +
+      'זה מוחק את ההשוואה מול שבוע 30.\n\n' +
+      'להדליק רק אם השיחה לא עובדת ויש כיתה בחדר.',
+      ui.ButtonSet.YES_NO);
+    if (ok !== ui.Button.YES) return;
+  }
+  PropertiesService.getScriptProperties()
+    .setProperty('SKIP_ONBOARDING', on ? 'no' : 'yes');
+  ui.alert(on ? 'שיחת הקליטה חזרה לפעול.'
+              : '⚠️ דילוג פעיל. לכבות מיד אחרי השיעור.');
+}
+
 // ═══ תפריט למורה ══════════════════════════════════════════════════════
 
 function onOpen() {
@@ -426,6 +463,8 @@ function onOpen() {
     .addItem('הכן את הגיליונות', 'setupSheets')
     .addItem('צור קודים לתלמידים חדשים', 'generateCodes')
     .addItem('בדוק שהמפתח עובד', 'testKey')
+    .addSeparator()
+    .addItem('⚠ דלג על שיחת הקליטה (חירום)', 'toggleBypass')
     .addToUi();
 }
 

@@ -21,6 +21,7 @@ const el = {
 
 const STAGES = ['arrival', 'role', 'baseline', 'handoff'];
 let lastSpeaker = null;
+let fails = 0;              // כישלונות רצופים מול השרת
 
 // ── האווטאר ───────────────────────────────────────────────────────────
 // המסגור המלא של §10.2 — talk/ ולא panel/. שם הראש 26% מהגובה
@@ -87,6 +88,7 @@ async function turn(message) {
     const r = await call('onboard', { token: session.token, message },
                          { timeout: 60000 });
     typing(false);
+    fails = 0;
     if (r.avatar) setAvatar(r.avatar);
     if (r.stage) setStage(r.stage);
     say(r.say);
@@ -101,6 +103,19 @@ async function turn(message) {
     ready(true);
   } catch (err) {
     typing(false);
+    fails += 1;
+
+    // ⚠️ **החסימה הזאת קשה, ולכן היא חייבת להיאמר.** בלי שהשיחה
+    //    מסתיימת אין מעבר למשימה — התלמיד יכול לנסות שוב לנצח בלי
+    //    להתקדם. אחרי שני כישלונות מפסיקים להעמיד פנים שזה יסתדר.
+    if (fails >= 2) {
+      say('אני לא מצליח להתחבר, וזה לא משהו שאתה יכול לתקן. ' +
+          'תקרא למורה ותגיד לו: "שיחת הקליטה לא עובדת".');
+      ready(false);
+      el.text.placeholder = 'ממתין למורה';
+      return;
+    }
+
     say(/fetch|Failed|NetworkError|abort/i.test(err.message)
       ? 'משהו ברשת נתקע. תנסה לשלוח שוב, ואם זה חוזר — קרא למורה.'
       : err.message);
