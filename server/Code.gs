@@ -36,8 +36,19 @@ var SHEETS = {
 
 // ═══ נקודת הכניסה ═════════════════════════════════════════════════════
 
+// ⚠️ **חותמת הגרסה.** ‏Apps Script מגיש את הגרסה הפרוסה, לא את מה
+//    שבעורך — והדבקה ושמירה לא משנות כלום עד Version: New. בלי
+//    החותמת הזאת "האם זה נפרס?" היא שאלה שאי אפשר לענות עליה בלי
+//    לנסות פעולה ולראות אם היא מתנהגת אחרת. **להעלות בכל שינוי.**
+var VERSION = '2026-09-14b';
+
 function doGet() {
-  return json({ ok: true, service: 'fintech-academy', time: new Date().toISOString() });
+  return json({
+    ok: true, service: 'fintech-academy', version: VERSION,
+    hasKey: !!prop('ANTHROPIC_API_KEY'),
+    skipOnboarding: bypassOnboarding(),
+    time: new Date().toISOString(),
+  });
 }
 
 /**
