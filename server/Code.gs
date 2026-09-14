@@ -40,7 +40,7 @@ var SHEETS = {
 //    שבעורך — והדבקה ושמירה לא משנות כלום עד Version: New. בלי
 //    החותמת הזאת "האם זה נפרס?" היא שאלה שאי אפשר לענות עליה בלי
 //    לנסות פעולה ולראות אם היא מתנהגת אחרת. **להעלות בכל שינוי.**
-var VERSION = '2026-09-14f';
+var VERSION = '2026-09-14g';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -84,6 +84,8 @@ function doGet(e) {
       keys: r.length ? Object.keys(r[0]) : [],
       firstCodeLen: r.length ? norm(r[0].code).length : -1,
       firstCodeType: r.length ? typeof r[0].code : 'none',
+      // כמה מהתאים הם באמת תאריכים — התקלה שהפילה את כל הכניסות
+      dateCells: r.filter(function (x) { return cellDate(x.code) !== null; }).length,
       exact: exact, numeric: numeric,
     };
   }
@@ -144,7 +146,31 @@ var BIDI = new RegExp('[' + BIDI_CODES.map(function (c) {
   return String.fromCharCode(c);
 }).join('') + ']', 'g');
 
+/**
+ * ⛔ **תא שנראה כמו קוד אבל הוא תאריך.**
+ *
+ * הקודים הם תאריכי לידה בפורמט DDMMYY — 190211, 310511, 061210 —
+ * ו-Sheets מפרש אותם אוטומטית כתאריכים. ‏getValues מחזיר אז אובייקט
+ * Date, ו-String עליו נותן "Sat Feb 19 2011 00:00:00 GMT+0200…"
+ * באורך 53 תווים. **בתא נראה 190211, ובקוד מגיע משהו אחר לגמרי.**
+ *
+ * זה הפיל את כל 22 הכניסות, ושום בדיקה של כותרות או של נרמול לא
+ * יכלה לגלות את זה — ‏`?probe=` שהחזיר `firstCodeType: "object"` כן.
+ *
+ * ההמרה חזרה ל-DDMMYY משחזרת בדיוק את מה שהתלמיד רואה על הפתק.
+ */
+function cellDate(v) {
+  if (Object.prototype.toString.call(v) !== '[object Date]') return null;
+  if (isNaN(v.getTime())) return null;
+  var tz;
+  try { tz = SpreadsheetApp.getActive().getSpreadsheetTimeZone(); }
+  catch (e) { tz = Session.getScriptTimeZone(); }
+  return Utilities.formatDate(v, tz, 'ddMMyy');
+}
+
 function norm(v) {
+  var asDate = cellDate(v);
+  if (asDate !== null) v = asDate;
   return String(v == null ? '' : v).replace(BIDI, '').trim();
 }
 
@@ -711,6 +737,7 @@ function onOpen() {
     .addItem('הכן את הגיליונות', 'setupSheets')
     .addItem('צור קודים לתלמידים חדשים', 'generateCodes')
     .addItem('בדוק שהמפתח עובד', 'testKey')
+    .addItem('תקן קודים שהפכו לתאריכים', 'fixCodeColumn')
     .addSeparator()
     .addItem('⚠ דלג על שיחת הקליטה (חירום)', 'toggleBypass')
     .addToUi();
@@ -829,6 +856,34 @@ function generateCodes() {
   }
   rng.setValues(vals);
   SpreadsheetApp.getUi().alert('נוצרו ' + made + ' קודים חדשים.');
+}
+
+/**
+ * מחזיר את עמודת הקודים לטקסט, ומקבע את התצוגה כטקסט רגיל.
+ *
+ * ⚠️ **השרת כבר מסתדר עם תאריכים** — ‏norm ממיר אותם חזרה. הפונקציה
+ *    הזאת מיותרת לתפקוד ונחוצה לשפיות: קוד שנראה בתא כמו `19/02/2011`
+ *    הוא קוד שאי אפשר להקריא לתלמיד.
+ */
+function fixCodeColumn() {
+  var sh = sheet('roster');
+  var last = sh.getLastRow();
+  if (last < 2) { SpreadsheetApp.getUi().alert('אין שורות ב-roster'); return; }
+
+  var rng = sh.getRange(2, 3, last - 1, 1);      // עמודה C = code
+  var vals = rng.getValues();
+  var fixed = 0;
+  for (var i = 0; i < vals.length; i++) {
+    var d = cellDate(vals[i][0]);
+    if (d !== null) { vals[i][0] = d; fixed++; }
+    else vals[i][0] = norm(vals[i][0]);
+  }
+  rng.setNumberFormat('@');                      // טקסט רגיל, לא תאריך
+  rng.setValues(vals);
+
+  SpreadsheetApp.getUi().alert(
+    fixed + ' קודים היו תאריכים והוחזרו לטקסט.\n\n' +
+    'העמודה מקובעת עכשיו כטקסט — הדבקה חדשה לא תהפוך שוב.');
 }
 
 function testKey() {
