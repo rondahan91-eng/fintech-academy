@@ -13,10 +13,12 @@
   <h1 class="login-brand">FinTech Academy</h1>
 
   <form id="login-form" autocomplete="off">
+    <!-- ⚠️ לא required. **הקוד הוא המפתח** — השם כאן רק כדי שהמסך
+         ירגיש כמו כניסה ולא כמו פתיחת כספת. ראה doLogin. -->
     <label class="field">
       <span>שם</span>
-      <input id="f-name" type="text" required autocomplete="off"
-             placeholder="כפי שמופיע ברשימת הכיתה">
+      <input id="f-name" type="text" autocomplete="off"
+             placeholder="השם שלך">
     </label>
 
     <label class="field">

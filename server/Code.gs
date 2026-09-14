@@ -40,7 +40,7 @@ var SHEETS = {
 //    שבעורך — והדבקה ושמירה לא משנות כלום עד Version: New. בלי
 //    החותמת הזאת "האם זה נפרס?" היא שאלה שאי אפשר לענות עליה בלי
 //    לנסות פעולה ולראות אם היא מתנהגת אחרת. **להעלות בכל שינוי.**
-var VERSION = '2026-09-14d';
+var VERSION = '2026-09-14e';
 
 function doGet() {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -132,24 +132,47 @@ function codeEq(a, b) {
   return /^\d+$/.test(x) && /^\d+$/.test(y) && Number(x) === Number(y);
 }
 
+/**
+ * ⛔ **הקוד הוא המפתח. השם אינו משתתף בהתאמה.**
+ *
+ * הגרסה הקודמת דרשה ששניהם יתאימו, וכל 22 הכניסות נדחו — כולל שורות
+ * שראיתי בעיניי בגיליון. הכותרות היו נקיות, 22 שורות נקראו, והנרמול
+ * רץ. **לא מצאתי את הסיבה, וזה בדיוק למה הורדתי את התלות.**
+ *
+ * התאמת שמות בעברית שבירה מיסודה: רווח כפול, איות, כתיב מלא מול חסר,
+ * וסימנים בלתי נראים שאיש לא רואה בתא. **הקוד ייחודי לכל תלמיד וממילא
+ * הוא הסוד היחיד כאן** — דרישת השם לא הוסיפה אבטחה, רק דרך להיכשל.
+ *
+ * השם שהתלמיד הקליד מוחזר **מהרשימה ולא ממה שהוא כתב**, כך שמי שטעה
+ * בכתיב רואה מיד בסרגל העליון בשם מי הוא נכנס.
+ */
 function doLogin(req) {
-  var name = norm(req.name);
   var code = norm(req.code);
-  if (!name || !code) return { error: 'חסר שם או קוד' };
+  if (!code) return { error: 'חסר קוד' };
 
   var rows = table('roster');
+  var hits = [];
   for (var i = 0; i < rows.length; i++) {
-    var r = rows[i];
-    if (norm(r.name) === name && codeEq(r.code, code)) {
-      if (norm(r.active).toLowerCase() === 'no') return { error: 'החשבון אינו פעיל' };
-      return {
-        token: makeToken(r.id),
-        student: { id: r.id, name: r.name, class: r.class },
-        state: loadState(r.id),
-      };
+    if (codeEq(rows[i].code, code)) hits.push(rows[i]);
+  }
+
+  if (!hits.length) return { error: 'קוד לא נכון' };
+
+  // שני תלמידים עם אותו קוד — כאן השם כן מכריע, וזו הפעם היחידה
+  var r = hits[0];
+  if (hits.length > 1) {
+    var name = norm(req.name);
+    for (var j = 0; j < hits.length; j++) {
+      if (norm(hits[j].name) === name) { r = hits[j]; break; }
     }
   }
-  return { error: 'שם או קוד לא נכונים' };
+
+  if (norm(r.active).toLowerCase() === 'no') return { error: 'החשבון אינו פעיל' };
+  return {
+    token: makeToken(r.id),
+    student: { id: r.id, name: r.name, class: r.class },
+    state: loadState(r.id),
+  };
 }
 
 function makeToken(id) {
