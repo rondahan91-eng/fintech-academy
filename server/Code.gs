@@ -19,7 +19,11 @@
 //    ומוסיף שניות שהתלמיד מחכה מולן, ו-Apps Script כבר גובה 3–7
 //    שניות משלו. **החזרה ל-Opus היא שינוי של מילה אחת כאן.**
 var MODEL = 'claude-sonnet-5';
-var MAX_TOKENS = 1024;       // תשובת מנטור. תקרה גבוהה = חשיבה ארוכה
+// ⚠️ **לא להוריד את זה.** ניסיתי 1024 כדי לקצר תגובות והתקבל 400:
+//    חשיבה אדפטיבית פעילה כברירת מחדל, ותקרה נמוכה לא משאירה מקום
+//    גם לה וגם לתשובה. **אורך התשובה נקבע בפרומפט** — אלעד מונחה
+//    לענות בשתיים-שלוש שורות — ולא בתקרה הזאת.
+var MAX_TOKENS = 4096;
 var EFFORT = 'low';          // תשובה קצרה של מנטור. ‏high כאן הוא בזבוז
 var CHAT_HISTORY = 12;       // כמה תורות אחרונות נשלחות כהקשר
 var TOKEN_TTL_HOURS = 14;    // יום לימודים אחד ועוד שוליים
@@ -44,7 +48,7 @@ var SHEETS = {
 //    שבעורך — והדבקה ושמירה לא משנות כלום עד Version: New. בלי
 //    החותמת הזאת "האם זה נפרס?" היא שאלה שאי אפשר לענות עליה בלי
 //    לנסות פעולה ולראות אם היא מתנהגת אחרת. **להעלות בכל שינוי.**
-var VERSION = '2026-09-14h';
+var VERSION = '2026-09-14i';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -413,7 +417,7 @@ function doChat(req) {
   var code = res.getResponseCode();
   if (code !== 200) {
     logChat(id, week, 'error', res.getContentText().slice(0, 500));
-    return { error: 'אלעד לא זמין כרגע (' + code + ')' };
+    return { error: 'אלעד לא זמין כרגע — ' + apiError(code, res) };
   }
 
   var data = JSON.parse(res.getContentText());
@@ -426,6 +430,20 @@ function doChat(req) {
   logChat(id, week, 'student', text);
   logChat(id, week, 'elad', reply);
   return { reply: reply, usage: data.usage };
+}
+
+/**
+ * ⚠️ **קוד מספרי לבדו אינו אבחון.** ‏400 מ-Anthropic נשא הודעה
+ *    מדויקת על מה שגוי בבקשה, והיא נבלעה — מה שהפך תקלה של שורה
+ *    אחת לסבב ניחושים. ההודעה עולה החוצה, קצוצה.
+ */
+function apiError(code, res) {
+  var msg = '';
+  try {
+    var d = JSON.parse(res.getContentText());
+    msg = (d.error && d.error.message) || '';
+  } catch (e) { msg = res.getContentText().slice(0, 120); }
+  return code + (msg ? ': ' + msg.slice(0, 160) : '');
 }
 
 function logChat(id, week, role, text) {
@@ -597,7 +615,7 @@ function doOnboard(req) {
   });
 
   if (res.getResponseCode() !== 200) {
-    return { error: 'אלעד לא זמין כרגע (' + res.getResponseCode() + ')' };
+    return { error: 'אלעד לא זמין כרגע — ' + apiError(res.getResponseCode(), res) };
   }
 
   var raw = '';
