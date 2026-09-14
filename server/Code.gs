@@ -293,6 +293,55 @@ function logChat(id, week, role, text) {
 // ⚠️ המודל מחזיר JSON ולא טקסט. ‏`record` הוא מה שהופך את השיחה
 //    למדידה: שש תשובות שנשמרות **כלשונן**, ונשאלות שוב בשבוע 30.
 
+// ⚠️ **הרישום לא נסמך על המודל, וזו הכרעה אחרי כישלון.**
+//    בבדיקה המודל שאל את השאלות בניסוח מדויק, כיבד never_judge —
+//    **והחזיר record: null בכל פעם.** התשובות פשוט לא נרשמו.
+//
+//    השרת יודע איזו שאלה הוא שאל בתור הקודם, ולכן הוא יכול לזהות
+//    דטרמיניסטית על מה התלמיד עונה עכשיו. **המודל אחראי לשפה;
+//    הבוקקיפינג הוא של השרת.** אותו עיקרון כמו SPEC §7 עם הטסטים.
+//
+//    הטביעות הן קטעים ייחודיים מהניסוחים הקבועים ב-onboarding.yml.
+//    הניסוח נעול שם ממילא — הוא נשאל שוב מילה במילה בשבוע 30.
+var BASELINE_Q = [
+  { id: 'q1_gross_net', probe: 'נכנס לו בפועל' },
+  { id: 'q2_percent',   probe: 'הנחה של 25' },
+  { id: 'q3_compound',  probe: 'ריבית של 10' },
+  { id: 'q4_loans',     probe: 'הלוואה של 10' },
+  { id: 'q5_fees',      probe: '0.2' },
+  { id: 'q6_risk',      probe: 'בוודאות' },
+];
+
+function questionIn(text) {
+  var t = String(text || '');
+  for (var i = 0; i < BASELINE_Q.length; i++) {
+    if (t.indexOf(BASELINE_Q[i].probe) !== -1) return BASELINE_Q[i].id;
+  }
+  return null;
+}
+
+function alreadyRecorded(id, q) {
+  var rows = table('baseline');
+  for (var i = 0; i < rows.length; i++) {
+    if (String(rows[i].id) === String(id) && String(rows[i].q) === q) return true;
+  }
+  return false;
+}
+
+/** השלב נגזר מהשיחה עצמה ולא מהצהרת המודל, מאותה סיבה. */
+function stageFrom(turns, done) {
+  if (done) return 'handoff';
+  for (var i = turns.length - 1; i >= 0; i--) {
+    if (turns[i].role === 'elad' && questionIn(turns[i].text)) return 'baseline';
+  }
+  return turns.length >= 3 ? 'role' : 'arrival';
+}
+
+var STAGE_AVATAR = {
+  arrival: 'neutral', role: 'explaining',
+  baseline: 'thinking', handoff: 'presenting',
+};
+
 function doOnboard(req) {
   var id = readToken(req.token);
   var key = prop('ANTHROPIC_API_KEY');
@@ -334,24 +383,39 @@ function doOnboard(req) {
   }
 
   var out = parseOnboard(raw);
+
+  // על איזו שאלה התלמיד ענה עכשיו — לפי מה שאלעד שאל בתור הקודם
+  var prev = null;
+  for (var j = turns.length - 1; j >= 0; j--) {
+    if (turns[j].role === 'elad') { prev = turns[j]; break; }
+  }
+  var answered = (text && prev) ? questionIn(prev.text) : null;
+
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
     if (text) sheet('onboard').appendRow([new Date(), id, 'student', text]);
     sheet('onboard').appendRow([new Date(), id, 'elad', out.say]);
 
-    if (out.record && out.record.q) {
+    if (answered && !alreadyRecorded(id, answered)) {
+      // ‏q והתשובה — מהשרת. ‏matched וה-note — מהמודל אם נתן, כי הם
+      // היחידים שדורשים שיפוט. **חסרונם לא מונע את הרישום.**
+      var rec = (out.record && out.record.q === answered) ? out.record : {};
       sheet('baseline').appendRow([
-        new Date(), id, nameOf(id), out.record.q,
-        String(out.record.answer || ''),
-        out.record.matched === true ? 'yes' : 'no',
-        String(out.record.note || ''),
+        new Date(), id, nameOf(id), answered, text,
+        rec.matched === true ? 'yes' : (rec.matched === false ? 'no' : ''),
+        String(rec.note || ''),
       ]);
     }
     if (out.done) markOnboarded(id);
   } finally {
     lock.releaseLock();
   }
+
+  // השלב והאווטאר נגזרים מהשיחה. הצהרת המודל היא רמז, לא מקור.
+  turns.push({ role: 'elad', text: out.say });
+  out.stage = stageFrom(turns, out.done);
+  out.avatar = STAGE_AVATAR[out.stage] || out.avatar || 'neutral';
   return out;
 }
 

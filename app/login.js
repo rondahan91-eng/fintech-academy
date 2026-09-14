@@ -34,8 +34,9 @@ form.addEventListener('submit', async (e) => {
     // ואיש לא בוחר: מי שטרם עבר קליטה הולך לשם, וזה קורה פעם אחת.
     location.replace(res.state.onboarded ? 'index.html' : 'onboarding.html');
   } catch (e2) {
-    // הודעה מהשרת מוצגת כמות שהיא; תקלת רשת מקבלת ניסוח משלה
-    fail(/fetch|Failed|NetworkError|abort/i.test(e2.message)
+    // הודעה מהשרת מוצגת כמות שהיא — כולל "השרת איטי מהרגיל", שכבר
+    // מנוסח ב-api.js. רק כשל רשת אמיתי מקבל ניסוח משלו כאן.
+    fail(/fetch|Failed|NetworkError/i.test(e2.message)
       ? 'אין חיבור לשרת. קרא למורה.'
       : e2.message);
   }

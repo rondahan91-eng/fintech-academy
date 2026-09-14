@@ -44,7 +44,11 @@ function setOnline(ok, err) {
  * עונה עליו. הבקשה נופלת ב-CORS לפני שהיא מגיעה לשרת. הגוף עדיין JSON,
  * והשרת עושה JSON.parse בעצמו.
  */
-export async function call(action, payload = {}, { timeout = 20000 } = {}) {
+// ⚠️ **45 שניות ולא 20.** ‏Apps Script עולה קר, והקריאה הראשונה אחרי
+//    פריסה או אחרי שקט ארוך לוקחת יותר מ-20 — נמדד: ‏POST ידני ב-30
+//    שניות הצליח בזמן שהטופס נכשל ב-20. **זה בדיוק מה שקורה בתלמיד
+//    הראשון בבוקר**, ואחריו כולם נהנים משרת חם.
+export async function call(action, payload = {}, { timeout = 45000 } = {}) {
   if (!ENDPOINT) throw new Error('לא הוגדרה כתובת שרת ב-app/config.js');
 
   const ctrl = new AbortController();
@@ -62,8 +66,14 @@ export async function call(action, payload = {}, { timeout = 20000 } = {}) {
     if (data.error) throw new Error(data.error);
     return data;
   } catch (err) {
-    // ביטול מרצון אינו נפילת שרת
-    if (err.name !== 'AbortError' && !/^(שם|קוד|הודעה|אסימון|פג|החשבון|לא הוגדר)/.test(err.message)) {
+    // ⚠️ **פסק זמן אינו היעדר שרת.** שניהם נראים אותו דבר ל-fetch,
+    //    אבל למורה הם שתי בעיות שונות לגמרי: "אין חיבור" שולח אותו
+    //    לבדוק רשת, כשבפועל השרת פשוט איטי והניסיון הבא יעבוד.
+    if (err.name === 'AbortError') {
+      setOnline(false, 'timeout');
+      throw new Error('השרת איטי מהרגיל. נסה שוב.');
+    }
+    if (!/^(שם|קוד|הודעה|אסימון|פג|החשבון|לא הוגדר)/.test(err.message)) {
       setOnline(false, err.message);
     }
     throw err;
