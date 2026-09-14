@@ -14,8 +14,12 @@
 
 // ═══ הגדרות ═══════════════════════════════════════════════════════════
 
-var MODEL = 'claude-opus-5';
-var MAX_TOKENS = 4096;
+// ⚠️ **‏Sonnet ולא Opus, וזו הכרעה של כיתה ולא של איכות.**
+//    אלעד כותב שתיים-שלוש שורות של מנטור. ‏Opus חושב לפני כל תשובה
+//    ומוסיף שניות שהתלמיד מחכה מולן, ו-Apps Script כבר גובה 3–7
+//    שניות משלו. **החזרה ל-Opus היא שינוי של מילה אחת כאן.**
+var MODEL = 'claude-sonnet-5';
+var MAX_TOKENS = 1024;       // תשובת מנטור. תקרה גבוהה = חשיבה ארוכה
 var EFFORT = 'low';          // תשובה קצרה של מנטור. ‏high כאן הוא בזבוז
 var CHAT_HISTORY = 12;       // כמה תורות אחרונות נשלחות כהקשר
 var TOKEN_TTL_HOURS = 14;    // יום לימודים אחד ועוד שוליים
@@ -40,7 +44,7 @@ var SHEETS = {
 //    שבעורך — והדבקה ושמירה לא משנות כלום עד Version: New. בלי
 //    החותמת הזאת "האם זה נפרס?" היא שאלה שאי אפשר לענות עליה בלי
 //    לנסות פעולה ולראות אם היא מתנהגת אחרת. **להעלות בכל שינוי.**
-var VERSION = '2026-09-14g';
+var VERSION = '2026-09-14h';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -159,13 +163,27 @@ var BIDI = new RegExp('[' + BIDI_CODES.map(function (c) {
  *
  * ההמרה חזרה ל-DDMMYY משחזרת בדיוק את מה שהתלמיד רואה על הפתק.
  */
+/**
+ * ⚠️ **אזור הזמן נשלף פעם אחת להרצה.**
+ *
+ * ‏getSpreadsheetTimeZone היא קריאת API לשירות Sheets, לא קריאת
+ * זיכרון. ‏cellDate נקראת על כל ערך, וכל 22 הקודים הם תאריכים —
+ * כלומר **22 נסיעות הלוך-חזור בכל כניסה בודדת.** זה מה שהפך את
+ * התגובה לאיטית מ-45 שניות אחרי שגרסה g עלתה.
+ */
+var TZ_CACHE = null;
+
+function tz() {
+  if (TZ_CACHE) return TZ_CACHE;
+  try { TZ_CACHE = SpreadsheetApp.getActive().getSpreadsheetTimeZone(); }
+  catch (e) { TZ_CACHE = Session.getScriptTimeZone(); }
+  return TZ_CACHE;
+}
+
 function cellDate(v) {
   if (Object.prototype.toString.call(v) !== '[object Date]') return null;
   if (isNaN(v.getTime())) return null;
-  var tz;
-  try { tz = SpreadsheetApp.getActive().getSpreadsheetTimeZone(); }
-  catch (e) { tz = Session.getScriptTimeZone(); }
-  return Utilities.formatDate(v, tz, 'ddMMyy');
+  return Utilities.formatDate(v, tz(), 'ddMMyy');
 }
 
 function norm(v) {
@@ -568,7 +586,9 @@ function doOnboard(req) {
     payload: JSON.stringify({
       model: MODEL,
       max_tokens: MAX_TOKENS,
-      output_config: { effort: 'medium' },   // שיחה, לא רמז. שווה קצת יותר
+      // ‏low ולא medium. השיחה מובנית היטב בתדריך ואינה דורשת עומק —
+      // ומול תלמיד שמחכה, כל שנייה כאן נמדדת.
+      output_config: { effort: 'low' },
       system: [{ type: 'text', text: ONBOARD_SYSTEM_PROMPT,
                  cache_control: { type: 'ephemeral' } }],
       messages: history,
