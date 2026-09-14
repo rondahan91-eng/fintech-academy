@@ -14,6 +14,14 @@ import { api, session, health, onHealthChange, saveOnExit } from './api.js';
 // §16.2 — הכניסה אינה תפריט, היא המשך. בלי אסימון אין מסך עבודה.
 if (!session.token) location.replace('login.html');
 
+// ⚠️ **כבוי אצל תלמידים.** התלמיד ראה קופסה שחורה עם מספרים בפינה
+//    ולא ידע מה היא. נדלק רק עם ‏?debug=1 בכתובת.
+//
+//    ⚠️ **ומוגדר כאן ולא ליד probe().** הוא נקרא מ-setResults בשורה
+//       456, ו-const בסוף הקובץ הוא אזור מת זמני — ReferenceError
+//       שמפיל את כל המודול.
+const DEBUG = new URLSearchParams(location.search).has('debug');
+
 const $ = (id) => document.getElementById(id);
 
 const el = {
@@ -712,6 +720,7 @@ onHealthChange((h) => { banner.hidden = h.online; });
 // כלי פיתוח. קיים כדי לבדוק טענה אחת מ-layout.md §2: "20 שורות קוד".
 
 function probe() {
+  if (!DEBUG) return;
   const wrap = document.querySelector('.code-wrap');
   const lh = parseFloat(getComputedStyle(el.code).lineHeight);
   const pad = parseFloat(getComputedStyle(el.code).paddingTop)
