@@ -7,4 +7,4 @@
 // לוודא שהכתובת נכונה: פתח אותה בדפדפן — היא מחזירה version ו-hasKey.
 
 window.FINTECH_ENDPOINT =
-  'https://script.google.com/macros/s/AKfycbzbX5qSjXdyq6C3zMxZL4WAk3wrnuy7PACNEYQ8mTQ9dltXpk4n2EOxvwu7UgN6REgK/exec';
+  'https://script.google.com/macros/s/AKfycbzZzDKJcZfQ3RqauEyKJ7mqeSX0uVOiRj14xAbpkBuxTKuByNp-GBHTzAv8WYNEyMaZ/exec';

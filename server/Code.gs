@@ -40,28 +40,54 @@ var SHEETS = {
 //    שבעורך — והדבקה ושמירה לא משנות כלום עד Version: New. בלי
 //    החותמת הזאת "האם זה נפרס?" היא שאלה שאי אפשר לענות עליה בלי
 //    לנסות פעולה ולראות אם היא מתנהגת אחרת. **להעלות בכל שינוי.**
-var VERSION = '2026-09-14e';
+var VERSION = '2026-09-14f';
 
-function doGet() {
+function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
   //    מי בכיתה — הכתובת הזאת ציבורית.
-  var head = [], rows = 0;
+  var head = [], rows = 0, ss = null;
   try {
+    ss = SpreadsheetApp.getActive();
     var sh = sheet('roster');
     rows = Math.max(0, sh.getLastRow() - 1);
     head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0]
              .map(function (h) { return norm(h); });
-  } catch (e) { head = ['<' + e.message + '>']; }
+  } catch (err) { head = ['<' + err.message + '>']; }
 
-  return json({
+  var out = {
     ok: true, service: 'fintech-academy', version: VERSION,
     hasKey: !!prop('ANTHROPIC_API_KEY'),
     skipOnboarding: bypassOnboarding(),
+    // ⚠️ **לאיזה גיליון הסקריפט קשור בפועל.** אם זה לא הגיליון
+    //    שמסתכלים עליו, כל השאר חסר משמעות — קוראים כאן טבלה אחרת.
+    sheetId: ss ? ss.getId() : null,
+    sheetName: ss ? ss.getName() : null,
     rosterRows: rows, rosterHeaders: head,
-    sheets: SpreadsheetApp.getActive().getSheets()
-      .map(function (s) { return s.getName(); }),
+    sheets: ss ? ss.getSheets().map(function (s) { return s.getName(); }) : [],
     time: new Date().toISOString(),
-  });
+  };
+
+  // ‏?probe=<קוד> — בודק את ההשוואה עצמה. מחזיר רק צורות, לא נתונים.
+  var probe = e && e.parameter ? norm(e.parameter.probe) : '';
+  if (probe) {
+    var r = table('roster');
+    var exact = 0, numeric = 0;
+    for (var i = 0; i < r.length; i++) {
+      var x = norm(r[i].code);
+      if (x === probe) exact++;
+      else if (/^\d+$/.test(x) && /^\d+$/.test(probe) &&
+               Number(x) === Number(probe)) numeric++;
+    }
+    out.probe = {
+      typed: probe, typedLen: probe.length,
+      parsedRows: r.length,
+      keys: r.length ? Object.keys(r[0]) : [],
+      firstCodeLen: r.length ? norm(r[0].code).length : -1,
+      firstCodeType: r.length ? typeof r[0].code : 'none',
+      exact: exact, numeric: numeric,
+    };
+  }
+  return json(out);
 }
 
 /**
