@@ -21,8 +21,20 @@
 
     <label class="field">
       <span>קוד</span>
-      <input id="f-code" type="text" required inputmode="numeric"
-             autocomplete="off" placeholder="שש ספרות">
+      <!-- מוסתר כברירת מחדל, עם גילוי בלחיצה. הכיתה יושבת צפוף
+           ומסך שכן נראה מהכיסא הסמוך. -->
+      <span class="field-wrap">
+        <input id="f-code" type="password" required inputmode="numeric"
+               autocomplete="off" placeholder="שש ספרות">
+        <button type="button" id="peek" class="peek"
+                aria-label="הצג את הקוד" aria-pressed="false" tabindex="-1">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path id="peek-eye" d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/>
+            <circle cx="12" cy="12" r="3.2"/>
+            <line id="peek-slash" x1="4" y1="20" x2="20" y2="4" hidden/>
+          </svg>
+        </button>
+      </span>
     </label>
 
     <!-- §16.3 · 24px שמורים תמיד. אחרת הכפתור קופץ בדיוק כשטעית -->

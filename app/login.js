@@ -11,6 +11,23 @@ const form = $('login-form'), err = $('err'), go = $('go');
 // כבר מחובר — §16.2: הכניסה אינה תפריט, היא המשך
 if (session.token) location.replace('index.html');
 
+// ── גילוי הקוד ────────────────────────────────────────────────────────
+// ⚠️ **חוזר למוסתר בהגשה.** תלמיד שגילה, טעה, וקיבל שגיאה — הקוד שלו
+//    נשאר על המסך בזמן שהוא קורא אותה, והשכן קורא איתו.
+const code = $('f-code'), peek = $('peek'), slash = $('peek-slash');
+
+function reveal(on) {
+  code.type = on ? 'text' : 'password';
+  slash.hidden = !on;
+  peek.setAttribute('aria-pressed', String(on));
+  peek.setAttribute('aria-label', on ? 'הסתר את הקוד' : 'הצג את הקוד');
+}
+
+peek.addEventListener('click', () => {
+  reveal(code.type === 'password');
+  code.focus();
+});
+
 function fail(message) {
   err.textContent = message;
   go.disabled = false;
@@ -20,6 +37,7 @@ function fail(message) {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   err.textContent = '';
+  reveal(false);                 // לא להשאיר קוד גלוי מול שגיאה
   go.disabled = true;
   go.textContent = 'מתחבר…';
 
