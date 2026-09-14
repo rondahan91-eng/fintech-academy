@@ -61,7 +61,19 @@ export async function call(action, payload = {}, { timeout = 45000 } = {}) {
       signal: ctrl.signal,
       redirect: 'follow',           // ‏Apps Script מפנה מחדש. חובה
     });
-    const data = await res.json();
+    // ⚠️ **לא res.json() ישירות.** ‏Apps Script מחזיר לפעמים דף HTML
+    //    של שגיאה במקום JSON — ראיתי את זה קורה פעם אחת באמצע בדיקה,
+    //    והניסיון הבא הצליח. ‏res.json() היה זורק SyntaxError, והתלמיד
+    //    היה רואה "Unexpected token '<'". זו הודעה חסרת פשר, והיא
+    //    גם לא מרמזת שכדאי פשוט לנסות שוב.
+    const raw = await res.text();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      setOnline(false, 'non-json');
+      throw new Error('השרת החזיר תשובה לא צפויה. נסה שוב.');
+    }
     setOnline(true);
     if (data.error) throw new Error(data.error);
     return data;
