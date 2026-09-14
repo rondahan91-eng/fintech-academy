@@ -40,13 +40,26 @@ var SHEETS = {
 //    שבעורך — והדבקה ושמירה לא משנות כלום עד Version: New. בלי
 //    החותמת הזאת "האם זה נפרס?" היא שאלה שאי אפשר לענות עליה בלי
 //    לנסות פעולה ולראות אם היא מתנהגת אחרת. **להעלות בכל שינוי.**
-var VERSION = '2026-09-14c';
+var VERSION = '2026-09-14d';
 
 function doGet() {
+  // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
+  //    מי בכיתה — הכתובת הזאת ציבורית.
+  var head = [], rows = 0;
+  try {
+    var sh = sheet('roster');
+    rows = Math.max(0, sh.getLastRow() - 1);
+    head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0]
+             .map(function (h) { return norm(h); });
+  } catch (e) { head = ['<' + e.message + '>']; }
+
   return json({
     ok: true, service: 'fintech-academy', version: VERSION,
     hasKey: !!prop('ANTHROPIC_API_KEY'),
     skipOnboarding: bypassOnboarding(),
+    rosterRows: rows, rosterHeaders: head,
+    sheets: SpreadsheetApp.getActive().getSheets()
+      .map(function (s) { return s.getName(); }),
     time: new Date().toISOString(),
   });
 }
@@ -89,16 +102,46 @@ function json(obj) {
 //    מידע רגיש — יש קוד פייתון ושיחות עם מנטור. **אל תשים כאן שום דבר
 //    שלא היית תולה על לוח הכיתה.**
 
+/**
+ * ⚠️ **‏trim לבדו לא מספיק לעברית.** טקסט שמודבק לגיליון נושא לעיתים
+ *    סימני כיווניות בלתי נראים — RLM ו-LRM וחבריהם. הם אינם רווחים,
+ *    ‏trim לא נוגע בהם, והם גורמים לכל השוואה להיכשל **בלי שרואים
+ *    שום דבר חריג בתא.** זה הפיל את כל 22 הכניסות.
+ */
+var BIDI_CODES = [0x200E, 0x200F, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E,
+                  0x2066, 0x2067, 0x2068, 0x2069, 0xFEFF];
+
+// ⚠️ **נבנית ממספרים ולא נכתבת כתווים.** התווים האלה בלתי נראים, והקובץ
+//    הזה עובר העתק-הדבק לעורך של Apps Script — עורך או לוח גזירים
+//    שיבלעו אותם היו הורגים את התיקון **בלי שאיש יראה שינוי בקוד.**
+var BIDI = new RegExp('[' + BIDI_CODES.map(function (c) {
+  return String.fromCharCode(c);
+}).join('') + ']', 'g');
+
+function norm(v) {
+  return String(v == null ? '' : v).replace(BIDI, '').trim();
+}
+
+/**
+ * ⚠️ **קוד עם אפס מוביל.** ‏050411 בתא שעוצב כמספר נשמר כ-50411,
+ *    והתלמיד מקליד את מה שמודפס לו על הפתק. משווים גם מספרית.
+ */
+function codeEq(a, b) {
+  var x = norm(a), y = norm(b);
+  if (x === y) return true;
+  return /^\d+$/.test(x) && /^\d+$/.test(y) && Number(x) === Number(y);
+}
+
 function doLogin(req) {
-  var name = String(req.name || '').trim();
-  var code = String(req.code || '').trim();
+  var name = norm(req.name);
+  var code = norm(req.code);
   if (!name || !code) return { error: 'חסר שם או קוד' };
 
   var rows = table('roster');
   for (var i = 0; i < rows.length; i++) {
     var r = rows[i];
-    if (String(r.name).trim() === name && String(r.code).trim() === code) {
-      if (String(r.active).toLowerCase() === 'no') return { error: 'החשבון אינו פעיל' };
+    if (norm(r.name) === name && codeEq(r.code, code)) {
+      if (norm(r.active).toLowerCase() === 'no') return { error: 'החשבון אינו פעיל' };
       return {
         token: makeToken(r.id),
         student: { id: r.id, name: r.name, class: r.class },
@@ -557,9 +600,12 @@ function table(name) {
   if (last < 2) return [];
   var head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
   var body = sh.getRange(2, 1, last - 1, sh.getLastColumn()).getValues();
+  // ⚠️ **גם הכותרות מנורמלות.** כותרת עם רווח נגרר נותנת o['name ']
+  //    במקום o['name'], ואז r.name הוא undefined — וכל שורה נכשלת
+  //    בהשוואה בלי שום סימן שמשהו לא בסדר.
   return body.map(function (row) {
     var o = {};
-    head.forEach(function (h, i) { o[h] = row[i]; });
+    head.forEach(function (h, i) { o[norm(h)] = row[i]; });
     return o;
   });
 }
