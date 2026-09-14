@@ -40,7 +40,7 @@ var SHEETS = {
 //    שבעורך — והדבקה ושמירה לא משנות כלום עד Version: New. בלי
 //    החותמת הזאת "האם זה נפרס?" היא שאלה שאי אפשר לענות עליה בלי
 //    לנסות פעולה ולראות אם היא מתנהגת אחרת. **להעלות בכל שינוי.**
-var VERSION = '2026-09-14b';
+var VERSION = '2026-09-14c';
 
 function doGet() {
   return json({
@@ -314,14 +314,44 @@ function logChat(id, week, role, text) {
 //
 //    הטביעות הן קטעים ייחודיים מהניסוחים הקבועים ב-onboarding.yml.
 //    הניסוח נעול שם ממילא — הוא נשאל שוב מילה במילה בשבוע 30.
+// ‏`right` — האם התשובה הלכה לכיוון הנכון. **גם זה דטרמיניסטי.**
+// בבדיקה המודל מילא matched באחת מארבע תשובות, וזו העמודה שמזינה
+// את הדלתא מול שבוע 30. ‏`correct` כאן זהה ל-onboarding.yml.
+//
+// ⚠️ **זה לא ציון ולא נאמר לתלמיד** — never_judge. זה רק למורה.
 var BASELINE_Q = [
-  { id: 'q1_gross_net', probe: 'נכנס לו בפועל' },
-  { id: 'q2_percent',   probe: 'הנחה של 25' },
-  { id: 'q3_compound',  probe: 'ריבית של 10' },
-  { id: 'q4_loans',     probe: 'הלוואה של 10' },
-  { id: 'q5_fees',      probe: '0.2' },
-  { id: 'q6_risk',      probe: 'בוודאות' },
+  { id: 'q1_gross_net', probe: 'נכנס לו בפועל',
+    right: function (a) {
+      if (/פחות|אחרי|ניכוי|מס\b/.test(a)) return true;
+      var n = numberIn(a);
+      return n !== null && n < 6000;
+    } },
+  { id: 'q2_percent', probe: 'הנחה של 25',
+    right: function (a) { return numberIn(a) === 150; } },
+  { id: 'q3_compound', probe: 'ריבית של 10',
+    right: function (a) { return numberIn(a) === 1210; } },
+  { id: 'q4_loans', probe: 'הלוואה של 10',
+    right: function (a) { return /יותר/.test(a); } },
+  { id: 'q5_fees', probe: '0.2',
+    right: function (a) { return /עצום/.test(a); } },
+  { id: 'q6_risk', probe: 'בוודאות',
+    right: function (a) { return /פיקדון|פקדון/.test(a); } },
 ];
+
+/** המספר הראשון בתשובה, בלי פסיקים. "1,210 שקל" → 1210 */
+function numberIn(text) {
+  var m = String(text).replace(/,/g, '').match(/\d+(\.\d+)?/);
+  return m ? Number(m[0]) : null;
+}
+
+function judge(qid, answer) {
+  for (var i = 0; i < BASELINE_Q.length; i++) {
+    if (BASELINE_Q[i].id === qid) {
+      try { return BASELINE_Q[i].right(String(answer)); } catch (e) { return null; }
+    }
+  }
+  return null;
+}
 
 function questionIn(text) {
   var t = String(text || '');
@@ -339,13 +369,58 @@ function alreadyRecorded(id, q) {
   return false;
 }
 
-/** השלב נגזר מהשיחה עצמה ולא מהצהרת המודל, מאותה סיבה. */
+/**
+ * השלב נגזר מהשיחה ולא מהצהרת המודל, מאותה סיבה.
+ * ⚠️ **רק התור האחרון של אלעד נבדק.** סריקה אחורה על כל השיחה
+ *    הייתה מחזירה baseline לנצח — שאלה שנשאלה פעם נשארת בתמלול —
+ *    וההתקדמות לא הייתה מגיעה ל"המשימה" אף פעם.
+ */
+function lastEladTurn(turns) {
+  for (var i = turns.length - 1; i >= 0; i--) {
+    if (turns[i].role === 'elad') return turns[i];
+  }
+  return null;
+}
+
+function askedCount(turns) {
+  var seen = {};
+  for (var i = 0; i < turns.length; i++) {
+    if (turns[i].role !== 'elad') continue;
+    var q = questionIn(turns[i].text);
+    if (q) seen[q] = true;
+  }
+  return Object.keys(seen).length;
+}
+
 function stageFrom(turns, done) {
   if (done) return 'handoff';
-  for (var i = turns.length - 1; i >= 0; i--) {
-    if (turns[i].role === 'elad' && questionIn(turns[i].text)) return 'baseline';
-  }
+  var last = lastEladTurn(turns);
+  if (last && questionIn(last.text)) return 'baseline';
+  if (askedCount(turns) >= BASELINE_Q.length) return 'handoff';
+  if (askedCount(turns) > 0) return 'baseline';
   return turns.length >= 3 ? 'role' : 'arrival';
+}
+
+/**
+ * ⚠️ **הסיום לא נסמך על המודל.** בבדיקה הוא סגר את השיחה כמו שצריך
+ *    — "תפתח את המשימה, נדבר תוך כדי" — והחזיר done: false. בלי
+ *    הדגל הזה התלמיד **לא מגיע למשימה לעולם**, וזו אותה חסימה
+ *    קשה שכבר עלתה כאן פעמיים.
+ *
+ *    הכלל: שש השאלות נשאלו, אין שאלה פתוחה בתור האחרון, ואלעד
+ *    קיבל שני תורים אחרי האחרונה כדי למסור את המשימה.
+ */
+function doneFrom(turns, modelDone) {
+  if (modelDone) return true;
+  if (askedCount(turns) < BASELINE_Q.length) return false;
+
+  var since = 0, hit = false;
+  for (var i = turns.length - 1; i >= 0; i--) {
+    if (turns[i].role !== 'elad') continue;
+    if (questionIn(turns[i].text)) { hit = true; break; }
+    since += 1;
+  }
+  return hit && since >= 2;
 }
 
 var STAGE_AVATAR = {
@@ -409,24 +484,27 @@ function doOnboard(req) {
     sheet('onboard').appendRow([new Date(), id, 'elad', out.say]);
 
     if (answered && !alreadyRecorded(id, answered)) {
-      // ‏q והתשובה — מהשרת. ‏matched וה-note — מהמודל אם נתן, כי הם
-      // היחידים שדורשים שיפוט. **חסרונם לא מונע את הרישום.**
+      // ‏q, התשובה **וההתאמה** — כולם מהשרת. מהמודל נלקח רק ה-note,
+      // שהוא היחיד שבאמת דורש שיפוט: נימוק שהתלמיד נתן מיוזמתו.
       var rec = (out.record && out.record.q === answered) ? out.record : {};
+      var ok = judge(answered, text);
       sheet('baseline').appendRow([
         new Date(), id, nameOf(id), answered, text,
-        rec.matched === true ? 'yes' : (rec.matched === false ? 'no' : ''),
+        ok === true ? 'yes' : (ok === false ? 'no' : ''),
         String(rec.note || ''),
       ]);
     }
-    if (out.done) markOnboarded(id);
   } finally {
     lock.releaseLock();
   }
 
-  // השלב והאווטאר נגזרים מהשיחה. הצהרת המודל היא רמז, לא מקור.
+  // השלב, האווטאר והסיום נגזרים מהשיחה. הצהרת המודל היא רמז, לא מקור.
   turns.push({ role: 'elad', text: out.say });
+  out.done = doneFrom(turns, out.done);
   out.stage = stageFrom(turns, out.done);
   out.avatar = STAGE_AVATAR[out.stage] || out.avatar || 'neutral';
+
+  if (out.done) markOnboarded(id);
   return out;
 }
 
