@@ -48,7 +48,7 @@ var SHEETS = {
 //    שבעורך — והדבקה ושמירה לא משנות כלום עד Version: New. בלי
 //    החותמת הזאת "האם זה נפרס?" היא שאלה שאי אפשר לענות עליה בלי
 //    לנסות פעולה ולראות אם היא מתנהגת אחרת. **להעלות בכל שינוי.**
-var VERSION = '2026-09-14l';
+var VERSION = '2026-09-15a';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -632,7 +632,13 @@ function doOnboard(req) {
     return { role: t.role === 'elad' ? 'assistant' : 'user', content: t.text };
   });
   if (text) history.push({ role: 'user', content: text });
-  if (!history.length) history.push({ role: 'user', content: '(התלמיד נכנס)' });
+
+  // ⛔ **חייב להיגמר בהודעת תלמיד.** היסטוריה שנגמרת בתור של אלעד
+  //    היא prefill, והמודל דוחה אותה ב-400. זה קורה בכל פתיחה מחדש
+  //    של שיחה שנקטעה — התלמיד סגר את הדפדפן אחרי שאלעד דיבר.
+  if (!history.length || history[history.length - 1].role !== 'user') {
+    history.push({ role: 'user', content: '(התלמיד נכנס)' });
+  }
 
   var res = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
     method: 'post',
