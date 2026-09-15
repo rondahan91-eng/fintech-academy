@@ -3,8 +3,8 @@
 //
 // נוצר מ-config.example.js. אם החלפת פריסה, החלף רק את המחרוזת.
 //
-// עודכן 2026-09-14 · פריסה חדשה, גרסה 2026-09-14g.
+// עודכן 2026-09-14 · פריסה חדשה, גרסה 2026-09-14l.
 // לוודא שהכתובת נכונה: פתח אותה בדפדפן — היא מחזירה version ו-hasKey.
 
 window.FINTECH_ENDPOINT =
-  'https://script.google.com/macros/s/AKfycby6wNgKH9atbS9QrukP8kArWRum5OpkeJjlq6mm-cGcLyBu8k_vktS1M-_ursXZ7gtA/exec';
+  'https://script.google.com/macros/s/AKfycbzKeSOb_oC2bAhXuKgRtqDTV6Q0zXtVxljiAlM4nyeHOujDOQycRmztJvrqIlbGZ3sF/exec';
