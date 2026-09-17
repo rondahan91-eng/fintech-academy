@@ -5,12 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FinTech Academy</title>
 <link rel="stylesheet" href="styles.css">
+<!-- מצב חריג בלבד. במחשב תקין הבלוק הזה לא מוצג ותקציב הגובה של
+     ‏§16 נשמר כלשונו. לכן סגנון מקומי ולא תוספת ל-styles.css. -->
+<style>
+.mc-warn{
+  display:none; max-width:400px; margin:0 auto 16px;
+  background:#FBF3E2; border:1px solid #E8D8AE; border-radius:10px;
+  padding:14px 16px; text-align:right; line-height:1.55;
+}
+.mc-warn.on{display:block}
+.mc-warn b{display:block;color:#8A6410;font-size:15px;margin-bottom:4px}
+.mc-warn span{display:block;color:#5C5240;font-size:13.5px}
+.mc-warn i{display:block;color:#8A8270;font-size:12.5px;font-style:normal;margin-top:6px}
+</style>
 </head>
 <body class="login-page">
 
 <!-- ‏layout.md §16 · 400px ממורכז · אין סרגל עליון · אין ניווט -->
 <main class="login">
   <h1 class="login-brand">FinTech Academy</h1>
+
+  <!-- ⚠️ **אזהרה, לא חסימה.** שיחת הקליטה היא צ'אט ועובדת בלי פייתון,
+       אז תלמיד במחשב שבור עדיין נכנס ונקלט. החסימה הייתה עולה לנו
+       בתלמיד שלא נקלט בגלל באג בבדיקה שלי. -->
+  <div class="mc-warn" id="mc-warn" role="status">
+    <b id="mc-title"></b>
+    <span id="mc-detail"></span>
+    <i id="mc-code"></i>
+  </div>
 
   <form id="login-form" autocomplete="off">
     <!-- ⚠️ לא required. **הקוד הוא המפתח** — השם כאן רק כדי שהמסך
@@ -48,6 +70,30 @@
 
 <!-- כתובת השרת. תג רגיל ולא מודול — היעדרו הוא 404, לא מוות שקט. -->
 <script src="config.js"></script>
+
+<!-- בדיקת המחשב. תג רגיל ו-ES5 — הוא מאבחן דפדפנים ישנים, אז הוא
+     חייב לרוץ עליהם. מודול היה מת בשקט בדיוק במחשב שרצינו לאבחן. -->
+<script src="machine-check.js"></script>
+<script>
+/* רץ אוטומטית בכל טעינה של מסך הכניסה, בפחות ממילישנייה, בלי רשת.
+   ⚠️ עטוף ב-try כולו: תקלה כאן לא תמנע מאף אחד להיכנס. */
+(function () {
+  try {
+    if (!window.MachineCheck) return;
+    var r = window.MachineCheck.fast();
+    if (r.ok) return;
+    var box = document.getElementById('mc-warn');
+    if (!box) return;
+    document.getElementById('mc-title').appendChild(document.createTextNode(r.title));
+    document.getElementById('mc-detail').appendChild(document.createTextNode(r.detail));
+    document.getElementById('mc-code').appendChild(document.createTextNode(
+      r.code + ' · ' + window.MachineCheck.line() +
+      ' · אפשר להיכנס ולדבר עם אלעד, אבל לא להריץ קוד מהמחשב הזה.'));
+    box.className = 'mc-warn on';
+  } catch (e) { /* שתיקה מכוונת. הכניסה חשובה מהאזהרה. */ }
+})();
+</script>
+
 <script type="module" src="login.js"></script>
 </body>
 </html>

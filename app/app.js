@@ -592,6 +592,39 @@ let py = null;
 //    שלושים תלמידים אומרים למורה "זה עוד נטען", ואי אפשר להבחין בין
 //    איטי למת. **קוד השגיאה הוא העיקר** — הוא מה שמאפשר למורה לאבחן
 //    מקדמת הכיתה במקום ללכת ממסך למסך.
+// שורה אחת שהמורה יכול להקריא בטלפון. בלי זה "זה לא עובד" הוא כל המידע
+// שמגיע אליו משלושים מחשבים, והאבחון נעשה בניחוש.
+// ‏machine-check.js הוא מקור האמת; זו רק נפילה לאחור אם התג לא נטען.
+function diagLine() {
+  if (window.MachineCheck) { try { return window.MachineCheck.line(); } catch (e) {} }
+  const ua = navigator.userAgent || '';
+  const m = ua.match(/(Edg|Chrome|Firefox|Safari)\/(\d+)/);
+  return (m ? `${m[1]} ${m[2]}` : 'דפדפן לא מזוהה') +
+         ' · wasm:' + (typeof WebAssembly === 'object' ? 'יש' : 'אין');
+}
+
+// ⚠️ **"PYO-2: WebAssembly.instantiate(): Out of memory" לא אומר כלום
+//    למורה.** כשהעלייה נכשלת, הבדיקה רצה מאליה ומחליפה את השגיאה
+//    הגולמית בסיבה ובפעולה: דפדפן ישן · wasm חסום · סינון שקטע קובץ ·
+//    זיכרון. זה ההבדל בין "קרא למורה" לבין "עבור למחשב אחר".
+function diagnose(code, err) {
+  const tail = (title, detail) => {
+    el.rbOut.textContent = el.rbOut.textContent.replace(
+      /מחפש את הסיבה…$/, `${title}\n${detail}`);
+  };
+  if (!window.MachineCheck) {
+    tail('אבחון מלא: פתח את check.html מאותה כתובת.', '');
+    return;
+  }
+  try {
+    window.MachineCheck.full('vendor/pyodide/', (d) => {
+      tail(d.title, `${d.detail}\n\nקוד: ${code} · ${d.code}`);
+    });
+  } catch (e) {
+    tail('אבחון מלא: פתח את check.html מאותה כתובת.', '');
+  }
+}
+
 async function boot() {
   el.btnRun.disabled = el.btnTests.disabled = true;
   el.rhint.textContent = 'טוען את פייתון…';
@@ -608,11 +641,22 @@ async function boot() {
   } catch (err) {
     const code = typeof loadPyodide !== 'function' ? 'PYO-1' : 'PYO-2';
     el.rhint.textContent = `פייתון לא נטען · ${code}`;
+    // ⚠️ **הנוסח הקודם גרם למורה להתקין פייתון על מחשבי הכיתה.**
+    //    "פייתון לא עלה במחשב הזה" נקרא בדיוק כמו "פייתון לא מותקן כאן".
+    //    פייתון רץ **בתוך הדפדפן** (Pyodide/WebAssembly) ואין מה להתקין.
+    //    השלילה חייבת להיות במשפט הראשון, לפני כל פרט טכני.
     el.rbOut.textContent =
-      `פייתון לא עלה במחשב הזה.\n\n${code}\n${err.message}\n\n` +
-      `קרא למורה. מה שכתבת נשמר ולא ילך לאיבוד.`;
+      `הדפדפן לא הצליח להפעיל את פייתון.\n\n` +
+      `אין מה להתקין. פייתון רץ בתוך הדפדפן עצמו —\n` +
+      `התקנת פייתון על המחשב לא תפתור את זה ואינה נדרשת.\n\n` +
+      `קרא למורה. מה שכתבת נשמר ולא ילך לאיבוד.\n\n` +
+      `─────────────  לדיווח למורה  ─────────────\n` +
+      `${code}  ${err.name || 'Error'}\n${err.message}\n` +
+      `${diagLine()}\n\n` +
+      `מחפש את הסיבה…`;
     showTab('out');
     openResults();
+    diagnose(code, err);          // רץ מאליו. לא ממתינים לו כאן
     return;                       // הכפתורים נשארים מנוטרלים, וזה נכון
   }
   el.btnRun.disabled = el.btnTests.disabled = false;

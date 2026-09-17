@@ -126,6 +126,9 @@
 <!-- כתובת השרת. תג רגיל ולא מודול — היעדרו הוא 404, לא מוות שקט. -->
 <script src="config.js"></script>
 <script src="vendor/pyodide/pyodide.js"></script>
+<!-- לפני app.js: כשהעלייה של Pyodide נכשלת, boot() קורא לו מיד
+     כדי להחליף את השגיאה הגולמית בסיבה. ES5, תג רגיל. -->
+<script src="machine-check.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>
