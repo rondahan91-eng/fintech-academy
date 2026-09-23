@@ -37,6 +37,14 @@ var SHEETS = {
   //    שהחינוך הפיננסי עבד — ולכן זה הגיליון שאסור למחוק.
   baseline: ['ts', 'id', 'name', 'q', 'answer', 'matched', 'note'],
   onboard: ['ts', 'id', 'role', 'text'],
+  // ⚠️ **שורה אחת לכל מחשב, המצב האחרון שלו.** זה הגיליון שהמורה
+  //    מסתכל עליו: מיון לפי result, וכל מה שאינו ok הוא מחשב לטפל בו.
+  //    נכתב מאליו בכל טעינה של מסך העבודה — אין מה להפעיל.
+  machines: ['machine', 'result', 'lastSeen', 'student', 'code', 'detail',
+             'browser', 'sec', 'okCount', 'failCount'],
+  // כל הדיווחים, לפי סדר. למקרה שמחשב "מתקן את עצמו" ורוצים לראות מה היה.
+  machinelog: ['ts', 'machine', 'id', 'student', 'result', 'code', 'detail',
+               'browser', 'sec', 'ua'],
   // נגזרת בלבד — נבנה מחדש מהתפריט. מחיקתו לא מוחקת דבר.
   dashboard: ['id', 'שם', 'קליטה', 'בסיס', 'הגשות', 'בדיקות', 'שיחות',
               'פעילות אחרונה', 'מצב'],
@@ -48,7 +56,7 @@ var SHEETS = {
 //    שבעורך — והדבקה ושמירה לא משנות כלום עד Version: New. בלי
 //    החותמת הזאת "האם זה נפרס?" היא שאלה שאי אפשר לענות עליה בלי
 //    לנסות פעולה ולראות אם היא מתנהגת אחרת. **להעלות בכל שינוי.**
-var VERSION = '2026-09-15b';
+var VERSION = '2026-09-17a';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -123,6 +131,7 @@ var ACTIONS = {
   submit: doSubmit,
   chat: doChat,
   onboard: doOnboard,
+  machine: doMachine,
 };
 
 function json(obj) {
@@ -372,6 +381,57 @@ function doSubmit(req) {
       String(req.code || ''),
     ]);
     upsertProgress(id, Number(req.week) || 1, String(req.code || ''));
+    return { ok: true };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// ═══ מחשבי הכיתה ══════════════════════════════════════════════════════
+//
+// הלקוח מדווח כאן אחרי כל טעינה של פייתון: ok · fail · stuck.
+// ⚠️ **אסימון לא חובה.** אסימון שפג תוקפו לא יבטל דיווח על מחשב
+//    שבור — דווקא שם הוא הכי חשוב. בלי אסימון השורה נכתבת בלי שם.
+// ⚠️ **כל שדה נחתך.** הכתובת ציבורית; לא נותנים לה למלא את הגיליון.
+
+var MACHINE_RESULTS = { ok: 1, fail: 1, stuck: 1 };
+
+function doMachine(req) {
+  var id = '';
+  try { id = readToken(req.token); } catch (e) {}
+  var cut = function (v, n) { return String(v == null ? '' : v).slice(0, n); };
+  var machine = cut(req.machine, 20);
+  var result = cut(req.result, 10);
+  if (!machine || !MACHINE_RESULTS[result]) return { error: 'דיווח לא תקין' };
+  var student = id ? nameOf(id) : '';
+  var code = cut(req.code, 40), detail = cut(req.detail, 400);
+  var browser = cut(req.browser, 80), sec = Number(req.sec) || 0;
+  var now = new Date();
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    sheet('machinelog').appendRow([now, machine, id, student, result, code,
+                                   detail, browser, sec, cut(req.ua, 200)]);
+    var sh = sheet('machines');
+    var last = sh.getLastRow();
+    var keys = last > 1 ? sh.getRange(2, 1, last - 1, 1).getValues() : [];
+    var row = -1;
+    for (var i = 0; i < keys.length; i++) {
+      if (String(keys[i][0]) === machine) { row = i + 2; break; }
+    }
+    var okN = 0, failN = 0;
+    if (row > 0) {
+      var prev = sh.getRange(row, 9, 1, 2).getValues()[0];
+      okN = Number(prev[0]) || 0;
+      failN = Number(prev[1]) || 0;
+    }
+    if (result === 'ok') okN++; else failN++;
+    // ‏stuck ואחריו ok באותה טעינה: ה-ok דורס, וזה נכון — המחשב עבד, לאט.
+    var vals = [[machine, result, now, student, code, detail, browser, sec,
+                 okN, failN]];
+    if (row > 0) sh.getRange(row, 1, 1, vals[0].length).setValues(vals);
+    else sh.appendRow(vals[0]);
     return { ok: true };
   } finally {
     lock.releaseLock();

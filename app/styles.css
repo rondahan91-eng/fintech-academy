@@ -71,6 +71,14 @@ body {
 .tb.num { font-family: var(--mono); color: #22262F; font-weight: 600; }
 .tb.dim { color: #B6BCCB; }
 .tb.menu { color: #97A0B3; cursor: default; }
+/* היציאה היא כפתור אמיתי ולא span — מקלדת ומקריא־מסך מגיעים אליה.
+   ‏font: inherit כי כפתור לא יורש גופן, והסרגל היה נשבר ל-13px של המערכת. */
+.tb.out {
+  font: inherit; font-size: 13px; color: var(--slate);
+  background: none; border: 1px solid var(--line); border-radius: 999px;
+  padding: 3px 12px; cursor: pointer;
+}
+.tb.out:hover { color: #22262F; border-color: #C3C9D6; }
 .nav { margin-inline-start: auto; display: flex; align-items: center; gap: 14px; }
 
 /* ══ הפריסה · שלוש עמודות, סדר קבוע ══ */

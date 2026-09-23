@@ -9,7 +9,7 @@
 // ══════════════════════════════════════════════════════════════════════
 
 import { WEEK } from './content.js';
-import { api, session, health, onHealthChange, saveOnExit } from './api.js';
+import { api, session, health, onHealthChange, saveOnExit, reportMachine } from './api.js';
 
 // §16.2 — הכניסה אינה תפריט, היא המשך. בלי אסימון אין מסך עבודה.
 if (!session.token) location.replace('login.html');
@@ -33,7 +33,7 @@ const el = {
   btnRun: $('btn-run'), btnTests: $('btn-tests'),
   btnReset: $('btn-reset'), btnSubmit: $('btn-submit'),
   taskTitle: $('task-title'), taskBody: $('task-body'),
-  tbWeek: $('tb-week'), probe: $('probe'),
+  tbWeek: $('tb-week'), probe: $('probe'), btnLogout: $('btn-logout'),
   avatar: $('avatar'), avatarImg: $('avatar-img'),
   avatarFallback: $('avatar-fallback'), avatarNote: $('avatar-note'),
   mirror: $('mirror'), starterView: $('starter-view'),
@@ -293,6 +293,25 @@ async function pushToServer() {
     dirty = false;
   } catch { /* נשאר dirty, ננסה בסבב הבא */ }
 }
+
+// ══ יציאה ═════════════════════════════════════════════════════════════
+//
+// ⚠️ **שומרים לפני שמנתקים.** אחרי session.clear אין אסימון, ו-api.save
+//    כבר לא יעבור — כל מה שנכתב מאז השמירה האחרונה היה הולך לאיבוד.
+// ⚠️ **שואלים לפני.** לחיצה בטעות על סרגל צפוף מוציאה תלמיד באמצע
+//    עבודה, והכניסה חזרה דורשת את הקוד שלו שלא תמיד נמצא עליו.
+// הטיוטה המקומית נשארת — המפתח נושא את מזהה התלמיד, ולכן היא לא
+// תיפתח אצל התלמיד הבא.
+el.btnLogout?.addEventListener('click', async () => {
+  const who = session.student?.name;
+  if (!confirm(who ? `לצאת מהחשבון של ${who}?` : 'לצאת מהחשבון?')) return;
+  el.btnLogout.disabled = true;
+  el.btnLogout.textContent = 'שומר…';
+  try { await pushToServer(); } catch { /* יציאה לא נעצרת בגלל רשת */ }
+  session.clear();
+  try { sessionStorage.removeItem('fintech:boot'); } catch { /* חסום */ }
+  location.replace('login.html');
+});
 
 setInterval(pushToServer, 30000);
 el.code.addEventListener('blur', pushToServer);
@@ -619,15 +638,33 @@ function diagnose(code, err) {
   try {
     window.MachineCheck.full('vendor/pyodide/', (d) => {
       tail(d.title, `${d.detail}\n\nקוד: ${code} · ${d.code}`);
+      report('fail', `${code} · ${d.code}`, `${d.title} — ${d.detail} | ${err.message}`);
     });
   } catch (e) {
     tail('אבחון מלא: פתח את check.html מאותה כתובת.', '');
+    report('fail', code, err.message);
   }
+}
+
+// ⚠️ **הבדיקה ברקע היא הטעינה עצמה.** כל תלמיד שנכנס מפעיל את פייתון
+//    ממילא, אז אין הורדה נוספת ואין בדיקה נפרדת — רק דיווח לגיליון
+//    machines על מה שכבר קרה. המורה לא צריך לעבור בין המחשבים.
+let bootT0 = 0, bootDone = false;
+function report(result, code = '', detail = '') {
+  reportMachine({
+    result, code, detail,
+    browser: diagLine(),
+    sec: Math.round((performance.now() - bootT0) / 100) / 10,
+  });
 }
 
 async function boot() {
   el.btnRun.disabled = el.btnTests.disabled = true;
   el.rhint.textContent = 'טוען את פייתון…';
+  bootT0 = performance.now();
+  // טעינה שלא מסתיימת לא מגיעה לשום catch. אחרי 60 שניות מדווחים
+  // "תקוע" — אם היא תסתיים אחר כך, יגיע גם דיווח ok שיחליף אותו.
+  setTimeout(() => { if (!bootDone) report('stuck', 'SLOW', 'פייתון לא סיים לעלות תוך 60 שניות'); }, 60000);
   try {
     if (typeof loadPyodide !== 'function') throw new Error('הקובץ vendor/pyodide/pyodide.js לא נטען');
     // ‏indexURL מוחלט ביחס לעמוד — משם Pyodide שולף בעצמו את
@@ -639,6 +676,7 @@ async function boot() {
     });
     py.runPython(HARNESS);
   } catch (err) {
+    bootDone = true;
     const code = typeof loadPyodide !== 'function' ? 'PYO-1' : 'PYO-2';
     el.rhint.textContent = `פייתון לא נטען · ${code}`;
     // ⚠️ **הנוסח הקודם גרם למורה להתקין פייתון על מחשבי הכיתה.**
@@ -659,6 +697,8 @@ async function boot() {
     diagnose(code, err);          // רץ מאליו. לא ממתינים לו כאן
     return;                       // הכפתורים נשארים מנוטרלים, וזה נכון
   }
+  bootDone = true;
+  report('ok');
   el.btnRun.disabled = el.btnTests.disabled = false;
   el.rhint.textContent = 'הרצה → פלט · בדיקות → בדיקות';
   probe();

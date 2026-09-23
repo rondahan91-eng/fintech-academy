@@ -8,6 +8,14 @@ import { api, session } from './api.js';
 const $ = (id) => document.getElementById(id);
 const form = $('login-form'), err = $('err'), go = $('go');
 
+// ⚠️ **דלת חירום למחשב תקוע.** תלמיד שקם בלי לצאת משאיר אסימון, והשורה
+//    הבאה מחזירה את הבא אחריו ישר לחשבון שלו — בלי דרך להגיע למסך הזה.
+//    ‏login.html?switch=1 מנתק ונשאר כאן. שווה לכתוב על הלוח.
+if (new URLSearchParams(location.search).has('switch')) {
+  session.clear();
+  try { sessionStorage.removeItem('fintech:boot'); } catch { /* חסום */ }
+}
+
 // כבר מחובר — §16.2: הכניסה אינה תפריט, היא המשך
 if (session.token) location.replace('index.html');
 

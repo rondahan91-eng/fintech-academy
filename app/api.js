@@ -111,6 +111,42 @@ export function saveOnExit(week, code) {
   } catch { /* הדף נסגר. אין למי לדווח */ }
 }
 
+/**
+ * מזהה קבוע לדפדפן הזה, כדי שבגיליון יהיה "מחשב" ולא רק "תלמיד".
+ * תלמידים מחליפים מקומות; התקלה שייכת למחשב.
+ * ⚠️ אם בית הספר מוחק פרופילים בכל כניסה, המזהה יתחדש — ואז שם התלמיד
+ *    והשעה הם מה שמאתר את המחשב.
+ */
+export function machineId() {
+  try {
+    let m = localStorage.getItem('fintech:machine');
+    if (!m) {
+      m = 'PC-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+      localStorage.setItem('fintech:machine', m);
+    }
+    return m;
+  } catch { return 'PC-?'; }
+}
+
+/**
+ * דיווח על מצב המחשב. ⚠️ **שגר ושכח:** לא מחכה, לא זורק, ולא נוגע
+ * ב-health — דיווח שנכשל לא יציג לתלמיד "אין חיבור". ‏keepalive כדי
+ * שדיווח כשל ישרוד גם אם התלמיד סוגר את הלשונית בתסכול.
+ */
+export function reportMachine(info) {
+  if (!ENDPOINT) return;
+  try {
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'machine', token: session.token,
+                             machine: machineId(), ua: navigator.userAgent,
+                             ...info }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch { /* דיווח בלבד */ }
+}
+
 export const api = {
   login: (name, code) => call('login', { name, code }),
   state: () => call('state', { token: session.token }),
