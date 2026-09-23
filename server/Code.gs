@@ -899,8 +899,83 @@ function onOpen() {
     .addItem('בדוק שהמפתח עובד', 'testKey')
     .addItem('תקן קודים שהפכו לתאריכים', 'fixCodeColumn')
     .addSeparator()
+    .addItem('גבה עכשיו', 'backupNow')
+    .addItem('הפעל גיבוי יומי', 'installDailyBackup')
+    .addSeparator()
     .addItem('⚠ דלג על שיחת הקליטה (חירום)', 'toggleBypass')
     .addToUi();
+}
+
+// ═══ גיבוי ════════════════════════════════════════════════════════════
+//
+// ⚠️ **הסיכון האמיתי היחיד שנותר לנתוני התלמידים.** פריסה ודחיפה לא
+//    נוגעות בגיליון; מיון שגוי, מחיקת שורות או Ctrl+Z שהגיע מאוחר מדי —
+//    כן, והם בלתי הפיכים. עותק יומי הוא ההבדל בין תקלה לאובדן שנה.
+//
+// ⚠️ **העותק כולל את הסקריפט, ואינו פרוס.** הוא קובץ בדרייב ותו לא,
+//    ולכן הוא לא יענה לאף תלמיד ולא יתחרה בשרת האמיתי.
+
+var BACKUP_FOLDER = 'FinTech Academy — גיבויים';
+var BACKUP_KEEP = 14;
+
+function backupFolder() {
+  var it = DriveApp.getFoldersByName(BACKUP_FOLDER);
+  return it.hasNext() ? it.next() : DriveApp.createFolder(BACKUP_FOLDER);
+}
+
+/** מריץ הטריגר היומי. מחזיר את שם העותק כדי שהתפריט יוכל להציג אותו. */
+function dailyBackup() {
+  var ss = SpreadsheetApp.getActive();
+  var folder = backupFolder();
+  var stamp = Utilities.formatDate(new Date(), tz(), 'yyyy-MM-dd HH:mm');
+  var name = ss.getName() + ' · ' + stamp;
+  DriveApp.getFileById(ss.getId()).makeCopy(name, folder);
+  pruneBackups(folder);
+  return name;
+}
+
+/** ⚠️ **רק עותקים שנוצרו כאן.** קובץ אחר שהמורה שם בתיקייה לא ייגע. */
+function pruneBackups(folder) {
+  var ss = SpreadsheetApp.getActive();
+  var mine = [];
+  var files = folder.getFilesByType(MimeType.GOOGLE_SHEETS);
+  while (files.hasNext()) {
+    var f = files.next();
+    if (f.getName().indexOf(ss.getName() + ' · ') === 0) {
+      mine.push({ file: f, at: f.getDateCreated().getTime() });
+    }
+  }
+  mine.sort(function (a, b) { return b.at - a.at; });      // חדש ראשון
+  for (var i = BACKUP_KEEP; i < mine.length; i++) mine[i].file.setTrashed(true);
+}
+
+function backupNow() {
+  var ui = SpreadsheetApp.getUi();
+  try {
+    var name = dailyBackup();
+    ui.alert('הגיבוי נוצר.\n\n' + name + '\n\nבתיקייה "' + BACKUP_FOLDER +
+             '" בדרייב. נשמרים ' + BACKUP_KEEP + ' עותקים אחרונים.');
+  } catch (e) {
+    ui.alert('הגיבוי נכשל: ' + e.message);
+  }
+}
+
+/** ⚠️ **מוחק טריגר קודם לפני שיוצר חדש** — אחרת מצטברים גיבויים כפולים. */
+function installDailyBackup() {
+  var ui = SpreadsheetApp.getUi();
+  var all = ScriptApp.getProjectTriggers();
+  var removed = 0;
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].getHandlerFunction() === 'dailyBackup') {
+      ScriptApp.deleteTrigger(all[i]);
+      removed++;
+    }
+  }
+  ScriptApp.newTrigger('dailyBackup').timeBased().atHour(2).everyDays(1).create();
+  ui.alert('גיבוי יומי פעיל, כל לילה בסביבות 02:00.' +
+           (removed ? '\n\n(הוסר טריגר קודם כדי שלא יגובה פעמיים.)' : '') +
+           '\n\nהעותקים: תיקיית "' + BACKUP_FOLDER + '" בדרייב, ' +
+           BACKUP_KEEP + ' אחרונים.');
 }
 
 // ═══ לוח המעקב ════════════════════════════════════════════════════════

@@ -10,7 +10,25 @@
 //    בפועל המפתח לשרת — ובשכפול נקי הוא פשוט לא קיים. ‏import סטטי
 //    שנכשל הורג את כל המודול לפני שנרשם מאזין אחד, והמסך נראה תקין
 //    ולא מגיב לכלום. תג script רגיל שנכשל הוא 404 בקונסולה, וזהו.
-const ENDPOINT = (globalThis.FINTECH_ENDPOINT || '').trim();
+// ⚠️ **let ולא const, וזה לב ההגנה.** ‏2026-09-23: פריסה חדשה הרגה את
+//    הכתובת הישנה, לשוניות שכבר היו פתוחות המשיכו לפנות אליה, וכל
+//    שמירה נכשלה. הכתובת החדשה כבר הייתה ב-config.js על השרת — פשוט
+//    לא בזיכרון של אותה לשונית. עכשיו כישלון גורר קריאה חוזרת של
+//    config.js, ואם הכתובת התחלפה הלשונית מתקנת את עצמה בלי רענון.
+let endpoint = (globalThis.FINTECH_ENDPOINT || '').trim();
+
+/** מחזיר true אם נמצאה כתובת **אחרת** מזו שבזיכרון. */
+async function refreshEndpoint() {
+  try {
+    const url = new URL('config.js', document.baseURI).href;
+    const txt = await (await fetch(url, { cache: 'no-store' })).text();
+    // ⚠️ הכתובת נשלפת מהטקסט ולא מ-eval: config.js שהוחלף בדף חסימה
+    //    היה מריץ אצלנו קוד זר.
+    const m = txt.match(/https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec/);
+    if (m && m[0] !== endpoint) { endpoint = m[0]; return true; }
+  } catch { /* אין רשת בכלל. הקריאה הבאה תנסה שוב */ }
+  return false;
+}
 
 const TOKEN_KEY = 'fintech:token';
 const STUDENT_KEY = 'fintech:student';
@@ -49,12 +67,22 @@ function setOnline(ok, err) {
 //    שניות הצליח בזמן שהטופס נכשל ב-20. **זה בדיוק מה שקורה בתלמיד
 //    הראשון בבוקר**, ואחריו כולם נהנים משרת חם.
 export async function call(action, payload = {}, { timeout = 45000 } = {}) {
-  if (!ENDPOINT) throw new Error('לא הוגדרה כתובת שרת ב-app/config.js');
+  if (!endpoint) throw new Error('לא הוגדרה כתובת שרת ב-app/config.js');
+  try {
+    return await attempt(action, payload, timeout);
+  } catch (err) {
+    // ⚠️ **רק כשל תעבורה מצדיק בדיקת כתובת.** "קוד לא נכון" הוא תשובה
+    //    תקינה של השרת, ולקרוא בגללה את config.js הוא רעש מיותר.
+    if (!err.transport || !(await refreshEndpoint())) throw err;
+    return attempt(action, payload, timeout);   // כתובת חדשה — ניסיון שני
+  }
+}
 
+async function attempt(action, payload, timeout) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeout);
   try {
-    const res = await fetch(ENDPOINT, {
+    const res = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action, ...payload }),
@@ -71,8 +99,12 @@ export async function call(action, payload = {}, { timeout = 45000 } = {}) {
     try {
       data = JSON.parse(raw);
     } catch {
-      setOnline(false, 'non-json');
-      throw new Error('השרת החזיר תשובה לא צפויה. נסה שוב.');
+      // דף HTML במקום JSON, או 404 של פריסה שנמחקה. שניהם כשל תעבורה,
+      // ולכן call ינסה כתובת מעודכנת לפני שהתלמיד רואה משהו.
+      setOnline(false, res.status === 404 ? 'gone' : 'non-json');
+      throw transport(res.status === 404
+        ? 'כתובת השרת התחלפה. רענן את הדף (Ctrl+F5).'
+        : 'השרת החזיר תשובה לא צפויה. נסה שוב.');
     }
     setOnline(true);
     if (data.error) throw new Error(data.error);
@@ -88,10 +120,21 @@ export async function call(action, payload = {}, { timeout = 45000 } = {}) {
     if (!/^(שם|קוד|הודעה|אסימון|פג|החשבון|לא הוגדר)/.test(err.message)) {
       setOnline(false, err.message);
     }
+    // ⚠️ **כתובת מתה נכשלת כאן, לא בתשובה.** דף 404 של גוגל מגיע בלי
+    //    כותרות CORS, ולכן fetch נדחה עם TypeError ואין מה לבדוק בגוף.
+    //    זה בדיוק מה שהכיתה חוותה, ולכן הוא חייב להיחשב כשל תעבורה.
+    if (err instanceof TypeError) err.transport = true;
     throw err;
   } finally {
     clearTimeout(timer);
   }
+}
+
+/** שגיאה שמסמנת "הבעיה בצינור, לא בתשובה" — ראה call. */
+function transport(message) {
+  const e = new Error(message);
+  e.transport = true;
+  return e;
 }
 
 /**
@@ -100,9 +143,9 @@ export async function call(action, payload = {}, { timeout = 45000 } = {}) {
  * שנמנע מ-preflight.
  */
 export function saveOnExit(week, code) {
-  if (!ENDPOINT || !session.token) return;
+  if (!endpoint || !session.token) return;
   try {
-    fetch(ENDPOINT, {
+    fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action: 'save', token: session.token, week, code }),
@@ -134,9 +177,9 @@ export function machineId() {
  * שדיווח כשל ישרוד גם אם התלמיד סוגר את הלשונית בתסכול.
  */
 export function reportMachine(info) {
-  if (!ENDPOINT) return;
+  if (!endpoint) return;
   try {
-    fetch(ENDPOINT, {
+    fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action: 'machine', token: session.token,
@@ -147,12 +190,87 @@ export function reportMachine(info) {
   } catch { /* דיווח בלבד */ }
 }
 
+// ══ תור השחזור ════════════════════════════════════════════════════════
+//
+// ⚠️ **הגשה שנכשלה הייתה נעלמת.** הקוד נשאר במחשב, אבל רישום ההגשה לא
+//    הגיע לגיליון אלא אם התלמיד לחץ שוב — והוא לא תמיד שם לב. עכשיו
+//    היא נכנסת לתור ונשלחת מאליה בטעינה הבאה או כשהחיבור חוזר.
+// ⚠️ **התור נושא את מזהה התלמיד** ונשלח רק כשאותו תלמיד מחובר. אחרת
+//    הגשה של תלמיד אחד הייתה נרשמת על שם מי שיושב אחריו במעבדה.
+// ⚠️ האסימון **אינו** נשמר בתור: הוא פג אחרי 14 שעות, והתור נשלח עם
+//    האסימון התקף של הרגע.
+const QUEUE_KEY = 'fintech:queue';
+const QUEUE_MAX = 40;
+
+function readQueue() {
+  try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function writeQueue(items) {
+  try { localStorage.setItem(QUEUE_KEY, JSON.stringify(items.slice(-QUEUE_MAX))); }
+  catch { /* אחסון חסום. אין מה לעשות מעבר לזה */ }
+}
+
+function enqueue(action, payload) {
+  const id = session.student?.id ?? 'anon';
+  const items = readQueue();
+  // שמירה היא תמונת מצב, לא אירוע: אין טעם בשתי שמירות תקועות לאותו
+  // שבוע. הגשות נשמרות כולן — כל אחת היא רגע שהתלמיד הצהיר עליו.
+  const keep = action === 'save'
+    ? items.filter((it) => !(it.action === 'save' && it.id === id &&
+                             it.payload.week === payload.week))
+    : items;
+  keep.push({ action, payload, id, at: Date.now() });
+  writeQueue(keep);
+}
+
+/** כמה פריטים ממתינים לתלמיד הנוכחי. מסך העבודה מציג את זה. */
+export function pending() {
+  const id = session.student?.id ?? 'anon';
+  return readQueue().filter((it) => it.id === id).length;
+}
+
+/**
+ * ⚠️ **אחד-אחד ובסדר.** שליחה מקבילה של חמש הגשות לאותו גיליון מתנגשת
+ *    בנעילה של Apps Script, וגם הופכת את הסדר בעמודת הזמן.
+ * ⚠️ פריט שנכשל **נשאר בתור**, והריצה נעצרת. אין טעם לנסות את הבא
+ *    כשברור שהשרת לא זמין.
+ */
+export async function flushQueue() {
+  if (!endpoint || !session.token) return 0;
+  const id = session.student?.id ?? 'anon';
+  let items = readQueue(), sent = 0;
+  while (true) {
+    const i = items.findIndex((it) => it.id === id);
+    if (i === -1) break;
+    const it = items[i];
+    let ok = true;
+    try {
+      await call(it.action, { ...it.payload, token: session.token });
+    } catch (err) {
+      // ⚠️ אסימון פסול לא יתוקן בניסיון נוסף — הפריט היה נתקע לנצח
+      //    וחוסם את התור. מוותרים עליו ומתקדמים.
+      if (!/אסימון|פג תוקף/.test(err.message)) break;
+      ok = false;
+    }
+    items = items.filter((x) => x !== it);
+    writeQueue(items);
+    // ⚠️ **נספר רק מה שבאמת הגיע.** פריט שנזרק בגלל אסימון פסול נספר
+    //    פעם אחת כ"נשלח", והתלמיד קיבל "הכול אצלי" על הגשה שלא נרשמה.
+    if (ok) sent++;
+  }
+  return sent;
+}
+
 export const api = {
   login: (name, code) => call('login', { name, code }),
   state: () => call('state', { token: session.token }),
-  save: (week, code) => call('save', { token: session.token, week, code }),
+  save: (week, code) => call('save', { token: session.token, week, code })
+    .catch((err) => { enqueue('save', { week, code }); throw err; }),
   submit: (week, code, pass, total) =>
-    call('submit', { token: session.token, week, code, pass, total }),
+    call('submit', { token: session.token, week, code, pass, total })
+      .catch((err) => { enqueue('submit', { week, code, pass, total }); throw err; }),
   chat: (week, message) =>
     call('chat', { token: session.token, week, message }, { timeout: 60000 }),
 };

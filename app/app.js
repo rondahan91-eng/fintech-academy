@@ -9,7 +9,8 @@
 // ══════════════════════════════════════════════════════════════════════
 
 import { WEEK } from './content.js';
-import { api, session, health, onHealthChange, saveOnExit, reportMachine } from './api.js';
+import { api, session, health, onHealthChange, saveOnExit, reportMachine,
+         flushQueue, pending } from './api.js';
 
 // §16.2 — הכניסה אינה תפריט, היא המשך. בלי אסימון אין מסך עבודה.
 if (!session.token) location.replace('login.html');
@@ -785,8 +786,12 @@ el.btnSubmit.addEventListener('click', async () => {
   } catch (err) {
     el.btnSubmit.disabled = false;
     el.btnSubmit.textContent = 'הגשה';
-    alert('ההגשה לא נשלחה: ' + err.message +
-          '\n\nהקוד שלך שמור במחשב. קרא למורה.');
+    // ⚠️ **ההגשה כבר בתור** — api.submit מכניס אותה לשם לפני שהוא זורק.
+    //    ההודעה הישנה ("קרא למורה") שלחה תלמיד לחכות למורה על משהו
+    //    שייפתר לבד, ובינתיים הוא היה לוחץ הגשה שוב ושוב.
+    alert('ההגשה לא נשלחה כרגע: ' + err.message +
+          '\n\nהיא שמורה ותישלח מאליה כשהחיבור יחזור.\n' +
+          'הקוד שלך שמור במחשב. אפשר להמשיך לעבוד.');
   }
 });
 
@@ -798,7 +803,31 @@ banner.className = 'offline';
 banner.hidden = true;
 banner.textContent = 'אין חיבור לשרת. העבודה נשמרת במחשב הזה בלבד — קרא למורה.';
 document.body.prepend(banner);
-onHealthChange((h) => { banner.hidden = h.online; });
+// ⚠️ **החיבור שחזר הוא הרגע לשלוח את התור.** בלי זה הגשה תקועה הייתה
+//    מחכה לטעינה הבאה, כלומר בדרך כלל לשיעור הבא.
+onHealthChange((h) => {
+  banner.hidden = h.online;
+  // שרת שהוחלף אינו "אין חיבור": שם הפעולה היא רענון, וכאן היא המתנה.
+  banner.textContent = h.lastError === 'gone'
+    ? 'כתובת השרת התחלפה. רענן את הדף — ‏Ctrl+F5. העבודה שלך שמורה.'
+    : 'אין חיבור לשרת. העבודה נשמרת במחשב הזה בלבד — קרא למורה.';
+  if (h.online) flushQueue().then(showPending);
+});
+
+// ══ מה ממתין לשליחה ═══════════════════════════════════════════════════
+//
+// מוצג ליד "נשמר אוטומטית". התלמיד צריך לדעת שיש משהו שטרם הגיע —
+// בלי זה "הגשתי" ו"ההגשה הגיעה" הם אותו מסך בדיוק.
+function showPending() {
+  const n = pending();
+  if (n) el.saved.textContent = `${n} ממתינים לשליחה`;
+}
+
+// בטעינה: מה שנתקע בשיעור הקודם נשלח עכשיו, לפני כל דבר אחר.
+flushQueue().then((sent) => {
+  if (sent) say(`נשלחו ${sent} דברים שנתקעו קודם. הכול אצלי.`);
+  showPending();
+});
 
 // ══ מד הפריסה ═════════════════════════════════════════════════════════
 // כלי פיתוח. קיים כדי לבדוק טענה אחת מ-layout.md §2: "20 שורות קוד".
