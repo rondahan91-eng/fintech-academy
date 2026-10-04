@@ -54,7 +54,7 @@ py tools/build_app_content.py 1
 ## ⚠️ Pyodide מגיע מ-CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.js"></script>
 ```
 
 **בייצור זה לא יעבוד.** רשת בית הספר סגורה. **אריזה מקומית של Pyodide

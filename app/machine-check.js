@@ -19,18 +19,19 @@
 (function (root) {
   'use strict';
 
-  var FILES = ['pyodide.js', 'pyodide.asm.js', 'pyodide.asm.wasm',
+  /* ⚠️ ‏`pyodide.asm.mjs` ולא `.js` — השם השתנה בשדרוג ל-314.0.7. */
+  var FILES = ['pyodide.js', 'pyodide.asm.mjs', 'pyodide.asm.wasm',
                'python_stdlib.zip', 'pyodide-lock.json'];
 
-  /* גדלים של Pyodide 0.26.2. **מידע, לא פסק דין** — אחרי שדרוג גרסה הם
+  /* גדלים של Pyodide 314.0.7. **מידע, לא פסק דין** — אחרי שדרוג גרסה הם
      ישתנו, ואי אפשר לסמוך עליהם כדי לקבוע תקינות. מה שקובע הוא חתימת
      הקובץ ומספר הבתים שהובטח בכותרת מול מה שהגיע בפועל. */
   var EXPECT = {
-    'pyodide.js':        14767,
-    'pyodide.asm.js':    1229628,
-    'pyodide.asm.wasm':  10087885,
-    'python_stdlib.zip': 2341761,
-    'pyodide-lock.json': 105980
+    'pyodide.js':        18912,
+    'pyodide.asm.mjs':   1250344,
+    'pyodide.asm.wasm':  9598218,
+    'python_stdlib.zip': 2545637,
+    'pyodide-lock.json': 119077
   };
 
   /* מתחת לזה Pyodide 0.26 לא עולה, או עולה ומתרסק. */

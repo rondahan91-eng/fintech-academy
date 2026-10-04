@@ -568,7 +568,12 @@ def _deadline_tracer(deadline):
         return local
     return top
 
-def _fintech_run(src, tests_src):
+# ⚠️ **ברירת מחדל None, ולא ערך שמגיע מ-JS.** בשדרוג ל-Pyodide 314
+#    ‏null של JS מגיע לפייתון כאובייקט JsNull ולא כ-None, ואז
+#    הבדיקה "tests_src is None" הייתה False והקוד ניסה להדר אותו:
+#    "compile() arg 1 must be a string". ‏execute קורא בלי הארגומנט
+#    כשאין טסטים, ו-isinstance למטה חוסם כל ערך זר אחר.
+def _fintech_run(src, tests_src=None):
     buf, old = _Capped(), sys.stdout
     sys.stdout = buf
     ns, err = {"__name__": "__main__"}, None
@@ -583,7 +588,7 @@ def _fintech_run(src, tests_src):
 
     out = buf.getvalue()
     res = {"output": out, "error": err, "tests": []}
-    if tests_src is None:
+    if not isinstance(tests_src, str):
         return json.dumps(res, ensure_ascii=False)
 
     g = {"OUTPUT": out, "LINES": out.split(chr(10)),
@@ -707,7 +712,9 @@ async function boot() {
 
 function execute(withTests) {
   const fn = py.globals.get('_fintech_run');
-  const raw = fn(el.code.value, withTests ? WEEK.testsVisible : null);
+  // ⚠️ **בלי ארגומנט שני כשאין טסטים.** ‏null של JS אינו None של פייתון
+  //    מאז Pyodide 314 — ראה ההערה ליד _fintech_run.
+  const raw = withTests ? fn(el.code.value, WEEK.testsVisible) : fn(el.code.value);
   fn.destroy();
   return JSON.parse(raw);
 }
