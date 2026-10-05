@@ -57,6 +57,20 @@ def parse_meta(yml: str) -> dict:
     return out
 
 
+def parse_injects(yml: str) -> list:
+    """‏meta.yml → injects: רשימת קובצי תשתית, יחסית לשורש המאגר.
+
+    ⚠️ **בלי זה שבוע 2 נופל אצל כל תלמיד.** ‏tools/run_week.py כבר מזריק
+       אותם כשאתה בודק הגשות; האפליקציה לא ידעה עליהם בכלל, והשורה
+       הראשונה בקובץ ההתחלה הייתה נותנת NameError: Account.
+    """
+    m = re.search(r"^injects:\s*\n((?:\s*-\s*.+\n)+)", yml, re.M)
+    if not m:
+        return []
+    return [ln.strip().lstrip("-").strip().strip("\"'")
+            for ln in m.group(1).strip().split("\n") if ln.strip()]
+
+
 def parse_manager_opening(yml: str) -> list:
     """הודעות הפתיחה של אלעד. שבוע 1 — מסירת המשימה בלבד."""
     msgs = []
@@ -96,8 +110,21 @@ def main() -> int:
         print(f"אין תיקייה: {d}")
         return 1
 
-    meta = parse_meta(read(d / "meta.yml"))
+    meta_src = read(d / "meta.yml")
+    meta = parse_meta(meta_src)
     task = parse_task_md(read(d / "task.md"))
+
+    # ⚠️ **קוד התשתית נשלח לדפדפן, כלומר הוא גלוי לתלמיד שיחפש.**
+    #    אין דרך להריץ אותו בדפדפן בלי לשלוח אותו. הממשק הוא מה שמתועד
+    #    ב-task.md; המימוש פשוט אינו מוסתר, והוא גם לא הפתרון למשימה.
+    injects = parse_injects(meta_src)
+    inject_src = ""
+    for rel in injects:
+        p = ROOT / rel
+        if not p.is_file():
+            print(f"⛔ קוד תשתית חסר: {rel}")
+            return 1
+        inject_src += f"# ===== {rel} =====\n{read(p)}\n"
 
     payload = {
         "week": meta["week"],
@@ -106,6 +133,7 @@ def main() -> int:
         "requirements": task["requirements"],
         "starter": read(d / "starter.py"),
         "testsVisible": read(d / "tests_visible.py"),
+        "inject": inject_src,
         "manager": parse_manager_opening(read(d / "manager.yml")),
         "avatars": parse_avatar_states(read(ROOT / "assets/persona/manifest.yml")),
     }
@@ -121,7 +149,11 @@ def main() -> int:
 
     # שורה שמופיעה גם בקובץ שנשלח בכוונה אינה דליפה. `real_lines = [...]`
     # הוא אותו ניב בטסטים הגלויים ובנסתרים, ושם הוא לגיטימי.
-    public = code_lines(read(d / "starter.py")) | code_lines(read(d / "tests_visible.py"))
+    # קוד התשתית נשלח בכוונה, ולכן שורה שמופיעה בו אינה דליפה — גם אם
+    # הפתרון משתמש באותה שורה בדיוק.
+    public = (code_lines(read(d / "starter.py"))
+              | code_lines(read(d / "tests_visible.py"))
+              | code_lines(inject_src))
 
     # ⚠️ **לחפש בערכים, לא ב-JSON.** בטקסט המקודד כל גרשיים הם \" ,
     #    ולכן `print("נטו: 4890")` לעולם אינו תת-מחרוזת שלו. גרסה

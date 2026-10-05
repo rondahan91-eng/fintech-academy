@@ -568,15 +568,42 @@ def _deadline_tracer(deadline):
         return local
     return top
 
-# ⚠️ **ברירת מחדל None, ולא ערך שמגיע מ-JS.** בשדרוג ל-Pyodide 314
-#    ‏null של JS מגיע לפייתון כאובייקט JsNull ולא כ-None, ואז
-#    הבדיקה "tests_src is None" הייתה False והקוד ניסה להדר אותו:
-#    "compile() arg 1 must be a string". ‏execute קורא בלי הארגומנט
-#    כשאין טסטים, ו-isinstance למטה חוסם כל ערך זר אחר.
-def _fintech_run(src, tests_src=None):
+# ⚠️ **מחרוזת ריקה היא "אין", ולא None ולא null.** בשדרוג ל-Pyodide 314
+#    ‏null של JS הפסיק להתרגם ל-None ומגיע כאובייקט JsNull, ואז הבדיקה
+#    "tests_src is None" הייתה False והקוד ניסה להדר אותו:
+#    "compile() arg 1 must be a string". ‏execute שולח תמיד מחרוזות,
+#    ו-_has חוסם כל ערך זר אחר שיגיע מ-JS בעתיד.
+def _has(s):
+    return isinstance(s, str) and s.strip() != ""
+
+def _fintech_run(src, tests_src="", inject_src=""):
     buf, old = _Capped(), sys.stdout
     sys.stdout = buf
     ns, err = {"__name__": "__main__"}, None
+
+    # ⚠️ **קוד התשתית רץ באותו namespace ולפני קוד התלמיד** — בדיוק
+    #    כמו ב-tools/run_week.py, אחרת ההגשה נבדקת אחרת ממה שרץ במסך.
+    #    משבוע 2 זו המחלקה Account, והתלמיד אינו כותב אותה.
+    # ⚠️ **מחוץ למגבלת חמש השניות ומחוץ ל-settrace.** השעון הוא של
+    #    התלמיד; קוד שהפלטפורמה הזריקה לא יגזול ממנו ולא ייעצר כאילו
+    #    הוא הלולאה האינסופית שלו.
+    if _has(inject_src):
+        try:
+            exec(compile(inject_src, "מודול הבנק", "exec"), ns)
+        except BaseException as e:
+            sys.stdout = old
+            return json.dumps({
+                "output": "",
+                # ⚠️ **באשמת הפלטפורמה, ולא באשמת התלמיד.** בלי המשפט
+                #    הזה הוא יחפש את הבאג שלו בקוד שלא כתב.
+                # ⚠️ ‏chr(10) ולא רצף בריחה: המחרוזת הזאת חיה בתוך
+                #    תבנית JS, ושם רצף בריחה הופך לירידת שורה אמיתית
+                #    ושובר את קוד הפייתון. זה הניב בכל הקובץ.
+                "error": "תקלה בקוד התשתית של המערכת, לא בקוד שלך. "
+                         "קרא למורה." + chr(10) + _fintech_error(e),
+                "tests": [],
+            }, ensure_ascii=False)
+
     try:
         sys.settrace(_deadline_tracer(time.monotonic() + LIMIT_SECONDS))
         exec(compile(src, FILE, "exec"), ns)
@@ -588,7 +615,7 @@ def _fintech_run(src, tests_src=None):
 
     out = buf.getvalue()
     res = {"output": out, "error": err, "tests": []}
-    if not isinstance(tests_src, str):
+    if not _has(tests_src):
         return json.dumps(res, ensure_ascii=False)
 
     g = {"OUTPUT": out, "LINES": out.split(chr(10)),
@@ -712,9 +739,12 @@ async function boot() {
 
 function execute(withTests) {
   const fn = py.globals.get('_fintech_run');
-  // ⚠️ **בלי ארגומנט שני כשאין טסטים.** ‏null של JS אינו None של פייתון
+  // ⚠️ **תמיד מחרוזות, לעולם לא null.** ‏null של JS אינו None של פייתון
   //    מאז Pyodide 314 — ראה ההערה ליד _fintech_run.
-  const raw = withTests ? fn(el.code.value, WEEK.testsVisible) : fn(el.code.value);
+  // ‏WEEK.inject הוא קוד התשתית של השבוע (משבוע 2: המחלקה Account).
+  const raw = fn(el.code.value,
+                 withTests ? (WEEK.testsVisible || '') : '',
+                 WEEK.inject || '');
   fn.destroy();
   return JSON.parse(raw);
 }
