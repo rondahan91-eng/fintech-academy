@@ -60,7 +60,7 @@ var SHEETS = {
 //    ‏2026-10-04: קוד הגיבוי נוסף בלי העלאת המספר, ואז הקובץ בתיקייה
 //    והקוד בעורך הראו **אותה גרסה והיו שונים ב-75 שורות** — בדיוק
 //    השאלה שהחותמת אמורה לענות עליה.
-var VERSION = '2026-10-04a';
+var VERSION = '2026-10-05a';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -77,6 +77,7 @@ function doGet(e) {
   var out = {
     ok: true, service: 'fintech-academy', version: VERSION,
     hasKey: !!prop('ANTHROPIC_API_KEY'),
+    activeWeek: activeWeek(),
     skipOnboarding: bypassOnboarding(),
     // ⚠️ **לאיזה גיליון הסקריפט קשור בפועל.** אם זה לא הגיליון
     //    שמסתכלים עליו, כל השאר חסר משמעות — קוראים כאן טבלה אחרת.
@@ -293,15 +294,32 @@ function doState(req) {
   return { state: loadState(readToken(req.token)) };
 }
 
+// ═══ השבוע הפעיל ══════════════════════════════════════════════════════
+//
+// ⚠️ **זה המתג היחיד שפותח שבוע לכיתה.** ‏content.js בדפדפן אורז את כל
+//    השבועות שנכתבו; המספר הזה בוחר מי מהם מוצג. החלפה כאן מגיעה
+//    לתלמידים בטעינה הבאה, בלי דחיפה לגיטהאב ובלי פריסה מחדש.
+
+function activeWeek() {
+  var n = Number(prop('ACTIVE_WEEK'));
+  return n > 0 ? n : 1;
+}
+
 function loadState(id) {
   var rows = table('progress');
   var mine = null;
   for (var i = 0; i < rows.length; i++) {
     if (String(rows[i].id) === String(id)) mine = rows[i];
   }
+  var week = activeWeek();
+  // ⚠️ **קוד משבוע אחר לא נשלח.** ‏progress מחזיק שורה אחת לתלמיד, ולכן
+  //    אחרי מעבר שבוע היא עדיין נושאת את העבודה הקודמת. להחזיר אותה
+  //    היה פותח לתלמיד את המשימה החדשה עם הקוד של הישנה.
+  var mineThisWeek = mine && Number(mine.week) === week;
   return {
-    week: mine ? Number(mine.week) : 1,
-    code: mine ? String(mine.code) : '',
+    activeWeek: week,
+    week: mine ? Number(mine.week) : week,
+    code: mineThisWeek ? String(mine.code) : '',
     updated: mine ? mine.updated : null,
     // ⚠️ **הדגל הזה הוא מה שמנתב.** ‏layout.md §16.2: הכניסה אינה
     //    תפריט אלא המשך — היא יודעת לאן, ואיש לא בוחר.
@@ -903,6 +921,8 @@ function onOpen() {
     .addItem('בדוק שהמפתח עובד', 'testKey')
     .addItem('תקן קודים שהפכו לתאריכים', 'fixCodeColumn')
     .addSeparator()
+    .addItem('פתח שבוע לכיתה…', 'setActiveWeek')
+    .addSeparator()
     .addItem('איזו גרסה שמורה כאן?', 'showVersion')
     .addSeparator()
     .addItem('גבה עכשיו', 'backupNow')
@@ -910,6 +930,35 @@ function onOpen() {
     .addSeparator()
     .addItem('⚠ דלג על שיחת הקליטה (חירום)', 'toggleBypass')
     .addToUi();
+}
+
+// ═══ פתיחת שבוע ═══════════════════════════════════════════════════════
+//
+// ⚠️ **זה משנה מה כל הכיתה רואה בטעינה הבאה.** אין כאן פריסה ואין
+//    דחיפה — רק המספר. שבוע שלא נארז ב-content.js לא יוצג, והאפליקציה
+//    תיפול חזרה לשבוע ברירת המחדל; לכן הרשימה שבהודעה היא מה שקובע.
+
+function setActiveWeek() {
+  var ui = SpreadsheetApp.getUi();
+  var now = activeWeek();
+  var res = ui.prompt(
+    'פתיחת שבוע לכיתה',
+    'השבוע הפעיל כרגע: ' + now + '\n\n' +
+    'הקלד מספר שבוע חדש.\n' +
+    'התלמידים יראו אותו בטעינה הבאה של מסך העבודה.\n\n' +
+    '⚠️ יש לוודא שהשבוע ארוז באפליקציה — אחרת הוא לא יוצג.',
+    ui.ButtonSet.OK_CANCEL);
+  if (res.getSelectedButton() !== ui.Button.OK) return;
+
+  var n = Number(String(res.getResponseText()).trim());
+  if (!(n >= 1 && n <= 30)) {
+    ui.alert('מספר לא תקין. צריך מספר שבוע בין 1 ל-30.');
+    return;
+  }
+  PropertiesService.getScriptProperties().setProperty('ACTIVE_WEEK', String(n));
+  ui.alert('שבוע ' + n + ' פתוח.\n\n' +
+           'תלמיד שהמסך שלו פתוח כרגע יעבור אליו ברענון הבא.\n' +
+           'העבודה על השבוע הקודם נשמרה ולא נמחקה.');
 }
 
 // ═══ איזו גרסה שמורה בעורך ════════════════════════════════════════════

@@ -100,15 +100,19 @@ def parse_avatar_states(yml: str) -> list:
     return states
 
 
-def main() -> int:
-    if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
-        sys.stdout.reconfigure(encoding="utf-8")
-
-    week = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+def build_week(week: int):
+    """בונה את המטען של שבוע אחד. מחזיר None אם השבוע אינו שלם."""
     d = ROOT / "content" / f"week-{week:02d}"
     if not d.is_dir():
         print(f"אין תיקייה: {d}")
-        return 1
+        return None
+
+    # שבוע שנכתב חלקית לא ייארז. **עדיף שלא יופיע מאשר שייפתח שבור.**
+    required = ["meta.yml", "task.md", "starter.py", "tests_visible.py"]
+    missing_files = [f for f in required if not (d / f).is_file()]
+    if missing_files:
+        print(f"  שבוע {week}: חסרים {', '.join(missing_files)} — מדלג")
+        return None
 
     meta_src = read(d / "meta.yml")
     meta = parse_meta(meta_src)
@@ -122,8 +126,8 @@ def main() -> int:
     for rel in injects:
         p = ROOT / rel
         if not p.is_file():
-            print(f"⛔ קוד תשתית חסר: {rel}")
-            return 1
+            print(f"⛔ שבוע {week}: קוד תשתית חסר — {rel}")
+            return None
         inject_src += f"# ===== {rel} =====\n{read(p)}\n"
 
     payload = {
@@ -171,35 +175,73 @@ def main() -> int:
 
     blob = "\n".join(walk(payload))
     for name in ("reference.py", "tests_hidden.py"):
-        leaked = sorted(ln for ln in code_lines(read(d / name)) - public
-                        if ln in blob)
+        p = d / name
+        if not p.is_file():
+            continue
+        leaked = sorted(ln for ln in code_lines(read(p)) - public if ln in blob)
         if leaked:
-            print(f"⛔ {name} דולף ל-content.js — {len(leaked)} שורות קוד")
+            print(f"⛔ שבוע {week}: {name} דולף ל-content.js — "
+                  f"{len(leaked)} שורות קוד")
             print(f"   לדוגמה: {leaked[0][:70]}")
-            return 1
+            return None
+
+    n_tests = len(re.findall(r"^def test_", payload["testsVisible"], re.M))
+    print(f"  שבוע {payload['week']} · {payload['title']} · "
+          f"{n_tests} בדיקות גלויות" +
+          (" · עם קוד תשתית" if inject_src else ""))
+    return payload
+
+
+def main() -> int:
+    if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+        sys.stdout.reconfigure(encoding="utf-8")
+
+    # ⚠️ **נארזים כל השבועות שנכתבו, ולא אחד.** השבוע הפעיל נקבע בשרת
+    #    (‏ACTIVE_WEEK) וההחלפה היא לחיצה בגיליון — בלי בנייה ובלי דחיפה.
+    #    מספרי שבועות בשורת הפקודה מצמצמים את הרשימה, לבדיקות.
+    wanted = [int(a) for a in sys.argv[1:] if a.isdigit()]
+    found = sorted(int(p.name.split("-")[1]) for p in
+                   (ROOT / "content").glob("week-*") if p.is_dir())
+    weeks = [w for w in found if not wanted or w in wanted]
+    if not weeks:
+        print("לא נמצאו שבועות לאריזה")
+        return 1
+
+    print("אורז:")
+    payloads = {}
+    for w in weeks:
+        p = build_week(w)
+        if p:
+            payloads[w] = p
+    if not payloads:
+        return 1
 
     out = ROOT / "app" / "content.js"
     out.parent.mkdir(exist_ok=True)
-    body = json.dumps(payload, ensure_ascii=False, indent=2)
+    body = json.dumps(payloads, ensure_ascii=False, indent=2)
+    default_week = min(payloads)
     out.write_text(
         "// נוצר על ידי tools/build_app_content.py — אין לערוך ידנית.\n"
-        f"export const WEEK = {body};\n",
+        "//\n"
+        "// ⚠️ כל השבועות הארוזים יושבים כאן. **איזה מהם פעיל נקבע בשרת**,\n"
+        "//    ולא בקובץ הזה: ‏state מחזיר activeWeek, ו-app.js בוחר לפיו.\n"
+        "//    ‏DEFAULT_WEEK הוא רשת ביטחון בלבד, למקרה שהשרת לא זמין.\n"
+        f"export const WEEKS = {body};\n\n"
+        f"export const DEFAULT_WEEK = {default_week};\n",
         encoding="utf-8",
     )
 
-    n_tests = len(re.findall(r"^def test_", payload["testsVisible"], re.M))
     print(f"נוצר: {out.relative_to(ROOT)}")
-    print(f"  שבוע {payload['week']} · {payload['title']}")
-    print(f"  {n_tests} בדיקות גלויות · starter {len(payload['starter'].splitlines())} שורות")
+    print(f"  {len(payloads)} שבועות: {', '.join(str(w) for w in payloads)}")
+    print(f"  ברירת מחדל אם השרת שותק: שבוע {default_week}")
 
     # האפליקציה טוענת את החיתוכים, לא את המקורות
-    missing = [a["file"] for a in payload["avatars"]
+    avatars = payloads[default_week]["avatars"]
+    missing = [a["file"] for a in avatars
                if not (ROOT / "assets/persona/panel" / a["file"]).is_file()]
     if missing:
-        print(f"  ⚠️ {len(missing)} מתוך {len(payload['avatars'])} חיתוכי אווטאר "
+        print(f"  ⚠️ {len(missing)} מתוך {len(avatars)} חיתוכי אווטאר "
               f"חסרים — הרץ py tools/crop_persona.py")
-    else:
-        print(f"  {len(payload['avatars'])} אווטארים · חיתוכי פאנל קיימים")
     return 0
 
 

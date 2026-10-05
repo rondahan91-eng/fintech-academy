@@ -8,7 +8,7 @@
 //     ‏עדכון גרסה = החלפת חמשת הקבצים שם + שינוי המספר ב-README.
 // ══════════════════════════════════════════════════════════════════════
 
-import { WEEK } from './content.js';
+import { WEEKS, DEFAULT_WEEK } from './content.js';
 import { api, session, health, onHealthChange, saveOnExit, reportMachine,
          flushQueue, pending } from './api.js';
 
@@ -50,6 +50,38 @@ const esc = (s) => String(s)
 //    `fintech:week-1:code` — גלובלי. במעבדה עם פרופיל Chrome משותף
 //    התלמיד של שיעור שלישי היה פותח ורואה את הקוד של השיעור השני,
 //    מתחיל לערוך, והשמירה האוטומטית הייתה דורסת אותו לתמיד.
+// ══ איזה שבוע פתוח ═══════════════════════════════════════════════════
+//
+// ⚠️ **השרת מחליט, לא הקובץ.** ‏content.js אורז את כל השבועות שנכתבו,
+//    והשרת מחזיר activeWeek. כך פתיחת שבוע לכיתה היא לחיצה בגיליון,
+//    בלי בנייה, בלי דחיפה ובלי להמתין ל-GitHub Pages.
+//
+// ⚠️ **נקרא לפני הכל**, כי STORE, מסך המשימה וקוד ההתחלה תלויים בו.
+//    ‏takeBoot רץ כאן ולא בהמשך הקובץ מאותה סיבה.
+const bootState = (() => {
+  try {
+    const raw = sessionStorage.getItem('fintech:boot');
+    if (!raw) return null;
+    sessionStorage.removeItem('fintech:boot');
+    return JSON.parse(raw);
+  } catch { return null; }
+})();
+
+// ⚠️ **זיכרון מקומי לשבוע הפעיל.** בלעדיו, רענון בלי מצב מהשרת היה
+//    מקפיץ את התלמיד לשבוע ברירת המחדל לרגע, ואז חזרה — ריצוד מיותר.
+const WEEK_CACHE = 'fintech:activeWeek';
+
+function chooseWeek() {
+  const fromServer = Number(bootState && bootState.activeWeek);
+  let n;
+  try { n = Number(localStorage.getItem(WEEK_CACHE)); } catch { n = 0; }
+  const pick = WEEKS[fromServer] ? fromServer : (WEEKS[n] ? n : DEFAULT_WEEK);
+  try { localStorage.setItem(WEEK_CACHE, String(pick)); } catch { /* חסום */ }
+  return WEEKS[pick] || WEEKS[DEFAULT_WEEK];
+}
+
+const WEEK = chooseWeek();
+
 const STORE = `fintech:${session.student?.id ?? 'anon'}:week-${WEEK.week}:code`;
 
 // ⚠️ **כל גישה ל-localStorage עטופה.** מדיניות ארגונית שחוסמת אחסון
@@ -183,15 +215,6 @@ el.chatForm.addEventListener('submit', async (e) => {
 // רק כשאין כלום מקומית — וזה בדיוק המקרה של מחשב חדש, שהוא הסיבה
 // שיש שרת מלכתחילה.
 
-function takeBoot() {
-  try {
-    const raw = sessionStorage.getItem('fintech:boot');
-    if (!raw) return null;
-    sessionStorage.removeItem('fintech:boot');
-    return JSON.parse(raw);
-  } catch { return null; }
-}
-
 function restoreChat(turns) {
   turns.forEach((t) => say(String(t.text), t.role === 'elad' ? 'אלעד' : 'אתה'));
 }
@@ -211,9 +234,12 @@ function applyState(state, { force = false } = {}) {
   return false;
 }
 
-// ‏bootState ולא boot — ‏boot() היא כבר פונקציית העלייה של Pyodide
-const bootState = takeBoot();
-el.code.value = store.get(STORE) ?? (bootState && bootState.code) ?? WEEK.starter;
+// ‏bootState נקרא למעלה, לפני בחירת השבוע — ראה chooseWeek
+//
+// ⚠️ **|| ולא ??** — השרת מחזיר מחרוזת ריקה כשאין עבודה שמורה לשבוע
+//    הפעיל, ומחרוזת ריקה אינה null. עם ?? היא הייתה "מנצחת" את קוד
+//    ההתחלה, והתלמיד היה פותח שבוע חדש מול עורך ריק לגמרי.
+el.code.value = store.get(STORE) || (bootState && bootState.code) || WEEK.starter;
 
 const student = session.student;
 if (student && student.name) {
@@ -231,9 +257,24 @@ if (!bootState) {
     .then(({ state }) => {
       // סימנייה ישירה למסך העבודה לא מדלגת על הקליטה
       if (!state.onboarded) { location.replace('onboarding.html'); return; }
+      if (switchedWeek(state)) return;
       applyState(state);
     })
     .catch(() => { /* השרת אופציונלי. הבאנר כבר יודיע */ });
+}
+
+/**
+ * ⚠️ **המורה פתח שבוע אחר בזמן שהדף היה פתוח.** המסך מציג משימה אחת
+ *    והשרת מדבר על אחרת; טעינה מחדש היא הדרך הנקייה היחידה, כי
+ *    המשימה, קוד ההתחלה והבדיקות כולם נגזרו מהשבוע שנבחר בעלייה.
+ *    העבודה עצמה שמורה מקומית תחת מפתח שנושא את מספר השבוע.
+ */
+function switchedWeek(state) {
+  const n = Number(state && state.activeWeek);
+  if (!WEEKS[n] || n === WEEK.week) return false;
+  try { localStorage.setItem(WEEK_CACHE, String(n)); } catch { /* חסום */ }
+  location.reload();
+  return true;
 }
 
 // ══ העורך ═════════════════════════════════════════════════════════════
