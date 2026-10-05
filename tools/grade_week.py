@@ -33,6 +33,19 @@ ROOT = Path(__file__).resolve().parent.parent
 LIMIT_SECONDS = 10          # נדיב פי שניים מהמגבלה שבדפדפן
 OUTPUT_CAP = 200_000
 
+# ⚠️ **המספרים מ-SPEC §3.2 ולא מהראש.** תגמול ביצועים = 800 ₪ למשימה:
+#    כל הטסטים עוברים · הוגש עד הדדליין · איכות קוד לפי rubric.md.
+#    ⛔ **"כל הטסטים" הוא הכל או כלום**, כך זה מוגדר שם. היחס מוצג
+#       לתלמיד כמשוב, אבל הוא לא הופך ל-250 ₪ על חצי.
+PAY_TESTS = 500
+PAY_ON_TIME = 150
+PAY_RUBRIC = 150
+PAY_TOTAL = PAY_TESTS + PAY_ON_TIME + PAY_RUBRIC
+
+# ⚠️ **איכות קוד אינה מחושבת כאן, ובכוונה.** שמות משתנים, מבנה ופלט
+#    קריא הם שיפוט אנושי שהרובריקה מתארת במילים. העמודה יוצאת ריקה
+#    והמורה ממלא. מספר שהמחשב ימציא כאן ייראה אובייקטיבי ולא יהיה.
+
 
 # ═══ ארגז החול ════════════════════════════════════════════════════════
 
@@ -105,8 +118,11 @@ def run_suite(test_src: str, label: str, output: str, ns: dict):
             continue
         # ⚠️ ה-docstring של טסט נסתר נכתב למורה ולעיתים הוא פסקה שלמה.
         #    בדוח הוא תווית, ולכן: שורה אחת, ועד המשפט הראשון.
+        # ⚠️ **בלי docstring התווית נשארת ריקה, ולא שם הפונקציה.** דף
+        #    המשוב חוזר לתלמיד, ו-test_dana_after_transfer לא אומר לו
+        #    כלום. הודעת ה-assert כבר כתובה בעברית — היא המשוב.
         doc = " ".join((fn.__doc__ or "").split())
-        title = doc.split(". ")[0][:90] if doc else name
+        title = doc.split(". ")[0][:90] if doc else ""
         try:
             fn()
             out.append((name, title, True, ""))
@@ -180,13 +196,54 @@ def status_of(crashed: bool, hidden_pass: int, hidden_total: int) -> str:
     return "חלקי"
 
 
+def pay_of(hidden_pass: int, hidden_total: int, on_time):
+    """
+    מחזיר (תשלום טסטים, תשלום הגשה בזמן, סכום ידוע).
+
+    ‏on_time הוא None כשלא נמסר דדליין — אז הרכיב פשוט לא מחושב,
+    ולא מוענק ולא נשלל. **ציון חלקי עדיף על ציון שגוי.**
+    """
+    tests = PAY_TESTS if (hidden_total and hidden_pass == hidden_total) else 0
+    timed = PAY_ON_TIME if on_time else (0 if on_time is False else None)
+    known = tests + (timed or 0)
+    return tests, timed, known
+
+
+def rubric_criteria(week: int) -> list:
+    """שורות הטבלה מתוך rubric.md — הקריטריונים שהמורה מסמן ידנית."""
+    p = ROOT / "content" / f"week-{week:02d}" / "rubric.md"
+    if not p.is_file():
+        return []
+    out, in_table = [], False
+    for line in p.read_text(encoding="utf-8").splitlines():
+        if line.startswith("| קריטריון"):
+            in_table = True
+            continue
+        if in_table:
+            if not line.startswith("|"):
+                break
+            if set(line.strip()) <= set("|- "):
+                continue
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if len(cells) >= 2:
+                out.append((cells[0], cells[1]))
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="בודק הגשות כיתה מול הטסטים הנסתרים")
     ap.add_argument("week", type=int)
     ap.add_argument("submissions", type=Path, help="‏CSV של לשונית submissions")
     ap.add_argument("--roster", type=Path, help="‏CSV של לשונית roster — מוסיף את מי שלא הגיש")
     ap.add_argument("--out", type=Path, help="קובץ דוח. ברירת מחדל: reports/week-NN.md")
+    ap.add_argument("--deadline", help='דדליין להגשה, בפורמט "dd/MM/yyyy HH:mm". '
+                                       "בלעדיו רכיב ההגשה בזמן לא מחושב")
     args = ap.parse_args()
+
+    deadline = parse_ts(args.deadline) if args.deadline else None
+    if args.deadline and not deadline:
+        print('דדליין לא קריא. פורמט: "15/09/2026 20:00"')
+        return 2
 
     if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
         sys.stdout.reconfigure(encoding="utf-8")
@@ -216,6 +273,7 @@ def main() -> int:
 
         last = graded[-1]
         best = max(graded, key=hidden_score)
+        last_at = parse_ts(subs[-1].get("ts", ""))
         results.append({
             "id": sid,
             "name": str(subs[-1].get("name", "")).strip(),
@@ -224,6 +282,9 @@ def main() -> int:
             "last": last,
             "best": best,
             "improved_earlier": hidden_score(best) > hidden_score(last),
+            # ⚠️ לפי **ההגשה האחרונה**, כמו הציון. תלמיד שהגיש בזמן ואז
+            #    שוב באיחור בחר להחליף את מה שיישפט.
+            "on_time": None if not deadline else bool(last_at and last_at <= deadline),
         })
 
     missing = []
@@ -239,6 +300,12 @@ def main() -> int:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     write_report(out_path, args.week, results, missing)
 
+    grades_path = out_path.parent / f"week-{args.week:02d}-grades.csv"
+    write_grades_csv(grades_path, args.week, results, missing)
+
+    feedback_dir = out_path.parent / f"week-{args.week:02d}-משוב"
+    write_feedback(feedback_dir, args.week, results)
+
     # ── סיכום למסך ────────────────────────────────────────────────────
     done = sum(1 for x in results if status_of(
         bool(x["last"]["err"]),
@@ -246,7 +313,12 @@ def main() -> int:
     print(f"שבוע {args.week} · {len(results)} הגישו · {done} השלימו "
           f"· {len(results) - done} חלקי או נכשל" +
           (f" · {len(missing)} לא הגישו" if args.roster else ""))
-    print(f"הדוח: {out_path}")
+    print(f"דוח למורה:   {out_path}")
+    print(f"ציונים ל-Sheets: {grades_path}")
+    print(f"משוב לתלמידים:   {feedback_dir}")
+    if not deadline:
+        print("רכיב ההגשה בזמן לא חושב — הרץ עם --deadline כדי לכלול אותו.")
+    print("עמודת איכות הקוד ריקה בכוונה. מלא אותה לפי rubric.md של השבוע.")
     return 0
 
 
@@ -293,10 +365,93 @@ def write_report(path: Path, week: int, results: list, missing: list):
             lines.append("- שאר הבדיקות נכשלו כתוצאה מכך, ואין בהן מידע נוסף.")
         else:
             for title, why in fails:
-                lines.append(f"- **{title}** — {why.splitlines()[0] if why else ''}")
+                msg = why.splitlines()[0] if why else ""
+                lines.append(f"- **{title}** — {msg}" if title else f"- {msg}")
         lines.append("")
 
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_grades_csv(path: Path, week: int, results: list, missing: list):
+    """
+    שורה לתלמיד, מוכנה להדבקה בלשונית grades שבגיליון — משם הפאנל
+    קורא אותה ומציג ציון. **עמודת איכות הקוד ריקה**; המורה ממלא.
+    """
+    with io.open(path, "w", encoding="utf-8-sig", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["id", "name", "week", "status", "hiddenPass", "hiddenTotal",
+                    "payTests", "payOnTime", "payRubric", "score", "note"])
+        for x in sorted(results, key=lambda r: r["name"]):
+            last = x["last"]
+            hp, ht = tally(last["suites"].get("tests_hidden.py", []))
+            state = status_of(bool(last["err"]), hp, ht)
+            tests, timed, known = pay_of(hp, ht, x["on_time"])
+            fails = [t for _, t, ok, _ in last["suites"].get("tests_hidden.py", [])
+                     if not ok]
+            note = last["err"] or ("; ".join(fails[:3]) if fails else "")
+            w.writerow([x["id"], x["name"], week, state, hp, ht, tests,
+                        "" if timed is None else timed, "", known, note])
+        for sid, name in missing:
+            w.writerow([sid, name, week, "לא הגיש", 0, 0, 0, 0, "", 0, ""])
+
+
+def write_feedback(folder: Path, week: int, results: list):
+    """
+    דף משוב אישי לכל תלמיד — מה עבר, מה לא, הקוד שהגיש, והרובריקה
+    לסימון. זה מה שחוזר אליו, ולכן הוא מנוסח אליו ולא עליו.
+    """
+    folder.mkdir(parents=True, exist_ok=True)
+    criteria = rubric_criteria(week)
+
+    for x in results:
+        last = x["last"]
+        hidden = last["suites"].get("tests_hidden.py", [])
+        hp, ht = tally(hidden)
+        state = status_of(bool(last["err"]), hp, ht)
+        tests, timed, known = pay_of(hp, ht, x["on_time"])
+
+        lines = [f"# משוב · שבוע {week} · {x['name']}", "",
+                 f"**מצב:** {state} · עברו {hp} מתוך {ht} בדיקות", ""]
+
+        if last["err"]:
+            lines += ["## הקוד לא רץ", "",
+                      f"`{last['err']}`", "",
+                      "כל עוד הקוד לא רץ אי אפשר לבדוק אותו. "
+                      "זה הדבר הראשון לתקן.", ""]
+        else:
+            # ⚠️ **רק הודעת ה-assert חוזרת לתלמיד.** לפי content/_schema
+            #    היא נכתבת אליו ומסבירה מה חסר בלי לומר איך לתקן.
+            #    ה-docstring הוא תווית למורה — הוא מסביר למה הטסט קיים,
+            #    ולעיתים מסגיר את הפתרון.
+            bad = [why.splitlines()[0] for _, _, ok, why in hidden
+                   if not ok and why]
+            if bad:
+                lines += ["## מה עוד חסר", ""] + [f"- {m}" for m in bad] + [""]
+            else:
+                lines += ["כל הבדיקות עברו.", ""]
+
+        lines += ["## תגמול הביצועים", "",
+                  "| רכיב | מתוך | קיבלת |", "|---|---|---|",
+                  f"| כל הבדיקות עוברות | {PAY_TESTS} | {tests} |",
+                  f"| הוגש עד הדדליין | {PAY_ON_TIME} | "
+                  f"{'—' if timed is None else timed} |",
+                  f"| איכות קוד | {PAY_RUBRIC} | ___ |",
+                  f"| **סך הכול** | **{PAY_TOTAL}** | **{known} + ___** |", ""]
+
+        if criteria:
+            lines += ["## איכות קוד — מה נבדק השבוע", ""]
+            lines += [f"- [ ] **{name}** — {what}" for name, what in criteria]
+            lines += [""]
+
+        if last["row"].get("code"):
+            lines += ["## הקוד שהגשת", "",
+                      f"הגשה אחרונה: {x['last_ts']} · מתוך {x['count']} הגשות",
+                      "", "```python", last["row"]["code"].rstrip(), "```", ""]
+
+        lines += ["## הערת המורה", "", "", ""]
+
+        safe = "".join(c for c in x["name"] if c.isalnum() or c in " -_") or x["id"]
+        (folder / f"{safe}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

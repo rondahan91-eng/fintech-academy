@@ -45,6 +45,13 @@ var SHEETS = {
   // כל הדיווחים, לפי סדר. למקרה שמחשב "מתקן את עצמו" ורוצים לראות מה היה.
   machinelog: ['ts', 'machine', 'id', 'student', 'result', 'code', 'detail',
                'browser', 'sec', 'ua'],
+  // ציונים. **נכתב מבחוץ** — הדבקה של week-NN-grades.csv מ-grade_week.py.
+  // הטסטים הנסתרים לא רצים בשרת, ולכן זו הדרך היחידה שציון מגיע לכאן.
+  grades: ['id', 'name', 'week', 'status', 'hiddenPass', 'hiddenTotal',
+           'payTests', 'payOnTime', 'payRubric', 'score', 'note'],
+  // חריגת שבוע לתלמיד בודד — למי שנעדר ונשאר מאחור, או למי שרץ קדימה.
+  // שורה כאן גוברת על השבוע הפעיל של הכיתה. ריק = אין חריגה.
+  overrides: ['id', 'week', 'note', 'updated'],
   // נגזרת בלבד — נבנה מחדש מהתפריט. מחיקתו לא מוחקת דבר.
   dashboard: ['id', 'שם', 'קליטה', 'בסיס', 'הגשות', 'בדיקות', 'שיחות',
               'פעילות אחרונה', 'מצב'],
@@ -60,7 +67,7 @@ var SHEETS = {
 //    ‏2026-10-04: קוד הגיבוי נוסף בלי העלאת המספר, ואז הקובץ בתיקייה
 //    והקוד בעורך הראו **אותה גרסה והיו שונים ב-75 שורות** — בדיוק
 //    השאלה שהחותמת אמורה לענות עליה.
-var VERSION = '2026-10-05a';
+var VERSION = '2026-10-05b';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -137,6 +144,12 @@ var ACTIONS = {
   chat: doChat,
   onboard: doOnboard,
   machine: doMachine,
+  // פאנל המורה. כל אחת מהן דורשת אסימון מורה — ראה readAdminToken.
+  adminLogin: doAdminLogin,
+  adminData: doAdminData,
+  adminStudent: doAdminStudent,
+  adminSetWeek: doAdminSetWeek,
+  adminSetStudentWeek: doAdminSetStudentWeek,
 };
 
 function json(obj) {
@@ -305,13 +318,29 @@ function activeWeek() {
   return n > 0 ? n : 1;
 }
 
+/** חריגה אישית גוברת על השבוע של הכיתה. 0 = אין חריגה. */
+function weekOverrideFor(id) {
+  var rows = table('overrides');
+  for (var i = 0; i < rows.length; i++) {
+    if (String(rows[i].id) === String(id)) {
+      var n = Number(rows[i].week);
+      if (n > 0) return n;
+    }
+  }
+  return 0;
+}
+
+function weekFor(id) {
+  return weekOverrideFor(id) || activeWeek();
+}
+
 function loadState(id) {
   var rows = table('progress');
   var mine = null;
   for (var i = 0; i < rows.length; i++) {
     if (String(rows[i].id) === String(id)) mine = rows[i];
   }
-  var week = activeWeek();
+  var week = weekFor(id);
   // ⚠️ **קוד משבוע אחר לא נשלח.** ‏progress מחזיק שורה אחת לתלמיד, ולכן
   //    אחרי מעבר שבוע היא עדיין נושאת את העבודה הקודמת. להחזיר אותה
   //    היה פותח לתלמיד את המשימה החדשה עם הקוד של הישנה.
@@ -404,6 +433,227 @@ function doSubmit(req) {
     ]);
     upsertProgress(id, Number(req.week) || 1, String(req.code || ''));
     return { ok: true };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// ═══ פאנל המורה ═══════════════════════════════════════════════════════
+//
+// ⛔ **הכתובת הזאת ציבורית, והפאנל חושף תמלולי שיחות של תלמידים.**
+//    סיסמת המורה היא ההגנה היחידה. היא יושבת בהגדרות הסקריפט ולא בקוד,
+//    היא מוחלפת באסימון חתום לשמונה שעות, ויש חסימה אחרי ניסיונות
+//    כושלים — כי כתובת ציבורית אפשר לנסות עליה סיסמאות בלי הגבלה.
+//
+// ⚠️ **אין כאן ציונים.** הטסטים הנסתרים לא רצים בשרת (‏SPEC §7), ולכן
+//    הפאנל מראה הגשות ובדיקות גלויות. "הושלם או חלקי" מגיע מהרצת
+//    tools/grade_week.py אצל המורה, ואם קיימת לשונית grades — משם.
+
+var ADMIN_TTL_HOURS = 8;
+var ADMIN_MAX_FAILS = 10;
+var ADMIN_LOCK_MINUTES = 10;
+
+function adminSign(issued) {
+  return sign('admin.' + issued);
+}
+
+function adminLocked() {
+  var raw = prop('ADMIN_FAILS');
+  if (!raw) return false;
+  try {
+    var o = JSON.parse(raw);
+    if (o.n < ADMIN_MAX_FAILS) return false;
+    return (Date.now() - o.at) < ADMIN_LOCK_MINUTES * 60000;
+  } catch (e) { return false; }
+}
+
+function adminNoteFail() {
+  var o = { n: 0, at: Date.now() };
+  try { o = JSON.parse(prop('ADMIN_FAILS') || '{"n":0}'); } catch (e) {}
+  if (Date.now() - (o.at || 0) > ADMIN_LOCK_MINUTES * 60000) o.n = 0;
+  o.n = (o.n || 0) + 1;
+  o.at = Date.now();
+  PropertiesService.getScriptProperties().setProperty('ADMIN_FAILS', JSON.stringify(o));
+}
+
+function doAdminLogin(req) {
+  var pass = prop('TEACHER_PASSWORD');
+  if (!pass) return { error: 'לא הוגדרה סיסמת מורה. בגיליון: FinTech ← קבע סיסמת מורה' };
+  if (adminLocked()) return { error: 'יותר מדי ניסיונות כושלים. נסה שוב בעוד כמה דקות.' };
+  if (String(req.password || '') !== String(pass)) {
+    adminNoteFail();
+    return { error: 'סיסמה שגויה' };
+  }
+  PropertiesService.getScriptProperties().deleteProperty('ADMIN_FAILS');
+  var issued = Date.now();
+  return { ok: true, token: 'admin.' + issued + '.' + adminSign(issued) };
+}
+
+function readAdminToken(token) {
+  var p = String(token || '').split('.');
+  if (p.length !== 3 || p[0] !== 'admin') throw new Error('אסימון מורה לא תקין');
+  if (adminSign(Number(p[1])) !== p[2]) throw new Error('אסימון מורה לא תקין');
+  if (Date.now() - Number(p[1]) > ADMIN_TTL_HOURS * 3600000) {
+    throw new Error('פג תוקף. התחבר שוב');
+  }
+  return true;
+}
+
+/** ציונים מלשונית grades, אם המורה הזין אותם מ-tools/grade_week.py. */
+function gradesIndex() {
+  var ss = SpreadsheetApp.getActive();
+  if (!ss.getSheetByName('grades')) return {};
+  var out = {};
+  var rows = table('grades');
+  for (var i = 0; i < rows.length; i++) {
+    // ⚠️ הציון הסופי = מה שחושב + איכות הקוד שהמורה מילא ביד. אם
+    //    העמודה ריקה, מוצג מה שידוע ולא אפס — אפס היה נראה כמו ציון.
+    var rubric = String(rows[i].payRubric || '').trim();
+    out[String(rows[i].id) + ':' + String(rows[i].week)] = {
+      status: String(rows[i].status || ''),
+      note: String(rows[i].note || ''),
+      hiddenPass: Number(rows[i].hiddenPass) || 0,
+      hiddenTotal: Number(rows[i].hiddenTotal) || 0,
+      score: Number(rows[i].score) || 0,
+      rubric: rubric === '' ? null : Number(rubric) || 0,
+    };
+  }
+  return out;
+}
+
+/** טבלת הכיתה. שורה לתלמיד, ביחס לשבוע שהוא רואה בפועל. */
+function doAdminData(req) {
+  readAdminToken(req.token);
+  var week = Number(req.week) || 0;        // 0 = השבוע של כל תלמיד
+  var roster = table('roster');
+  var prog = index(table('progress'), 'id');
+  var subs = table('submissions');
+  var chats = table('chat');
+  var onb = table('onboard');
+  var grades = gradesIndex();
+
+  var students = [];
+  for (var i = 0; i < roster.length; i++) {
+    var r = roster[i];
+    var id = String(r.id);
+    if (!String(r.name || '').trim()) continue;
+
+    var mine = weekFor(id);
+    var shown = week || mine;
+    var mySubs = [];
+    for (var j = 0; j < subs.length; j++) {
+      if (String(subs[j].id) === id && Number(subs[j].week) === shown) {
+        mySubs.push(subs[j]);
+      }
+    }
+    var last = mySubs.length ? mySubs[mySubs.length - 1] : null;
+    var p = prog[id];
+    var talk = 0;
+    for (var k = 0; k < chats.length; k++) {
+      if (String(chats[k].id) === id && chats[k].role === 'student') talk++;
+    }
+    var startedOnboarding = false;
+    for (var m = 0; m < onb.length; m++) {
+      if (String(onb[m].id) === id) { startedOnboarding = true; break; }
+    }
+    var g = grades[id + ':' + shown] || null;
+
+    students.push({
+      id: id,
+      name: String(r.name),
+      week: mine,
+      override: weekOverrideFor(id),
+      onboarded: !!(p && String(p.onboarded) === 'yes'),
+      startedOnboarding: startedOnboarding,
+      submissions: mySubs.length,
+      lastSubmit: last ? String(last.ts) : '',
+      visiblePass: last ? Number(last.visiblePass) : null,
+      visibleTotal: last ? Number(last.visibleTotal) : null,
+      talked: talk,
+      lastSeen: p && p.updated ? String(p.updated) : '',
+      grade: g ? g.status : '',
+      gradeNote: g ? g.note : '',
+      hiddenPass: g ? g.hiddenPass : null,
+      hiddenTotal: g ? g.hiddenTotal : null,
+      score: g ? g.score : null,
+      rubric: g ? g.rubric : null,
+    });
+  }
+
+  return { ok: true, activeWeek: activeWeek(), week: week, students: students };
+}
+
+/** כרטיס תלמיד: הגשות, שיחה עם אלעד, ושיחת הקליטה. */
+function doAdminStudent(req) {
+  readAdminToken(req.token);
+  var id = String(req.id || '');
+  var mySubs = [];
+  var subs = table('submissions');
+  for (var i = 0; i < subs.length; i++) {
+    if (String(subs[i].id) !== id) continue;
+    mySubs.push({
+      ts: String(subs[i].ts), week: Number(subs[i].week),
+      pass: Number(subs[i].visiblePass), total: Number(subs[i].visibleTotal),
+      code: String(subs[i].code || ''),
+    });
+  }
+
+  var talk = [], chats = table('chat');
+  for (var j = 0; j < chats.length; j++) {
+    if (String(chats[j].id) !== id) continue;
+    talk.push({ ts: String(chats[j].ts), week: Number(chats[j].week),
+                role: String(chats[j].role), text: String(chats[j].text) });
+  }
+
+  var intake = [], onb = table('onboard');
+  for (var k = 0; k < onb.length; k++) {
+    if (String(onb[k].id) !== id) continue;
+    intake.push({ ts: String(onb[k].ts), role: String(onb[k].role),
+                  text: String(onb[k].text) });
+  }
+
+  var base = [], baseline = table('baseline');
+  for (var m = 0; m < baseline.length; m++) {
+    if (String(baseline[m].id) !== id) continue;
+    base.push({ q: String(baseline[m].q), answer: String(baseline[m].answer),
+                matched: String(baseline[m].matched) });
+  }
+
+  return { ok: true, id: id, name: nameOf(id), week: weekFor(id),
+           override: weekOverrideFor(id), submissions: mySubs,
+           chat: talk, intake: intake, baseline: base };
+}
+
+function doAdminSetWeek(req) {
+  readAdminToken(req.token);
+  var n = Number(req.week);
+  if (!(n >= 1 && n <= 30)) return { error: 'מספר שבוע לא תקין' };
+  PropertiesService.getScriptProperties().setProperty('ACTIVE_WEEK', String(n));
+  return { ok: true, activeWeek: n };
+}
+
+/** חריגה אישית. ‏week ריק או 0 מבטל אותה ומחזיר את התלמיד לכיתה. */
+function doAdminSetStudentWeek(req) {
+  readAdminToken(req.token);
+  var id = String(req.id || '');
+  if (!id) return { error: 'חסר מזהה תלמיד' };
+  var n = Number(req.week) || 0;
+  if (n && !(n >= 1 && n <= 30)) return { error: 'מספר שבוע לא תקין' };
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var sh = sheet('overrides');
+    var last = sh.getLastRow();
+    var ids = last > 1 ? sh.getRange(2, 1, last - 1, 1).getValues() : [];
+    for (var i = 0; i < ids.length; i++) {
+      if (String(ids[i][0]) === id) {
+        sh.getRange(i + 2, 2, 1, 3).setValues([[n || '', String(req.note || ''), new Date()]]);
+        return { ok: true, id: id, week: n };
+      }
+    }
+    if (n) sh.appendRow([id, n, String(req.note || ''), new Date()]);
+    return { ok: true, id: id, week: n };
   } finally {
     lock.releaseLock();
   }
@@ -922,6 +1172,7 @@ function onOpen() {
     .addItem('תקן קודים שהפכו לתאריכים', 'fixCodeColumn')
     .addSeparator()
     .addItem('פתח שבוע לכיתה…', 'setActiveWeek')
+    .addItem('קבע סיסמת מורה…', 'setTeacherPassword')
     .addSeparator()
     .addItem('איזו גרסה שמורה כאן?', 'showVersion')
     .addSeparator()
@@ -959,6 +1210,37 @@ function setActiveWeek() {
   ui.alert('שבוע ' + n + ' פתוח.\n\n' +
            'תלמיד שהמסך שלו פתוח כרגע יעבור אליו ברענון הבא.\n' +
            'העבודה על השבוע הקודם נשמרה ולא נמחקה.');
+}
+
+// ═══ סיסמת המורה ══════════════════════════════════════════════════════
+//
+// ⛔ **הסיסמה היא מה שמגן על תמלולי השיחות של התלמידים.** היא נשמרת
+//    בהגדרות הסקריפט, לא בקוד ולא בגיליון, ולכן היא לא נוסעת לגיט ולא
+//    נראית למי שפותח את הגיליון. **לא לבחור את אותה סיסמה של משהו אחר.**
+
+function setTeacherPassword() {
+  var ui = SpreadsheetApp.getUi();
+  var has = !!prop('TEACHER_PASSWORD');
+  var res = ui.prompt(
+    'סיסמת כניסה לפאנל המורה',
+    (has ? 'קיימת סיסמה. הקלדה כאן מחליפה אותה.\n\n'
+         : 'אין עדיין סיסמה, והפאנל חסום.\n\n') +
+    'בחר סיסמה באורך 8 תווים לפחות.\n' +
+    'השאר ריק כדי לבטל את הפאנל לגמרי.',
+    ui.ButtonSet.OK_CANCEL);
+  if (res.getSelectedButton() !== ui.Button.OK) return;
+
+  var pass = String(res.getResponseText()).trim();
+  var props = PropertiesService.getScriptProperties();
+  if (!pass) {
+    props.deleteProperty('TEACHER_PASSWORD');
+    ui.alert('הסיסמה נמחקה. הפאנל חסום לכולם.');
+    return;
+  }
+  if (pass.length < 8) { ui.alert('קצרה מדי. נדרשים 8 תווים לפחות.'); return; }
+  props.setProperty('TEACHER_PASSWORD', pass);
+  props.deleteProperty('ADMIN_FAILS');
+  ui.alert('הסיסמה נקבעה.\n\nהפאנל: app/teacher.html באתר, עם הסיסמה הזאת.');
 }
 
 // ═══ איזו גרסה שמורה בעורך ════════════════════════════════════════════
