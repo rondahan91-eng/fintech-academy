@@ -67,7 +67,7 @@ var SHEETS = {
 //    ‏2026-10-04: קוד הגיבוי נוסף בלי העלאת המספר, ואז הקובץ בתיקייה
 //    והקוד בעורך הראו **אותה גרסה והיו שונים ב-75 שורות** — בדיוק
 //    השאלה שהחותמת אמורה לענות עליה.
-var VERSION = '2026-10-06a';
+var VERSION = '2026-10-06b';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -85,6 +85,12 @@ function doGet(e) {
     ok: true, service: 'fintech-academy', version: VERSION,
     hasKey: !!prop('ANTHROPIC_API_KEY'),
     activeWeek: activeWeek(),
+    // ⚠️ **אילו תדריכי שבוע באמת טעונים.** ‏VERSION יושב ב-Code.gs,
+    //    ולכן הוא לא מעיד על Prompt.gs: אפשר לפרוס Code.gs חדש עם
+    //    Prompt.gs ישן, ואלעד ימשיך לתת את תדריך שבוע 1 בשקט. קרה.
+    eladWeeks: (typeof ELAD_WEEK_BRIEF === 'undefined')
+      ? 'ישן — Prompt.gs לא עודכן'
+      : Object.keys(ELAD_WEEK_BRIEF).join(','),
     skipOnboarding: bypassOnboarding(),
     // ⚠️ **לאיזה גיליון הסקריפט קשור בפועל.** אם זה לא הגיליון
     //    שמסתכלים עליו, כל השאר חסר משמעות — קוראים כאן טבלה אחרת.

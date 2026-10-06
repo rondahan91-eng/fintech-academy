@@ -343,8 +343,11 @@ body.focus .task { display: none; }
 .task-body code {
   font: 500 12px var(--mono); background: #F1F3F8; color: #2B3244;
   padding: 1px 5px; border-radius: 4px;
-  /* שם פעולה לועזי בתוך משפט עברי — בלי זה הוא נודד באמצע השורה */
-  unicode-bidi: isolate;
+  /* ⚠️ **‏direction ולא רק isolate.** הסוגריים ב-acc.owner() הם תווים
+     ניטרליים: בתוך בידוד שכיוונו עברי הם נדדו לתחילת המילה והוצג
+     ‏()acc.owner. ‏direction: ltr מכריע אותם לצד הנכון, והבידוד מונע
+     מהם לגרור איתם את המשפט העברי שמסביב. */
+  display: inline-block; direction: ltr; unicode-bidi: isolate;
 }
 .task-body table {
   width: 100%; border-collapse: collapse; margin: 0 0 10px; font-size: 12.5px;
@@ -354,10 +357,13 @@ body.focus .task { display: none; }
   vertical-align: top;
 }
 .task-body th { color: var(--slate); font-weight: 600; font-size: 12px; }
+/* הלוח צר, ושורת קוד ארוכה נחתכה והסתירה את סופה. גלישה עדיפה על
+   גלילה אופקית בעמודה שהתלמיד קורא תוך כדי עבודה. */
 .task-body pre {
   margin: 0 0 10px; padding: 8px 10px; border-radius: 7px;
-  background: var(--navy); color: #DDE6F7; overflow-x: auto;
+  background: var(--navy); color: #DDE6F7;
   font: 400 12px/1.6 var(--mono); text-align: left;
+  white-space: pre-wrap; overflow-wrap: anywhere;
 }
 .task-body blockquote {
   margin: 0 0 10px; padding: 7px 10px; background: #F7F9FD;
