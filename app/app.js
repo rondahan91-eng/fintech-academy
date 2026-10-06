@@ -97,7 +97,11 @@ const store = {
 el.tbWeek.textContent = `שבוע ${WEEK.week}`;
 el.taskTitle.textContent = WEEK.title;
 
-el.taskBody.innerHTML = WEEK.requirements.map((sec) => `
+// ⚠️ **דף המשימה המלא, ולא שליפה של טבלאות.** עד 2026-10-06 הלוח נבנה
+//    מ-requirements, שנשלף בצורה שהתאימה לשבוע 1 בלבד — ושבועות 2–4
+//    הגיעו לתלמיד **ריקים**, בלי טבלת הממשק ובלי ההוראות. ‏taskHtml
+//    מיוצר מ-task.md בכלי הבנייה; הטקסט שם כבר עבר escaping.
+el.taskBody.innerHTML = WEEK.taskHtml || WEEK.requirements.map((sec) => `
   <h2>${esc(sec.section)}</h2>
   ${sec.items.map((it) => `
     <div class="req"><span>${esc(it.label)}</span><b dir="auto">${esc(it.value)}</b></div>

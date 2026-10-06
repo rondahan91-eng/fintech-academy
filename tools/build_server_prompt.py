@@ -44,7 +44,13 @@ FRAME = """אתה אלעד שגב, ראש צוות פיתוח בבנק. אתה �
 # ═══ הזהות ═══
 
 {persona}
+"""
 
+# ⚠️ **התדריך השבועי נפרד מהבסיס, וזה לא קוסמטי.** עד 2026-10-06
+#    ‏Prompt.gs נבנה לשבוע אחד, ו-doChat השתמש בו תמיד — כך שאחרי
+#    פתיחת שבוע חדש אלעד המשיך למסור את ההנחיות של השבוע הקודם.
+#    עכשיו נארזים כל התדריכים, והשרת בוחר לפי השבוע של התלמיד.
+WEEK_FRAME = """
 # ═══ תדריך שבוע {week} ═══
 
 {manager}
@@ -159,15 +165,22 @@ def main() -> int:
     if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
         sys.stdout.reconfigure(encoding="utf-8")
 
-    week = int(sys.argv[1]) if len(sys.argv) > 1 else 1
-    d = ROOT / "content" / f"week-{week:02d}"
-    if not d.is_dir():
-        print(f"אין תיקייה: {d}")
+    wanted = [int(a) for a in sys.argv[1:] if a.isdigit()]
+    persona = read(ROOT / "content/_shared/persona.yml")
+    base = FRAME.format(persona=persona)
+
+    briefs = {}
+    for d in sorted((ROOT / "content").glob("week-*")):
+        if not (d / "manager.yml").is_file():
+            continue
+        n = int(d.name.split("-")[1])
+        if wanted and n not in wanted:
+            continue
+        briefs[n] = WEEK_FRAME.format(week=n, manager=read(d / "manager.yml"))
+    if not briefs:
+        print("לא נמצא אף manager.yml")
         return 1
 
-    persona = read(ROOT / "content/_shared/persona.yml")
-    prompt = FRAME.format(week=week, persona=persona,
-                          manager=read(d / "manager.yml"))
     onboard = ONBOARD_FRAME.format(
         persona=persona,
         onboarding=read(ROOT / "content/_shared/onboarding.yml"),
@@ -175,10 +188,16 @@ def main() -> int:
 
     out = ROOT / "server" / "Prompt.gs"
     out.parent.mkdir(exist_ok=True)
+    weeks_js = ",\n".join(
+        f"  {n}: {json.dumps(text, ensure_ascii=False)}" for n, text in sorted(briefs.items()))
     out.write_text(
         "// נוצר על ידי tools/build_server_prompt.py — אין לערוך ידנית.\n"
-        f"// שבוע {week} · {len(prompt)} + {len(onboard)} תווים\n\n"
-        f"var ELAD_SYSTEM_PROMPT = {json.dumps(prompt, ensure_ascii=False)};\n\n"
+        f"// {len(briefs)} תדריכי שבוע · בסיס {len(base)} תווים\n"
+        "//\n"
+        "// ⚠️ **הבסיס זהה לכל השבועות; התדריך משתנה.** ‏Code.gs מרכיב\n"
+        "//    אותם ב-eladPrompt(week) לפי השבוע שהתלמיד רואה בפועל.\n\n"
+        f"var ELAD_BASE_PROMPT = {json.dumps(base, ensure_ascii=False)};\n\n"
+        f"var ELAD_WEEK_BRIEF = {{\n{weeks_js}\n}};\n\n"
         f"var ONBOARD_SYSTEM_PROMPT = {json.dumps(onboard, ensure_ascii=False)};\n",
         encoding="utf-8",
     )
@@ -191,8 +210,10 @@ def main() -> int:
         return 1
 
     print(f"נוצר: {out.relative_to(ROOT)}")
-    print(f"  שבוע {week} · {len(prompt):,} תווים · ~{len(prompt)//3:,} טוקנים")
-    print(f"  נשלח פעם אחת ונשמר במטמון — ‏cache_control ב-Code.gs")
+    print(f"  בסיס משותף: {len(base):,} תווים · ~{len(base)//3:,} טוקנים")
+    for n, text in sorted(briefs.items()):
+        print(f"  שבוע {n}: {len(text):,} תווים")
+    print("  כל שבוע נשמר במטמון בנפרד — ‏cache_control ב-Code.gs")
     return 0
 
 

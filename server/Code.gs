@@ -67,7 +67,7 @@ var SHEETS = {
 //    ‏2026-10-04: קוד הגיבוי נוסף בלי העלאת המספר, ואז הקובץ בתיקייה
 //    והקוד בעורך הראו **אותה גרסה והיו שונים ב-75 שורות** — בדיוק
 //    השאלה שהחותמת אמורה לענות עליה.
-var VERSION = '2026-10-05b';
+var VERSION = '2026-10-06a';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -711,10 +711,34 @@ function doMachine(req) {
 }
 
 // ═══ אלעד ═════════════════════════════════════════════════════════════
+//
+// ⛔ **אלעד חייב לקבל את תדריך השבוע שהתלמיד באמת עובד עליו.**
+//    ‏2026-10-06: אחרי פתיחת שבוע חדש הוא המשיך למסור את ההנחיות של
+//    השבוע הקודם, כי Prompt.gs נבנה לשבוע אחד ו-doChat השתמש בו תמיד.
+//    עכשיו Prompt.gs אורז תדריך לכל שבוע, וכאן נבחר הנכון.
+
+function eladPrompt(week) {
+  // ‏Prompt.gs ישן שנשאר בעורך — עדיף תדריך ישן מאשר קריסה באמצע שיעור.
+  if (typeof ELAD_WEEK_BRIEF === 'undefined') {
+    return typeof ELAD_SYSTEM_PROMPT === 'undefined' ? '' : ELAD_SYSTEM_PROMPT;
+  }
+  var brief = ELAD_WEEK_BRIEF[week] || ELAD_WEEK_BRIEF[String(week)];
+  if (!brief) {
+    // ⚠️ **לא ליפול לשבוע אחר.** תדריך של שבוע שגוי הוא בדיוק התקלה
+    //    שתוקנה כאן. בלי תדריך אלעד עונה על מה שהוא יודע ומפנה למורה.
+    brief = '\n\n# ═══ אין תדריך לשבוע ' + week + ' ═══\n\n' +
+            'לשבוע הזה לא נכתב תדריך. **אל תמסור הנחיות משבוע אחר.** ' +
+            'ענה רק על מה שהתלמיד שואל במפורש, ואם הוא מבקש את המשימה — ' +
+            'הפנה אותו לדף המשימה שעל המסך ולמורה.';
+  }
+  return ELAD_BASE_PROMPT + brief;
+}
 
 function doChat(req) {
   var id = readToken(req.token);
-  var week = Number(req.week) || 1;
+  // ⚠️ **השבוע נקבע בשרת ולא לפי מה שהלקוח שלח.** לשונית ישנה שנשארה
+  //    פתוחה על שבוע קודם הייתה גוררת את אלעד לתדריך הלא נכון.
+  var week = weekFor(id);
   var text = String(req.message || '').trim();
   if (!text) return { error: 'הודעה ריקה' };
 
@@ -733,7 +757,7 @@ function doChat(req) {
     // ⚠️ cache_control על הבלוק היחיד של ה-system: הפרומפט של אלעד הוא
     //    כמה אלפי טוקנים והוא זהה לכל שלושים התלמידים. בלי זה משלמים
     //    עליו מחדש בכל הודעה.
-    system: [{ type: 'text', text: ELAD_SYSTEM_PROMPT,
+    system: [{ type: 'text', text: eladPrompt(week),
                cache_control: { type: 'ephemeral' } }],
     messages: history,
   };

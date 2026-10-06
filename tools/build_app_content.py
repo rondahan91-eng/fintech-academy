@@ -46,6 +46,98 @@ def parse_task_md(md: str) -> dict:
     return {"title": title, "requirements": reqs}
 
 
+def md_to_html(md: str) -> str:
+    """
+    ‏task.md → HTML ללוח המשימה.
+
+    ⛔ **הגרסה הקודמת לא הייתה ממיר אלא שולף.** היא חיפשה טבלאות שבאות
+       מיד אחרי שורה מודגשת שמתחילה במילה "חלק" — הצורה המדויקת של
+       שבוע 1 — וכל מה שלא נראה כך נזרק. התוצאה: שבועות 2, 3 ו-4 הגיעו
+       לתלמיד עם **לוח משימה ריק לגמרי**, בלי טבלת הממשק ובלי ההוראות.
+
+    הכותרת הראשית (# שבוע N · שם) יורדת — היא מוצגת בנפרד מעל הלוח.
+    """
+    esc_html = (lambda s: s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+
+    def inline(s: str) -> str:
+        s = esc_html(s)
+        s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
+        s = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", s)
+        return s
+
+    out, rows, lst, code = [], [], None, None
+
+    def flush_table():
+        if not rows:
+            return
+        head, body = rows[0], rows[2:] if len(rows) > 2 else []
+        out.append("<table><tr>" +
+                   "".join(f"<th>{inline(c)}</th>" for c in head) + "</tr>")
+        for r in body:
+            out.append("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r) + "</tr>")
+        out.append("</table>")
+        rows.clear()
+
+    def flush_list():
+        nonlocal lst
+        if lst:
+            out.append(f"</{lst}>")
+            lst = None
+
+    for raw in md.splitlines():
+        line = raw.rstrip()
+
+        # גוש קוד מוקף. ⚠️ **נאסף כמות שהוא** — כל עיבוד אחר ישבור הזחה.
+        if line.startswith("```"):
+            if code is None:
+                flush_table(); flush_list(); code = []
+            else:
+                out.append("<pre dir=\"ltr\">" + esc_html("\n".join(code)) + "</pre>")
+                code = None
+            continue
+        if code is not None:
+            code.append(raw)
+            continue
+
+        if line.startswith("|"):
+            rows.append([c.strip() for c in line.strip().strip("|").split("|")])
+            continue
+        flush_table()
+
+        if not line.strip() or set(line.strip()) <= set("-*_ ") and len(line.strip()) >= 3:
+            flush_list()
+            continue
+        if line.startswith("# "):
+            continue                                  # הכותרת מוצגת מעל הלוח
+        if line.startswith("## "):
+            flush_list(); out.append(f"<h2>{inline(line[3:])}</h2>"); continue
+        if line.startswith("### "):
+            flush_list(); out.append(f"<h3>{inline(line[4:])}</h3>"); continue
+        if line.startswith("> "):
+            flush_list(); out.append(f"<blockquote>{inline(line[2:])}</blockquote>"); continue
+
+        m = re.match(r"^(\d+)\.\s+(.*)", line)
+        if m:
+            if lst != "ol":
+                flush_list(); out.append("<ol>"); lst = "ol"
+            out.append(f"<li>{inline(m.group(2))}</li>")
+            continue
+        if line.startswith("- "):
+            if lst != "ul":
+                flush_list(); out.append("<ul>"); lst = "ul"
+            out.append(f"<li>{inline(line[2:])}</li>")
+            continue
+
+        flush_list()
+        out.append(f"<p>{inline(line)}</p>")
+
+    flush_table()
+    flush_list()
+    if code is not None:                     # גדר שנפתחה ולא נסגרה
+        out.append("<pre dir=\"ltr\">" + esc_html("\n".join(code)) + "</pre>")
+    return "\n".join(out)
+
+
 def parse_meta(yml: str) -> dict:
     """קורא את השדות שהממשק צריך. מכוון — לא מנתח YAML מלא."""
     out = {}
@@ -116,7 +208,8 @@ def build_week(week: int):
 
     meta_src = read(d / "meta.yml")
     meta = parse_meta(meta_src)
-    task = parse_task_md(read(d / "task.md"))
+    task_md = read(d / "task.md")
+    task = parse_task_md(task_md)
 
     # ⚠️ **קוד התשתית נשלח לדפדפן, כלומר הוא גלוי לתלמיד שיחפש.**
     #    אין דרך להריץ אותו בדפדפן בלי לשלוח אותו. הממשק הוא מה שמתועד
@@ -134,7 +227,9 @@ def build_week(week: int):
         "week": meta["week"],
         "title": meta.get("title", task["title"]),
         "xp": meta.get("xp"),
+        # ‏requirements נשאר לתאימות; מה שמוצג בפועל הוא taskHtml.
         "requirements": task["requirements"],
+        "taskHtml": md_to_html(task_md),
         "starter": read(d / "starter.py"),
         "testsVisible": read(d / "tests_visible.py"),
         "inject": inject_src,
