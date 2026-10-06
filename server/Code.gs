@@ -67,7 +67,7 @@ var SHEETS = {
 //    ‏2026-10-04: קוד הגיבוי נוסף בלי העלאת המספר, ואז הקובץ בתיקייה
 //    והקוד בעורך הראו **אותה גרסה והיו שונים ב-75 שורות** — בדיוק
 //    השאלה שהחותמת אמורה לענות עליה.
-var VERSION = '2026-10-06c';
+var VERSION = '2026-10-06d';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -372,7 +372,7 @@ function loadState(id) {
     onboarded: bypassOnboarding() ||
                !!(mine && String(mine.onboarded) === 'yes'),
     onboardTurns: onboardTurns(id),
-    chat: loadChat(id),
+    chat: loadChat(id, week),
   };
 }
 
@@ -387,13 +387,24 @@ function onboardTurns(id) {
   return mine;
 }
 
-function loadChat(id) {
+/**
+ * ⛔ **שיחה של שבוע אחד לא נגררת לשבוע הבא.**
+ *
+ * עד 2026-10-06 הוחזרו כל התורות של התלמיד, והעמודה `week` בגיליון
+ * נכתבה ולא שימשה לכלום. התוצאה נראתה בכיתה: אחרי פתיחת שבוע 2 אלעד
+ * קיבל תדריך של שבוע 2 ומעליו עשרים תורות על תלוש המשכורת של שבוע 1,
+ * והמשיך את השיחה הישנה — כולל מסירת המשימה הקודמת.
+ *
+ * ⚠️ ההיסטוריה עצמה **אינה נמחקת**. היא נשארת בגיליון ובכרטיס התלמיד
+ *    שבפאנל; רק מה שנשלח למודל מצטמצם לשבוע הנוכחי.
+ */
+function loadChat(id, week) {
   var rows = table('chat');
   var mine = [];
   for (var i = 0; i < rows.length; i++) {
-    if (String(rows[i].id) === String(id)) {
-      mine.push({ role: rows[i].role, text: String(rows[i].text) });
-    }
+    if (String(rows[i].id) !== String(id)) continue;
+    if (week && Number(rows[i].week) !== Number(week)) continue;
+    mine.push({ role: rows[i].role, text: String(rows[i].text) });
   }
   return mine.slice(-CHAT_HISTORY * 2);
 }
@@ -756,7 +767,7 @@ function doChat(req) {
   var key = prop('ANTHROPIC_API_KEY');
   if (!key) return { error: 'לא הוגדר מפתח API. ראה server/README.md' };
 
-  var history = loadChat(id).map(function (m) {
+  var history = loadChat(id, week).map(function (m) {
     return { role: m.role === 'elad' ? 'assistant' : 'user', content: m.text };
   });
   history.push({ role: 'user', content: text });
