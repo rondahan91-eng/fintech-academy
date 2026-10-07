@@ -1,29 +1,77 @@
 # בדיקות גלויות — שבוע 3
-# התלמיד מריץ אותן כמה שירצה. מכסות את המקרה הבסיסי בלבד.
+#
+# ⛔ **שורה לכל חלק של המשימה.** מד ההתקדמות שהתלמיד רואה הוא מספר
+#    הבדיקות שעברו, ולכן כיסוי חלקי משדר "סיימת" למי שסיים שליש.
+#
+# ⚠️ **הערכים כאן מופיעים כבר בדף המשימה** (טבלת הנתונים וחלק ג'),
+#    ולכן אין בהם דליפה. מה שאינו בדף — ניסוח ההודעות של הטיפוסים
+#    ובדיקת המשתנים הכפולים — נשאר לבדיקות הנסתרות.
 #
 # זמין: OUTPUT · LINES · VARS
 
 
+REQUIRED = ["customer_name", "account_number", "age", "gross_salary", "is_active"]
+
+
+def test_something_printed():
+    """התוכנית מדפיסה משהו"""
+    assert OUTPUT.strip(), "התוכנית לא הדפיסה כלום."
+
+
+# ── חלק א' ────────────────────────────────────────────────────────────
+
 def test_variables_exist():
-    required = ["customer_name", "account_number", "age", "gross_salary", "is_active"]
-    missing = [n for n in required if n not in VARS]
-    assert not missing, (
-        f"חסרים משתנים: {', '.join(missing)}"
-    )
+    """חלק א': חמשת המשתנים קיימים"""
+    missing = [n for n in REQUIRED if n not in VARS]
+    assert not missing, f"חסרים משתנים: {', '.join(missing)}"
 
 
 def test_account_number_is_text():
+    """חלק א': מספר החשבון נשמר נכון"""
     value = VARS.get("account_number")
     assert isinstance(value, str), (
         "account_number אינו מחרוזת. בדוק מה קרה לאפס המוביל."
     )
 
 
-def test_something_printed():
-    assert OUTPUT.strip(), "התוכנית לא הדפיסה כלום."
+def test_card_printed():
+    """חלק א': הכרטיס מודפס"""
+    assert "רותם אזולאי" in OUTPUT, (
+        "לא מצאתי את שם הלקוחה בפלט. חלק א' מבקש להדפיס כרטיס לקוח."
+    )
 
+
+# ── חלק ב' ────────────────────────────────────────────────────────────
 
 def test_types_printed():
-    assert "class" in OUTPUT, (
-        "לא מצאתי הדפסה של טיפוס. חלק ב' מבקש להשתמש ב-type()."
+    """חלק ב': הטיפוס של כל משתנה מודפס"""
+    assert OUTPUT.count("class") >= 5, (
+        "מצאתי פחות מחמש הדפסות של טיפוס. "
+        "חלק ב' מבקש את הטיפוס של כל אחד מחמשת המשתנים."
+    )
+
+
+# ── חלק ג' ────────────────────────────────────────────────────────────
+
+def test_account_activated():
+    """חלק ג': החשבון הופעל"""
+    assert VARS.get("is_active") is True, (
+        "is_active אינו True בסוף התוכנית. "
+        "בחלק ג' המסמכים הגיעו והחשבון הופעל."
+    )
+
+
+def test_salary_updated():
+    """חלק ג': השכר עודכן"""
+    assert VARS.get("gross_salary") == 13750.5, (
+        "gross_salary אינו מחזיק את השכר שאחרי ההעלאה. "
+        "חלק ג' מבקש לעדכן את המשתנה הקיים."
+    )
+
+
+def test_card_printed_twice():
+    """חלק ג': הכרטיס מודפס שוב אחרי העדכון"""
+    assert OUTPUT.count("רותם אזולאי") >= 2, (
+        "שם הלקוחה מופיע בפלט פחות מפעמיים. "
+        "הכרטיס אמור להיות מודפס לפני העדכון ואחריו."
     )
