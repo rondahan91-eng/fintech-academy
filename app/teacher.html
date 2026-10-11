@@ -122,11 +122,19 @@ pre{background:var(--navy);color:#E8EDF7;border-radius:10px;padding:14px;overflo
 
 <!-- ── הפאנל ── -->
 <div class="wrap hide" id="panel">
+  <!-- ⚠️ **שני בוררים שונים, ובכוונה.** העליון משנה מה הכיתה רואה;
+       התחתון משנה רק מה אתה מסתכל עליו. ערבוב ביניהם היה הופך צפייה
+       בשבוע קודם לפתיחה שלו לכל הכיתה. -->
   <div class="bar">
     <b>השבוע הפתוח לכיתה:</b>
     <select id="week-select"></select>
     <button type="button" id="btn-week">פתח שבוע</button>
     <span class="muted" id="week-msg"></span>
+  </div>
+
+  <div class="bar">
+    <b>מציג נתונים של:</b>
+    <select id="view-select"></select>
     <span class="grow"></span>
     <button type="button" class="sec" id="btn-export">ייצוא טבלת כיתה</button>
     <button type="button" class="sec" id="btn-export-code">ייצוא הגשות</button>

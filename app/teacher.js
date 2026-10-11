@@ -26,6 +26,11 @@ const token = {
 
 let DATA = null;          // תשובת adminData האחרונה
 
+// ⚠️ **השבוע שאני מסתכל עליו, ולא השבוע שהכיתה עובדת עליו.** בלי זה
+//    כל רענון החזיר את הטבלה לשבוע הפעיל, ואי אפשר היה לבדוק מה הגישו
+//    בשבוע שעבר. ‏0 = לכל תלמיד השבוע שלו, כולל חריגות אישיות.
+let viewWeek = 0;
+
 // ══ כניסה ═════════════════════════════════════════════════════════════
 
 $('gate-form').addEventListener('submit', async (e) => {
@@ -63,7 +68,7 @@ async function enterPanel() {
 async function loadData() {
   $('list').innerHTML = '<p class="muted">טוען…</p>';
   try {
-    DATA = await call('adminData', { token: token.get() });
+    DATA = await call('adminData', { token: token.get(), week: viewWeek });
   } catch (err) {
     // אסימון שפג — חזרה לשער, ולא מסך ריק בלי הסבר
     if (/אסימון|פג תוקף/.test(err.message)) {
@@ -76,7 +81,32 @@ async function loadData() {
   }
   $('whoami').textContent = `${DATA.students.length} תלמידים`;
   fillWeekSelect(DATA.activeWeek);
+  fillViewSelect();
   renderList();
+}
+
+/** בורר הצפייה. ⚠️ נבנה פעם אחת — בנייה מחדש הייתה מאפסת את הבחירה. */
+function fillViewSelect() {
+  const sel = $('view-select');
+  if (sel.options.length) {
+    sel.value = String(viewWeek);
+    return;
+  }
+  const any = document.createElement('option');
+  any.value = '0';
+  any.textContent = 'השבוע של כל תלמיד';
+  sel.append(any);
+  Object.keys(WEEKS).map(Number).sort((a, b) => a - b).forEach((n) => {
+    const o = document.createElement('option');
+    o.value = String(n);
+    o.textContent = `שבוע ${n} · ${WEEKS[n].title}`;
+    sel.append(o);
+  });
+  sel.value = String(viewWeek);
+  sel.addEventListener('change', () => {
+    viewWeek = Number(sel.value) || 0;
+    loadData();
+  });
 }
 
 function fillWeekSelect(active) {
@@ -222,6 +252,9 @@ function renderList() {
       ${rows}
     </table>
     <p class="muted" style="margin-top:10px">
+      ${viewWeek
+        ? `הטבלה מציגה את <b>שבוע ${viewWeek}</b> לכל התלמידים.`
+        : 'הטבלה מציגה לכל תלמיד את השבוע שהוא עובד עליו.'}
       הציון והבדיקות הנסתרות מגיעים מלשונית <b>grades</b> בגיליון, שאליה
       מדביקים את <span class="num">week-NN-grades.csv</span> שמייצר
       ‏tools/grade_week.py. בלעדיה מוצגות הבדיקות הגלויות בלבד, ואין ציון.
@@ -259,14 +292,14 @@ function exportTable() {
                 'ציון ללא איכות קוד', 'איכות קוד', 'ציון כולל',
                 'שאלות לאלעד', 'מצב', 'הערה'];
   const rows = DATA.students.map((s) => [
-    s.id, s.name, s.override || DATA.activeWeek, s.submissions, s.lastSubmit,
+    s.id, s.name, viewWeek || s.override || DATA.activeWeek, s.submissions, s.lastSubmit,
     s.hiddenPass ?? '', s.hiddenTotal ?? '',
     s.visiblePass ?? '', s.visibleTotal ?? '',
     s.score ?? '', s.rubric ?? '',
     s.score === null || s.score === undefined ? '' : s.score + (s.rubric || 0),
     s.talked, s.grade || stateText(s), s.gradeNote || '',
   ]);
-  download(`כיתה-שבוע-${DATA.activeWeek}.csv`, toCsv([head, ...rows]));
+  download(`כיתה-שבוע-${viewWeek || DATA.activeWeek}.csv`, toCsv([head, ...rows]));
 }
 
 function stateText(s) {
