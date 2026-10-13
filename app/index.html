@@ -110,9 +110,19 @@
       <h1 id="task-title">—</h1>
     </div>
     <div class="task-body" id="task-body"></div>
+
+    <!-- ההרחבה. מוסתרת עד שאלעד מציע ובסוף התלמיד מקבל. -->
+    <div class="ext" id="ext-offer" hidden>
+      <b>אלעד הציע לך הרחבה</b>
+      <span>משימה נוספת, רשותית, על אותם נתונים. מזכה בבונוס.</span>
+      <button type="button" id="btn-ext">קבל את ההרחבה</button>
+    </div>
     <div class="task-foot">
       <div class="tf-row"><span>מועד</span><b>עוד 5 ימים</b></div>
-      <div class="tf-row"><span>שכר</span><b>עד 800 ₪</b></div>
+      <div class="tf-row"><span>שכר על המשימה</span><b>עד 800 ₪</b></div>
+      <!-- ⚠️ **צבירה, לא משכורת.** הסרגל העליון מציג את מה ששולם
+           בפועל ולא זז עד יום התלוש; כאן נצבר הברוטו בין תלוש לתלוש. -->
+      <div class="tf-row"><span>נצבר עד כה</span><b id="tf-wallet">—</b></div>
       <div class="tf-row locked">
         <span>פריטי השבוע</span><b class="dim">נפתח אחרי ההגשה</b>
       </div>

@@ -176,7 +176,18 @@ def main() -> int:
         n = int(d.name.split("-")[1])
         if wanted and n not in wanted:
             continue
-        briefs[n] = WEEK_FRAME.format(week=n, manager=read(d / "manager.yml"))
+        brief = WEEK_FRAME.format(week=n, manager=read(d / "manager.yml"))
+        # ⚠️ **אלעד חייב להכיר את ההרחבה כדי להציע אותה.** הוא מציע
+        #    אותה בשיחה, בתירוץ משלו, ולכן הוא צריך לדעת מה היא כוללת.
+        ext = d / "extension.md"
+        if ext.is_file():
+            brief += ("\n\n# ═══ ההרחבה של השבוע ═══\n\n"
+                      "זו משימה **נוספת ורשותית** לתלמיד שסיים. אתה מציע אותה\n"
+                      "כשתתבקש לכך, בתירוץ מתוך העבודה — לקוח שפנה, בקשה\n"
+                      "מהמנהל, תקלה שצצה — **ובניסוח אחר בכל פעם.** אם התלמיד\n"
+                      "מסרב, לא מפצירים: אומרים שזה בסדר וחוזרים לעבודה.\n\n"
+                      + read(ext))
+        briefs[n] = brief
     if not briefs:
         print("לא נמצא אף manager.yml")
         return 1

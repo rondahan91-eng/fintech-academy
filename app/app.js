@@ -35,6 +35,7 @@ const el = {
   btnReset: $('btn-reset'), btnSubmit: $('btn-submit'),
   taskTitle: $('task-title'), taskBody: $('task-body'),
   tbWeek: $('tb-week'), probe: $('probe'), btnLogout: $('btn-logout'),
+  wallet: $('tf-wallet'), extOffer: $('ext-offer'), btnExt: $('btn-ext'),
   avatar: $('avatar'), avatarImg: $('avatar-img'),
   avatarFallback: $('avatar-fallback'), avatarNote: $('avatar-note'),
   mirror: $('mirror'), starterView: $('starter-view'),
@@ -107,6 +108,62 @@ el.taskBody.innerHTML = WEEK.taskHtml || WEEK.requirements.map((sec) => `
     <div class="req"><span>${esc(it.label)}</span><b dir="auto">${esc(it.value)}</b></div>
   `).join('')}
 `).join('');
+
+// ══ הארנק וההרחבה ═════════════════════════════════════════════════════
+//
+// ⚠️ **הצבירה אינה המשכורת.** היא ברוטו שנצבר בין תלוש לתלוש, ולכן
+//    היא יושבת בפאנל המשימה ולא בסרגל העליון — הסרגל מציג את מה
+//    ששולם בפועל, והוא זז רק ביום התלוש.
+
+let extensionState = '';     // '' · pending · offered · accepted · done
+
+function showWallet(wallet) {
+  if (!wallet || !el.wallet) return;
+  el.wallet.textContent = `${wallet.total.toLocaleString('he-IL')} ₪`;
+  const earned = wallet.rows.filter((r) => r.done).length;
+  el.wallet.title = earned
+    ? `${earned} משימות שהושלמו`
+    : 'עדיין לא הושלמה משימה';
+}
+
+function showExtension(state) {
+  extensionState = state || '';
+  const box = el.extOffer || document.getElementById('ext-offer');
+  if (!box) return;
+  // ההצעה מופיעה רק אחרי שאלעד באמת הציע אותה בשיחה.
+  box.hidden = extensionState !== 'offered';
+  const btn = box.querySelector('#btn-ext');
+  if (btn) btn.onclick = () => acceptExtension(btn);
+  if (extensionState === 'accepted' || extensionState === 'done') openExtension();
+}
+
+/** פותח את ההרחבה בפאנל המשימה, מתחת למשימה השבועית. */
+function openExtension() {
+  if (!WEEK.extension || el.taskBody.dataset.ext === '1') return;
+  el.taskBody.dataset.ext = '1';
+  el.taskBody.insertAdjacentHTML('beforeend',
+    '<h2 style="color:#8B5CF6">ההרחבה</h2>' + WEEK.extension.html);
+  if (el.extOffer) el.extOffer.hidden = true;
+}
+
+/**
+ * ⚠️ **מתחבר ברגע החשיפה, ולא בעליית המודול.** ‏el נתפס פעם אחת
+ *    בהתחלה, וכפתור שלא היה שם אז נשאר בלי מאזין — בשקט. ‏onclick
+ *    ולא addEventListener: קריאה חוזרת מחליפה ולא מכפילה.
+ */
+async function acceptExtension(btn) {
+  btn.disabled = true;
+  btn.textContent = 'פותח…';
+  try {
+    await api.extensionAccept();
+    showExtension('accepted');
+    say('יופי. ההרחבה נפתחה לך מתחת למשימה.');
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'קבל את ההרחבה';
+    alert('לא הצלחתי לפתוח את ההרחבה: ' + err.message);
+  }
+}
 
 // ══ האווטאר ═══════════════════════════════════════════════════════════
 // המצבים מגיעים מ-assets/persona/manifest.yml דרך סקריפט הבנייה.
@@ -196,9 +253,11 @@ el.chatForm.addEventListener('submit', async (e) => {
   input.placeholder = 'אלעד כותב…';
   setAvatar('thinking');
   try {
-    const { reply } = await api.chat(WEEK.week, t);
+    const { reply, extension } = await api.chat(WEEK.week, t);
     say(reply);
     setAvatar('neutral');
+    // אלעד הציע את ההרחבה בהודעה הזאת — הכפתור נפתח עכשיו.
+    if (extension) showExtension(extension);
   } catch (err) {
     // ההודעה של התלמיד כבר על המסך. לא מוחקים אותה ולא מעמידים פנים.
     say(/fetch|Failed|NetworkError|abort/i.test(err.message)
@@ -225,6 +284,8 @@ function restoreChat(turns) {
 
 function applyState(state, { force = false } = {}) {
   if (!state) return false;
+  showWallet(state.wallet);
+  showExtension(state.extension);
   const localCode = store.get(STORE);
   if (state.code && (force || !localCode)) {
     el.code.value = state.code;
@@ -237,6 +298,8 @@ function applyState(state, { force = false } = {}) {
   }
   return false;
 }
+
+if (bootState) { showWallet(bootState.wallet); showExtension(bootState.extension); }
 
 // ‏bootState נקרא למעלה, לפני בחירת השבוע — ראה chooseWeek
 //
@@ -787,9 +850,13 @@ function execute(withTests) {
   // ⚠️ **תמיד מחרוזות, לעולם לא null.** ‏null של JS אינו None של פייתון
   //    מאז Pyodide 314 — ראה ההערה ליד _fintech_run.
   // ‏WEEK.inject הוא קוד התשתית של השבוע (משבוע 2: המחלקה Account).
-  const raw = fn(el.code.value,
-                 withTests ? (WEEK.testsVisible || '') : '',
-                 WEEK.inject || '');
+  // ⚠️ **תלמיד שקיבל הרחבה נבדק גם עליה.** שתי החבילות רצות יחד, כי
+  //    ההרחבה ממשיכה את אותה תוכנית ולא מחליפה אותה.
+  let tests = withTests ? (WEEK.testsVisible || '') : '';
+  if (withTests && WEEK.extension && extensionState === 'accepted') {
+    tests += '\n\n' + (WEEK.extension.tests || '');
+  }
+  const raw = fn(el.code.value, tests, WEEK.inject || '');
   fn.destroy();
   return JSON.parse(raw);
 }
@@ -860,9 +927,13 @@ el.btnSubmit.addEventListener('click', async () => {
   el.btnSubmit.disabled = true;
   el.btnSubmit.textContent = 'מגיש…';
   try {
-    await api.submit(WEEK.week, el.code.value, pass, r.tests.length);
+    const res = await api.submit(WEEK.week, el.code.value, pass, r.tests.length);
     dirty = false;
-    say('קיבלתי. תודה.');
+    // ⚠️ **"קיבלתי. תודה." מגיע מהשרת ולא מכאן.** הוא נרשם גם ביומן
+    //    השיחה, כדי שאלעד יראה אותו כשהוא ממשיך את השיחה.
+    (res.eladSaid && res.eladSaid.length ? res.eladSaid : ['קיבלתי. תודה.'])
+      .forEach((t) => say(t));
+    showWallet(res.wallet);
     el.btnSubmit.textContent = 'הוגש ✓';
     setTimeout(() => { el.btnSubmit.textContent = 'הגשה'; el.btnSubmit.disabled = false; }, 4000);
   } catch (err) {

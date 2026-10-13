@@ -223,6 +223,15 @@ def build_week(week: int):
             return None
         inject_src += f"# ===== {rel} =====\n{read(p)}\n"
 
+    # ההרחבה — משימה רשותית לתלמיד שסיים. קיימת רק בשבועות שנכתבה להם.
+    extension = None
+    ext_md, ext_tests = d / "extension.md", d / "tests_extension.py"
+    if ext_md.is_file():
+        extension = {
+            "html": md_to_html(read(ext_md)),
+            "tests": read(ext_tests) if ext_tests.is_file() else "",
+        }
+
     payload = {
         "week": meta["week"],
         "title": meta.get("title", task["title"]),
@@ -233,6 +242,9 @@ def build_week(week: int):
         "starter": read(d / "starter.py"),
         "testsVisible": read(d / "tests_visible.py"),
         "inject": inject_src,
+        # ⚠️ **נשלח לכל התלמידים, ומוצג רק למי שקיבל אותה.** ההרחבה היא
+        #    משימה ולא פתרון, ולכן אין נזק בכך שהיא יושבת בקובץ.
+        "extension": extension,
         "manager": parse_manager_opening(read(d / "manager.yml")),
         "avatars": parse_avatar_states(read(ROOT / "assets/persona/manifest.yml")),
     }
@@ -258,6 +270,8 @@ def build_week(week: int):
               | code_lines(read(d / "tests_visible.py"))
               | code_lines(task_md)
               | code_lines(inject_src))
+    if extension:
+        public |= code_lines(extension["tests"]) | code_lines(read(ext_md))
 
     # ⚠️ **לחפש בערכים, לא ב-JSON.** בטקסט המקודד כל גרשיים הם \" ,
     #    ולכן `print("נטו: 4890")` לעולם אינו תת-מחרוזת שלו. גרסה

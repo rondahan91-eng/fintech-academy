@@ -373,6 +373,22 @@ body.focus .task { display: none; }
 .req { display: flex; justify-content: space-between; gap: 10px;
   padding: 5px 0; border-bottom: 1px solid #F1F3F8; }
 .req b { font-family: var(--mono); font-size: 12.5px; font-weight: 600; }
+/* הצעת ההרחבה — בולטת אך לא צועקת. מופיעה רק אחרי שאלעד הציע. */
+.ext {
+  flex: none; margin-top: 10px; padding: 12px 14px; border-radius: 10px;
+  background: #F3F1FD; border: 1px solid #E2DCF8;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.ext[hidden] { display: none; }
+.ext b { font-size: 13.5px; color: var(--accent-end); }
+.ext span { font-size: 12.5px; color: var(--slate); line-height: 1.5; }
+.ext button {
+  align-self: flex-start; font: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 0; border-radius: 999px; padding: 6px 16px;
+  background: var(--accent-end); color: #fff;
+}
+.ext button:disabled { opacity: .55; cursor: default; }
+
 .task-foot { flex: none; padding-top: 12px; border-top: 1px solid var(--line);
   display: flex; flex-direction: column; gap: 7px; font-size: 13px; }
 .tf-row { display: flex; justify-content: space-between; }

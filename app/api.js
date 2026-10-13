@@ -271,6 +271,7 @@ export const api = {
   submit: (week, code, pass, total) =>
     call('submit', { token: session.token, week, code, pass, total })
       .catch((err) => { enqueue('submit', { week, code, pass, total }); throw err; }),
+  extensionAccept: () => call('extensionAccept', { token: session.token }),
   chat: (week, message) =>
     call('chat', { token: session.token, week, message }, { timeout: 60000 }),
 };

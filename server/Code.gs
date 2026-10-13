@@ -49,6 +49,8 @@ var SHEETS = {
   // הטסטים הנסתרים לא רצים בשרת, ולכן זו הדרך היחידה שציון מגיע לכאן.
   grades: ['id', 'name', 'week', 'status', 'hiddenPass', 'hiddenTotal',
            'payTests', 'payOnTime', 'payRubric', 'score', 'note'],
+  // הצעת הרחבה לתלמיד שסיים: pending → offered → accepted.
+  extensions: ['ts', 'id', 'week', 'status', 'bonus'],
   // חריגת שבוע לתלמיד בודד — למי שנעדר ונשאר מאחור, או למי שרץ קדימה.
   // שורה כאן גוברת על השבוע הפעיל של הכיתה. ריק = אין חריגה.
   overrides: ['id', 'week', 'note', 'updated'],
@@ -67,7 +69,7 @@ var SHEETS = {
 //    ‏2026-10-04: קוד הגיבוי נוסף בלי העלאת המספר, ואז הקובץ בתיקייה
 //    והקוד בעורך הראו **אותה גרסה והיו שונים ב-75 שורות** — בדיוק
 //    השאלה שהחותמת אמורה לענות עליה.
-var VERSION = '2026-10-06d';
+var VERSION = '2026-10-13a';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -155,6 +157,7 @@ var ACTIONS = {
   chat: doChat,
   onboard: doOnboard,
   machine: doMachine,
+  extensionAccept: doExtensionAccept,
   // פאנל המורה. כל אחת מהן דורשת אסימון מורה — ראה readAdminToken.
   adminLogin: doAdminLogin,
   adminData: doAdminData,
@@ -356,9 +359,13 @@ function loadState(id) {
   //    אחרי מעבר שבוע היא עדיין נושאת את העבודה הקודמת. להחזיר אותה
   //    היה פותח לתלמיד את המשימה החדשה עם הקוד של הישנה.
   var mineThisWeek = mine && Number(mine.week) === week;
+  var ext = extensionRow(id, week);
   return {
     activeWeek: week,
     week: mine ? Number(mine.week) : week,
+    // מצב ההרחבה והארנק — המסך מציג אותם בלי קריאה נוספת
+    extension: ext ? String(ext.status) : '',
+    wallet: walletFor(id),
     code: mineThisWeek ? String(mine.code) : '',
     updated: mine ? mine.updated : null,
     // ⚠️ **הדגל הזה הוא מה שמנתב.** ‏layout.md §16.2: הכניסה אינה
@@ -440,21 +447,134 @@ function upsertProgress(id, week, code) {
   sh.appendRow([id, week, code, new Date()]);
 }
 
+// ═══ הארנק ════════════════════════════════════════════════════════════
+//
+// ⚠️ **הבדיקות הגלויות הן שמזכות, בהחלטת המורה (2026-10-13).** הן רצות
+//    בדפדפן ולכן הזיכוי מיידי — התלמיד רואה תנועה ברגע ההגשה ולא
+//    שבוע אחרי. הבדיקות הנסתרות נשארות לציון התעודה, והן יכולות
+//    לדרוס כל שורה כאן דרך לשונית grades.
+//
+// ⚠️ **זה ברוטו.** הניכויים מוצגים ביום התלוש ולא כאן, וזו בדיוק
+//    הנקודה שהקורס מלמד: מה שנצבר אינו מה שנכנס.
+
+var PAY_FULL_TASK = 800;     // SPEC §3.2 — תגמול ביצועים מלא למשימה
+var PAY_EXTENSION = 300;     // בונוס הרחבה
+
+/** שורה אחת לכל שבוע שהתלמיד הגיש בו, עם הסכום והסיבה. */
+function walletFor(id) {
+  var subs = table('submissions');
+  var grades = gradesIndex();
+  var best = {};
+
+  for (var i = 0; i < subs.length; i++) {
+    var s = subs[i];
+    if (String(s.id) !== String(id)) continue;
+    var w = Number(s.week);
+    var pass = Number(s.visiblePass) || 0;
+    var total = Number(s.visibleTotal) || 0;
+    // ⚠️ **ההגשה הטובה ביותר, לא האחרונה.** תלמיד שהגיש שוב וקלקל
+    //    לא ייענש; ההגשה שבה הכול עבר כבר קרתה והכסף שלו.
+    if (!best[w] || pass / (total || 1) > best[w].pass / (best[w].total || 1)) {
+      best[w] = { pass: pass, total: total, ts: String(s.ts) };
+    }
+  }
+
+  var rows = [], total = 0;
+  var weeks = Object.keys(best).map(Number).sort(function (a, b) { return a - b; });
+  for (var j = 0; j < weeks.length; j++) {
+    var wk = weeks[j], b = best[wk];
+    var done = b.total > 0 && b.pass === b.total;
+    var amount = done ? PAY_FULL_TASK : 0;
+    var why = done ? 'כל הבדיקות עברו' : 'עברו ' + b.pass + ' מתוך ' + b.total;
+
+    // ציון מהמורה גובר על החישוב האוטומטי
+    var g = grades[String(id) + ':' + wk];
+    if (g && g.score) {
+      amount = g.score + (g.rubric || 0);
+      why = g.status || 'נבדק';
+    }
+
+    var ext = extensionRow(id, wk);
+    var bonus = (ext && String(ext.status) === 'done') ? Number(ext.bonus) || PAY_EXTENSION : 0;
+
+    rows.push({ week: wk, amount: amount, bonus: bonus, why: why, done: done });
+    total += amount + bonus;
+  }
+  return { rows: rows, total: total };
+}
+
+// ═══ הרחבה ════════════════════════════════════════════════════════════
+//
+// הזרימה: התלמיד מגיש ועובר → אלעד כותב "קיבלתי. תודה." ואז "אתה כאן?"
+// (‏pending) → בפנייה הבאה שלו אלעד מציע את ההרחבה בתירוץ משלו
+// (‏offered) → התלמיד לוחץ "קבל" (‏accepted) → ההרחבה נפתחת במסך.
+
+function extensionRow(id, week) {
+  var rows = table('extensions');
+  for (var i = 0; i < rows.length; i++) {
+    if (String(rows[i].id) === String(id) && Number(rows[i].week) === Number(week)) {
+      return rows[i];
+    }
+  }
+  return null;
+}
+
+function setExtension(id, week, status, bonus) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var sh = sheet('extensions');
+    var last = sh.getLastRow();
+    var vals = last > 1 ? sh.getRange(2, 1, last - 1, 3).getValues() : [];
+    for (var i = 0; i < vals.length; i++) {
+      if (String(vals[i][1]) === String(id) && Number(vals[i][2]) === Number(week)) {
+        sh.getRange(i + 2, 4, 1, 2).setValues([[status, bonus || '']]);
+        return;
+      }
+    }
+    sh.appendRow([new Date(), id, week, status, bonus || '']);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function doExtensionAccept(req) {
+  var id = readToken(req.token);
+  var week = weekFor(id);
+  var row = extensionRow(id, week);
+  if (!row) return { error: 'אין הרחבה פתוחה' };
+  setExtension(id, week, 'accepted', '');
+  return { ok: true, week: week };
+}
+
 // ═══ הגשה ═════════════════════════════════════════════════════════════
 
 function doSubmit(req) {
   var id = readToken(req.token);
   var name = nameOf(id);
+  var week = weekFor(id);
+  var pass = Number(req.pass) || 0;
+  var total = Number(req.total) || 0;
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
     sheet('submissions').appendRow([
-      new Date(), id, name, Number(req.week) || 1,
-      Number(req.pass) || 0, Number(req.total) || 0,
-      String(req.code || ''),
+      new Date(), id, name, week, pass, total, String(req.code || ''),
     ]);
-    upsertProgress(id, Number(req.week) || 1, String(req.code || ''));
-    return { ok: true };
+    upsertProgress(id, week, String(req.code || ''));
+
+    // ⚠️ **שתי ההודעות האלה נכתבות על ידי השרת ולא על ידי המודל.**
+    //    "קיבלתי. תודה." חייב להגיע תמיד ומיד; שאלה פתוחה היא מה
+    //    שמזמין את התלמיד לכתוב, ומשם אלעד מציע את ההרחבה בשיחה.
+    var said = [];
+    var ext = extensionRow(id, week);
+    if (total > 0 && pass === total && !ext) {
+      said = ['קיבלתי. תודה.', (name || 'היי') + ', אתה כאן?'];
+      logChat(id, week, 'elad', said[0]);
+      logChat(id, week, 'elad', said[1]);
+      setExtension(id, week, 'pending', '');
+    }
+    return { ok: true, eladSaid: said, wallet: walletFor(id) };
   } finally {
     lock.releaseLock();
   }
@@ -772,6 +892,20 @@ function doChat(req) {
   });
   history.push({ role: 'user', content: text });
 
+  // ⚠️ **ההצעה נשלחת כהוראה חיה ולא כטקסט קבוע.** התירוץ והניסוח הם
+  //    של אלעד, ומשתנים בכל פעם — זו כל הנקודה. השרת רק אומר מתי.
+  var ext = extensionRow(id, week);
+  var pendingOffer = ext && String(ext.status) === 'pending';
+  var system = eladPrompt(week);
+  if (pendingOffer) {
+    system += '\n\n# ═══ עכשיו: הצע את ההרחבה ═══\n\n' +
+      'התלמיד סיים את המשימה השבועית וענה לך. **בהודעה הזאת הצע לו את ' +
+      'ההרחבה של השבוע** — פתח בתירוץ מתוך העבודה, בניסוח משלך, ואל ' +
+      'תחזור על תירוץ שכבר השתמשת בו בשיחה הזאת. שתיים-שלוש שורות, ' +
+      'ובסוף שאלה אם הוא רוצה לקחת את זה. **אל תפרט את המשימה עצמה** — ' +
+      'היא תיפתח לו במסך ברגע שיסכים.';
+  }
+
   var body = {
     model: MODEL,
     max_tokens: MAX_TOKENS,
@@ -779,7 +913,7 @@ function doChat(req) {
     // ⚠️ cache_control על הבלוק היחיד של ה-system: הפרומפט של אלעד הוא
     //    כמה אלפי טוקנים והוא זהה לכל שלושים התלמידים. בלי זה משלמים
     //    עליו מחדש בכל הודעה.
-    system: [{ type: 'text', text: eladPrompt(week),
+    system: [{ type: 'text', text: system,
                cache_control: { type: 'ephemeral' } }],
     messages: history,
   };
@@ -807,7 +941,10 @@ function doChat(req) {
 
   logChat(id, week, 'student', text);
   logChat(id, week, 'elad', reply);
-  return { reply: reply, usage: data.usage };
+  // ההצעה יצאה. מכאן הכפתור "קבל את ההרחבה" מופיע אצל התלמיד.
+  if (pendingOffer) setExtension(id, week, 'offered', '');
+  return { reply: reply, usage: data.usage,
+           extension: pendingOffer ? 'offered' : (ext ? String(ext.status) : '') };
 }
 
 /**
