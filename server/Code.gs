@@ -460,6 +460,37 @@ function upsertProgress(id, week, code) {
 var PAY_FULL_TASK = 800;     // SPEC §3.2 — תגמול ביצועים מלא למשימה
 var PAY_EXTENSION = 300;     // בונוס הרחבה
 
+// ═══ XP ודרגות — SPEC §2 ══════════════════════════════════════════════
+//
+// ⚠️ **שני מטבעות נפרדים, ולא במקרה.** כסף נשרף בחנות; XP רק עולה.
+//    תלמיד שקונה משהו לא מאבד דרגה, ולכן אין עונש על לקנות.
+// ⚠️ **אין ירידה בדרגה, לעולם.** חוק האנטי-נעילה של SPEC §2.
+
+var XP_FULL_TASK = 500;
+var XP_PARTIAL_TASK = 250;   // חצי מהבדיקות ומעלה
+var XP_EXTENSION = 400;
+
+var RANKS = [
+  { id: 'D1', title: 'מפתח זוטר', xp: 0, base: 6000 },
+  { id: 'D2', title: 'מפתח', xp: 2500, base: 8000 },
+  { id: 'D3', title: 'מפתח בכיר', xp: 6500, base: 11000 },
+  { id: 'D4', title: 'ראש צוות', xp: 12000, base: 15000 },
+  { id: 'D5', title: 'ארכיטקט', xp: 19000, base: 20000 },
+];
+
+function rankFor(xp) {
+  var cur = RANKS[0], next = null;
+  for (var i = 0; i < RANKS.length; i++) {
+    if (xp >= RANKS[i].xp) cur = RANKS[i];
+    else { next = RANKS[i]; break; }
+  }
+  return {
+    id: cur.id, title: cur.title, base: cur.base,
+    next: next ? next.id : '', nextAt: next ? next.xp : 0,
+    toNext: next ? next.xp - xp : 0,
+  };
+}
+
 /** שורה אחת לכל שבוע שהתלמיד הגיש בו, עם הסכום והסיבה. */
 function walletFor(id) {
   var subs = table('submissions');
@@ -479,13 +510,17 @@ function walletFor(id) {
     }
   }
 
-  var rows = [], total = 0;
+  var rows = [], total = 0, xp = 0;
   var weeks = Object.keys(best).map(Number).sort(function (a, b) { return a - b; });
   for (var j = 0; j < weeks.length; j++) {
     var wk = weeks[j], b = best[wk];
     var done = b.total > 0 && b.pass === b.total;
+    var half = b.total > 0 && b.pass * 2 >= b.total;
     var amount = done ? PAY_FULL_TASK : 0;
     var why = done ? 'כל הבדיקות עברו' : 'עברו ' + b.pass + ' מתוך ' + b.total;
+    // ⚠️ **חצי מהבדיקות מזכה ב-XP אך לא בכסף.** התקדמות מקצועית קרתה;
+    //    תגמול הביצועים לא. ההפרש הוא מה שמתמרץ להשלים ולהגיש שוב.
+    xp += done ? XP_FULL_TASK : (half ? XP_PARTIAL_TASK : 0);
 
     // ציון מהמורה גובר על החישוב האוטומטי
     var g = grades[String(id) + ':' + wk];
@@ -495,12 +530,14 @@ function walletFor(id) {
     }
 
     var ext = extensionRow(id, wk);
-    var bonus = (ext && String(ext.status) === 'done') ? Number(ext.bonus) || PAY_EXTENSION : 0;
+    var extDone = ext && String(ext.status) === 'done';
+    var bonus = extDone ? (Number(ext.bonus) || PAY_EXTENSION) : 0;
+    if (extDone) xp += XP_EXTENSION;
 
     rows.push({ week: wk, amount: amount, bonus: bonus, why: why, done: done });
     total += amount + bonus;
   }
-  return { rows: rows, total: total };
+  return { rows: rows, total: total, xp: xp, rank: rankFor(xp) };
 }
 
 // ═══ הרחבה ════════════════════════════════════════════════════════════
@@ -568,6 +605,15 @@ function doSubmit(req) {
     //    שמזמין את התלמיד לכתוב, ומשם אלעד מציע את ההרחבה בשיחה.
     var said = [];
     var ext = extensionRow(id, week);
+
+    // ⚠️ **ההרחבה נסגרת מההגשה המשותפת.** כשהיא פתוחה, התלמיד מריץ את
+    //    שתי חבילות הבדיקות יחד — ולכן pass === total אומר ששתיהן עברו.
+    if (req.ext && total > 0 && pass === total && ext &&
+        String(ext.status) === 'accepted') {
+      setExtension(id, week, 'done', PAY_EXTENSION);
+      ext = extensionRow(id, week);
+    }
+
     if (total > 0 && pass === total && !ext) {
       said = ['קיבלתי. תודה.', (name || 'היי') + ', אתה כאן?'];
       logChat(id, week, 'elad', said[0]);

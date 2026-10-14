@@ -268,9 +268,9 @@ export const api = {
   state: () => call('state', { token: session.token }),
   save: (week, code) => call('save', { token: session.token, week, code })
     .catch((err) => { enqueue('save', { week, code }); throw err; }),
-  submit: (week, code, pass, total) =>
-    call('submit', { token: session.token, week, code, pass, total })
-      .catch((err) => { enqueue('submit', { week, code, pass, total }); throw err; }),
+  submit: (week, code, pass, total, ext) =>
+    call('submit', { token: session.token, week, code, pass, total, ext })
+      .catch((err) => { enqueue('submit', { week, code, pass, total, ext }); throw err; }),
   extensionAccept: () => call('extensionAccept', { token: session.token }),
   chat: (week, message) =>
     call('chat', { token: session.token, week, message }, { timeout: 60000 }),

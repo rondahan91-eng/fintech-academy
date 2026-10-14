@@ -36,6 +36,7 @@ const el = {
   taskTitle: $('task-title'), taskBody: $('task-body'),
   tbWeek: $('tb-week'), probe: $('probe'), btnLogout: $('btn-logout'),
   wallet: $('tf-wallet'), extOffer: $('ext-offer'), btnExt: $('btn-ext'),
+  xp: $('tf-xp'), tbRank: $('tb-rank'),
   avatar: $('avatar'), avatarImg: $('avatar-img'),
   avatarFallback: $('avatar-fallback'), avatarNote: $('avatar-note'),
   mirror: $('mirror'), starterView: $('starter-view'),
@@ -118,12 +119,26 @@ el.taskBody.innerHTML = WEEK.taskHtml || WEEK.requirements.map((sec) => `
 let extensionState = '';     // '' · pending · offered · accepted · done
 
 function showWallet(wallet) {
-  if (!wallet || !el.wallet) return;
-  el.wallet.textContent = `${wallet.total.toLocaleString('he-IL')} ₪`;
-  const earned = wallet.rows.filter((r) => r.done).length;
-  el.wallet.title = earned
-    ? `${earned} משימות שהושלמו`
-    : 'עדיין לא הושלמה משימה';
+  if (!wallet) return;
+  const money = el.wallet || document.getElementById('tf-wallet');
+  if (money) {
+    money.textContent = `${wallet.total.toLocaleString('he-IL')} ₪`;
+    const earned = wallet.rows.filter((r) => r.done).length;
+    money.title = earned ? `${earned} משימות שהושלמו` : 'עדיין לא הושלמה משימה';
+  }
+
+  // ⚠️ **הדרגה גלויה, השכר לא.** ‏SPEC §1: הדרגה היא תפקיד ולכן היא
+  //    בסרגל; הכסף פרטי לתלמיד, ולכן הוא יושב בפאנל ולא בכותרת.
+  const rank = wallet.rank;
+  const xpRow = el.xp || document.getElementById('tf-xp');
+  if (xpRow && rank) {
+    xpRow.textContent = `${(wallet.xp || 0).toLocaleString('he-IL')} XP`;
+    xpRow.title = rank.toNext
+      ? `עוד ${rank.toNext.toLocaleString('he-IL')} ל-${rank.next}`
+      : 'הדרגה הגבוהה ביותר';
+  }
+  const chip = el.tbRank || document.getElementById('tb-rank');
+  if (chip && rank) chip.textContent = `${rank.id} · ${rank.title}`;
 }
 
 function showExtension(state) {
@@ -927,7 +942,8 @@ el.btnSubmit.addEventListener('click', async () => {
   el.btnSubmit.disabled = true;
   el.btnSubmit.textContent = 'מגיש…';
   try {
-    const res = await api.submit(WEEK.week, el.code.value, pass, r.tests.length);
+    const res = await api.submit(WEEK.week, el.code.value, pass, r.tests.length,
+                                 extensionState === 'accepted');
     dirty = false;
     // ⚠️ **"קיבלתי. תודה." מגיע מהשרת ולא מכאן.** הוא נרשם גם ביומן
     //    השיחה, כדי שאלעד יראה אותו כשהוא ממשיך את השיחה.
