@@ -124,7 +124,15 @@
       <!-- ⚠️ **צבירה, לא משכורת.** הסרגל העליון מציג את מה ששולם
            בפועל ולא זז עד יום התלוש; כאן נצבר הברוטו בין תלוש לתלוש. -->
       <div class="tf-row"><span>נצבר עד כה</span><b id="tf-wallet">—</b></div>
-      <div class="tf-row"><span>ניסיון</span><b id="tf-xp">—</b></div>
+      <!-- מד ההתקדמות לדרגה הבאה. ⚠️ **מספר בלי הקשר לא מניע** —
+           "1,250" לא אומר כלום; "עוד 1,250 עד מפתח" כן. -->
+      <div class="xp">
+        <div class="xp-head">
+          <span id="xp-now">—</span>
+          <span id="xp-next"></span>
+        </div>
+        <div class="xp-bar"><i id="xp-fill"></i></div>
+      </div>
       <div class="tf-row locked">
         <span>פריטי השבוע</span><b class="dim">נפתח אחרי ההגשה</b>
       </div>

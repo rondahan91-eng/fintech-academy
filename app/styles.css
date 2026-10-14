@@ -373,6 +373,20 @@ body.focus .task { display: none; }
 .req { display: flex; justify-content: space-between; gap: 10px;
   padding: 5px 0; border-bottom: 1px solid #F1F3F8; }
 .req b { font-family: var(--mono); font-size: 12.5px; font-weight: 600; }
+/* מד ההתקדמות לדרגה. ‏XP רק עולה (SPEC §2), ולכן המד לעולם לא נסוג. */
+.xp { padding: 8px 0 2px; display: flex; flex-direction: column; gap: 5px; }
+.xp-head { display: flex; justify-content: space-between; font-size: 12.5px; }
+.xp-head span:first-child { font-weight: 600; color: #333A48; }
+.xp-head span:last-child { color: var(--slate); }
+.xp-bar {
+  height: 6px; border-radius: 999px; background: #EDF0F6; overflow: hidden;
+}
+.xp-bar i {
+  display: block; height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--accent-end));
+  transition: width .4s ease;
+}
+
 /* הצעת ההרחבה — בולטת אך לא צועקת. מופיעה רק אחרי שאלעד הציע. */
 .ext {
   flex: none; margin-top: 10px; padding: 12px 14px; border-radius: 10px;

@@ -130,15 +130,33 @@ function showWallet(wallet) {
   // ⚠️ **הדרגה גלויה, השכר לא.** ‏SPEC §1: הדרגה היא תפקיד ולכן היא
   //    בסרגל; הכסף פרטי לתלמיד, ולכן הוא יושב בפאנל ולא בכותרת.
   const rank = wallet.rank;
-  const xpRow = el.xp || document.getElementById('tf-xp');
-  if (xpRow && rank) {
-    xpRow.textContent = `${(wallet.xp || 0).toLocaleString('he-IL')} XP`;
-    xpRow.title = rank.toNext
-      ? `עוד ${rank.toNext.toLocaleString('he-IL')} ל-${rank.next}`
-      : 'הדרגה הגבוהה ביותר';
+  if (!rank) return;
+
+  const chip = document.getElementById('tb-rank');
+  if (chip) chip.textContent = `${rank.id} · ${rank.title}`;
+
+  const xp = wallet.xp || 0;
+  const now = document.getElementById('xp-now');
+  const next = document.getElementById('xp-next');
+  const fill = document.getElementById('xp-fill');
+  if (now) now.textContent = `${xp.toLocaleString('he-IL')} XP`;
+
+  if (!rank.nextAt) {                       // D5 — אין יעד הבא
+    if (next) next.textContent = 'הדרגה הגבוהה ביותר';
+    if (fill) fill.style.width = '100%';
+    return;
   }
-  const chip = el.tbRank || document.getElementById('tb-rank');
-  if (chip && rank) chip.textContent = `${rank.id} · ${rank.title}`;
+  if (next) {
+    next.textContent = `עוד ${rank.toNext.toLocaleString('he-IL')} ל-${rank.next}`;
+  }
+  // ⚠️ **המד נמתח מסף הדרגה הנוכחית ולא מאפס**, אחרת תלמיד שעלה
+  //    לדרגה חדשה היה רואה מד כמעט מלא ומתקדם לאט — חוויה הפוכה.
+  if (fill) {
+    const from = rank.at || 0;
+    const span = Math.max(1, rank.nextAt - from);
+    const pct = Math.max(2, Math.min(100, Math.round(((xp - from) / span) * 100)));
+    fill.style.width = `${pct}%`;
+  }
 }
 
 function showExtension(state) {
