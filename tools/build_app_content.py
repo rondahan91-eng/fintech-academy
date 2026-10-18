@@ -288,7 +288,7 @@ def build_week(week: int):
                 yield from walk(v)
 
     blob = "\n".join(walk(payload))
-    for name in ("reference.py", "tests_hidden.py"):
+    for name in ("reference.py", "reference_extension.py", "tests_hidden.py"):
         p = d / name
         if not p.is_file():
             continue
