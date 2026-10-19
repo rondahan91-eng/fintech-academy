@@ -63,6 +63,8 @@
         <button class="tab is-active" data-tab="mine">הקוד שלי</button>
         <button class="tab" data-tab="starter">קוד פתיחה</button>
         <span class="saved" id="saved">נשמר אוטומטית</span>
+        <!-- מופיע פעם אחת, בפעם הראשונה שהשדרוג נפתח. -->
+        <span class="unlock" id="unlock-pill" hidden></span>
         <button class="focus-btn" id="btn-focus" title="מסך מלא לעריכה">
           <span id="focus-label">⤢ מסך מלא</span>
           <span class="pip" id="focus-pip" hidden></span>
@@ -70,6 +72,9 @@
       </div>
       <div class="code-wrap">
         <div class="gutter" id="gutter" aria-hidden="true"></div>
+        <!-- שכבת הצבע · שדרוג D2. יושבת מתחת ל-textarea ומחזיקה את
+             אותו טקסט בדיוק. ריקה ובלתי נראית עד שהשדרוג נפתח. -->
+        <pre class="code-hl" id="code-hl" dir="ltr" aria-hidden="true"></pre>
         <textarea id="code" spellcheck="false" dir="ltr" aria-label="עורך הקוד"></textarea>
         <!-- מודד את גובה כל שורה לוגית אחרי שבירה. מחוץ למסך, לא נקרא. -->
         <div class="code-mirror" id="mirror" aria-hidden="true"></div>

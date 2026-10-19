@@ -11,6 +11,7 @@
 import { WEEKS, DEFAULT_WEEK } from './content.js';
 import { api, session, health, onHealthChange, saveOnExit, reportMachine,
          flushQueue, pending } from './api.js';
+import { highlight } from './highlight.js';
 
 // §16.2 — הכניסה אינה תפריט, היא המשך. בלי אסימון אין מסך עבודה.
 if (!session.token) location.replace('login.html');
@@ -39,7 +40,8 @@ const el = {
   xp: $('tf-xp'), tbRank: $('tb-rank'),
   avatar: $('avatar'), avatarImg: $('avatar-img'),
   avatarFallback: $('avatar-fallback'), avatarNote: $('avatar-note'),
-  mirror: $('mirror'), starterView: $('starter-view'),
+  mirror: $('mirror'), starterView: $('starter-view'), codeHl: $('code-hl'),
+  unlockPill: $('unlock-pill'),
   btnFocus: $('btn-focus'), focusLabel: $('focus-label'), focusPip: $('focus-pip'),
 };
 
@@ -118,6 +120,48 @@ el.taskBody.innerHTML = WEEK.taskHtml || WEEK.requirements.map((sec) => `
 
 let extensionState = '';     // '' · pending · offered · accepted · done
 
+// ══ שדרוגי דרגה ═══════════════════════════════════════════════════════
+// שדרוג נפתח בעלייה בדרגה ונשאר פתוח. **לא פריט חנות ולא הגדרה** —
+// התלמיד לא בוחר בו, הוא מקבל אותו, וזה כל העניין: הדרגה משנה את
+// הכלי שבו עובדים ולא רק את המספר בסרגל.
+//
+// ⚠️ **נשמר מקומית כי הארנק מגיע מהשרת באיחור.** בלי זה התלמיד היה
+//    רואה חצי שנייה של עורך לבן בכל טעינה, ובמחשב מעבדה בלי רשת
+//    היה מאבד את השדרוג לגמרי. דרגה לא יורדת, ולכן מטמון בטוח כאן.
+const UPGRADE_KEY = 'fintech.upgrades';
+const SEEN_KEY = 'fintech.upgrades.seen';
+
+// ⚠️ **מוכרז כאן ולא לצד paintCode, למרות ששם מקומו העניינית.**
+//    ‏showWallet רץ כבר בעליית הדף מ-bootState, והוא מגיע דרך
+//    ‏applyUpgrades אל setHighlight שקורא את המשתנה הזה. ‏let בתחתית
+//    הקובץ היה באזור המת הזמני באותו רגע, וזורק ReferenceError —
+//    **בדיוק אצל תלמידי D2**, היחידים שהענף הזה בכלל רץ אצלם.
+let hlOn = false;
+
+function rankIndex(id) {
+  const n = Number(String(id || 'D1').replace(/\D/g, ''));
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+function applyUpgrades(rank) {
+  const level = Math.max(rankIndex(rank && rank.id),
+                         rankIndex(store.get(UPGRADE_KEY)));
+  if (level >= 2) {
+    store.set(UPGRADE_KEY, `D${level}`);
+    setHighlight(true);
+    announceUnlock();
+  }
+}
+
+// ההודעה מופיעה פעם אחת בלבד. אחרי שנראתה, הצבע מדבר בעד עצמו.
+function announceUnlock() {
+  if (!el.unlockPill || store.get(SEEN_KEY)) return;
+  store.set(SEEN_KEY, '1');
+  el.unlockPill.textContent = 'צבע קוד · נפתח בדרגה D2';
+  el.unlockPill.hidden = false;
+  setTimeout(() => { el.unlockPill.hidden = true; }, 12000);
+}
+
 function showWallet(wallet) {
   if (!wallet) return;
   const money = el.wallet || document.getElementById('tf-wallet');
@@ -134,6 +178,8 @@ function showWallet(wallet) {
 
   const chip = document.getElementById('tb-rank');
   if (chip) chip.textContent = `${rank.id} · ${rank.title}`;
+
+  applyUpgrades(rank);
 
   const xp = wallet.xp || 0;
   const now = document.getElementById('xp-now');
@@ -403,6 +449,34 @@ function drawGutter() {
   });
   el.gutter.textContent = out;
   el.gutter.scrollTop = el.code.scrollTop;
+  paintCode();
+}
+
+// ── צביעת התחביר · שדרוג D2 ───────────────────────────────────────────
+// ⚠️ **נצבע כאן ולא במאזין נפרד.** ‏drawGutter כבר רץ בכל נקודה שבה
+//    הטקסט או הרוחב משתנים — הקלדה, איפוס, טעינת קוד מהשרת, החלפת
+//    שבוע, מסך מלא, שינוי גודל חלון. מאזין משלו היה מפספס חלק מהן,
+//    והצבע היה נשאר על הקוד הקודם.
+//    ‏hlOn עצמו מוכרז למעלה, ליד שדרוגי הדרגה — ראה ההערה שם.
+
+function paintCode() {
+  if (!hlOn || !el.codeHl) return;
+  // הרוחב נלקח מה-textarea ולא מ-CSS: פס הגלילה שלו גונב רוחב, ועם
+  // רוחב אחר השורות נשברות במקום אחר ושתי השכבות מתפצלות.
+  el.codeHl.style.width = `${el.code.clientWidth}px`;
+  el.codeHl.innerHTML = highlight(el.code.value);
+  el.codeHl.scrollTop = el.code.scrollTop;
+}
+
+function setHighlight(on) {
+  if (hlOn === on) return;
+  hlOn = on;
+  document.body.classList.toggle('hl', on);
+  if (el.codeHl) {
+    el.codeHl.hidden = !on;
+    if (!on) el.codeHl.innerHTML = '';
+  }
+  if (on) paintCode();
 }
 
 // ── שמירה ─────────────────────────────────────────────────────────────
@@ -468,7 +542,10 @@ el.code.addEventListener('input', () => {
 el.code.addEventListener('blur', () => { if (saveTimer) saveNow(); });
 addEventListener('pagehide', () => { if (saveTimer) saveNow(); });
 
-el.code.addEventListener('scroll', () => { el.gutter.scrollTop = el.code.scrollTop; });
+el.code.addEventListener('scroll', () => {
+  el.gutter.scrollTop = el.code.scrollTop;
+  if (hlOn && el.codeHl) el.codeHl.scrollTop = el.code.scrollTop;
+});
 addEventListener('resize', drawGutter);     // שינוי רוחב משנה את השבירה
 
 // ‏Tab מזיז פוקוס בדפדפן. בעורך הוא צריך להזיח. ‏4 רווחים — PEP 8.
@@ -507,6 +584,9 @@ el.code.addEventListener('keydown', (e) => {
   el.code.setSelectionRange(from, from + next.join('\n').length);
 });
 
+// ⚠️ **לפני drawGutter.** השדרוג השמור נדלק כאן כדי שהציור הראשון
+//    כבר ייצא צבוע; אחרת יש הבזק של עורך לא צבוע עד שהארנק חוזר.
+applyUpgrades(null);
 drawGutter();
 
 // ══ מסך מלא לעריכה ════════════════════════════════════════════════════

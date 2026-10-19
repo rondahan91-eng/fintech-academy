@@ -222,6 +222,50 @@ body.focus .task { display: none; }
   overflow-y: auto;
 }
 
+/* ══ שכבת הצבע · שדרוג D2 ══════════════════════════════════════════
+   ⚠️ **כל הצהרה כאן חייבת להתאים ל-#code שמעליה.** גופן, גודל, גובה
+      שורה, ריפוד, כיוון, דו-כיווניות וכללי השבירה — הבדל באחד מהם
+      מזיז את הטקסט הצבוע ביחס לסמן, והתלמיד רואה צל כפול.
+      הרוחב נקבע ב-JS לפי el.code.clientWidth, כי פס הגלילה של
+      ה-textarea גונב רוחב ומשנה היכן השורות נשברות.
+
+   ⚠️ **‏overflow: hidden ולא auto.** פס גלילה שני היה מופיע כאן
+      ומקטין את הרוחב בדיוק בשכבה שאמורה להיות זהה. ‏app.js מסנכרן
+      ‏scrollTop מה-textarea. */
+.code-hl {
+  position: absolute; top: 0; bottom: 0; left: 44px;
+  margin: 0; overflow: hidden; pointer-events: none;
+  font: 400 13px/1.6 var(--mono);
+  padding: 8px 14px 8px 0;
+  direction: ltr; text-align: left;
+  unicode-bidi: plaintext;
+  white-space: pre-wrap; overflow-wrap: break-word;
+  color: #DDE6F7;
+}
+.code-hl[hidden] { display: none; }
+
+/* ‏body.hl — השדרוג פתוח. הטקסט ב-textarea הופך שקוף והסמן נשאר. */
+body.hl #code { color: transparent; }
+/* ⚠️ הבחירה חייבת להישאר נראית גם כשהטקסט שקוף. */
+body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
+
+/* יחסי הניגודיות מול #1E2A38 נמדדו: הנמוך ביותר הוא ההערה, 5.75:1.
+   אף אחד מהם אינו יורד מ-4.5:1, שהוא הסף לטקסט בגודל 13. */
+.t-kw    { color: #C792EA; }   /* מילה שמורה      6.05:1 */
+.t-bi    { color: #7FB4FF; }   /* פונקציה מובנית  6.84:1 */
+.t-const { color: #F2B873; }   /* True/False/None 8.23:1 */
+.t-str   { color: #9BE3A8; }   /* מחרוזת          9.66:1 */
+.t-num   { color: #F2B873; }   /* מספר            8.23:1 */
+.t-com   { color: #94A3C4; }   /* הערה            5.75:1 */
+.t-def   { color: #5CD6C0; }   /* שם שהוגדר       8.20:1 */
+
+/* ההודעה על פתיחת השדרוג — פעם אחת, ואז נעלמת לתמיד */
+.unlock {
+  margin-inline-start: 10px; font-size: 11.5px; font-weight: 600;
+  color: #D8A6F5; white-space: nowrap;
+}
+.unlock[hidden] { display: none; }
+
 /* מודד כמה שורות מסך תופסת כל שורה לוגית אחרי שבירה. §2 קובע ששבירה
    מופעלת מתחת ל-1220, ולכן מונה שורות תמים היה מוצג לא מיושר. */
 .code-mirror {
