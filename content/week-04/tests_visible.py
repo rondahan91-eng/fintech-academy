@@ -39,6 +39,16 @@ def test_commission_value():
     )
 
 
+def test_commission_labels():
+    """חלק א': שתי השורות מודפסות עם התוויות"""
+    missing = [label for label in ["סכום ההעברה:", "עמלה:"]
+               if label not in OUTPUT]
+    assert not missing, (
+        f"חסרות תוויות: {', '.join(missing)} — "
+        "ראה את טבלת התוויות בחלק א'."
+    )
+
+
 # ── חלק ב' ────────────────────────────────────────────────────────────
 
 def test_payslip_variables():
@@ -75,6 +85,20 @@ def test_payslip_printed():
     )
 
 
+def test_payslip_labels():
+    """חלק ב': לכל שורה בתלוש יש תווית"""
+    # ⚠️ **אותה תבנית הדפסה של שבוע 3.** ארבעת הסכומים ייראו אותו
+    #    דבר אצל כל התלמידים, וההרחבה נשענת על כך כשהיא מבקשת תלוש
+    #    שני באותן תוויות.
+    missing = [label for label in
+               ["ברוטו:", "מס הכנסה:", "ביטוח לאומי:", "נטו:"]
+               if label not in OUTPUT]
+    assert not missing, (
+        f"חסרות תוויות בתלוש: {', '.join(missing)} — "
+        "ראה את טבלת התוויות בחלק ב'."
+    )
+
+
 # ── חלק ג' ────────────────────────────────────────────────────────────
 
 def test_effective_rate_computed():
@@ -97,7 +121,10 @@ def test_effective_rate_computed():
 
 
 def test_effective_rate_printed():
-    """חלק ג': שיעור הניכוי מודפס"""
+    """חלק ג': שיעור הניכוי מודפס עם התווית"""
+    assert "שיעור ניכוי אפקטיבי:" in OUTPUT, (
+        "לא מצאתי את התווית 'שיעור ניכוי אפקטיבי:' בפלט."
+    )
     rate = VARS.get("effective_rate")
     assert rate is not None and str(rate) in OUTPUT, (
         "לא מצאתי את שיעור הניכוי בפלט. המשימה מבקשת גם להדפיס אותו."

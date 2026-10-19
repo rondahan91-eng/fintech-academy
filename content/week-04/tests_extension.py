@@ -53,6 +53,37 @@ def test_second_net():
     )
 
 
+def test_second_payslip_printed():
+    """התלוש השני מודפס באותן ארבע תוויות"""
+    # ⚠️ **נספרות שורות שמתחילות בתווית ולא מופעים במחרוזת.** השורה
+    #    "הפרש ברוטו:" מכילה את "ברוטו:", וספירה פשוטה הייתה סופרת
+    #    אותה כתלוש שני.
+    for lbl in ["ברוטו:", "מס הכנסה:", "ביטוח לאומי:", "נטו:"]:
+        rows = [ln for ln in LINES if ln.strip().startswith(lbl)]
+        assert len(rows) >= 2, (
+            f"התווית '{lbl}' מופיעה בתחילת שורה פעם אחת בלבד. "
+            "התלוש של העובד השני מודפס באותן ארבע תוויות."
+        )
+
+
+def test_difference_variables():
+    """שני משתני ההפרש קיימים"""
+    missing = [n for n in ["gross_diff", "net_diff"] if n not in VARS]
+    assert not missing, f"חסרים משתנים: {', '.join(missing)}"
+
+
+def test_differences_computed():
+    """ההפרשים חושבו מהמשתנים שלך"""
+    expected_gross = _num("gross2") - _num("gross_salary")
+    assert abs(_num("gross_diff") - expected_gross) < 0.01, (
+        "gross_diff אינו הברוטו של העובד השני פחות הברוטו שלך."
+    )
+    expected_net = _num("net2") - _num("net_salary")
+    assert abs(_num("net_diff") - expected_net) < 0.01, (
+        "net_diff אינו הנטו שלו פחות הנטו שלך."
+    )
+
+
 def test_difference_lines():
     """שתי שורות ההפרש מודפסות"""
     missing = [lbl for lbl in ["הפרש ברוטו:", "הפרש נטו:"] if lbl not in OUTPUT]
@@ -88,4 +119,15 @@ def test_fee_at_threshold_is_consistent():
     assert abs(fee - 4.9) < 0.01 or abs(fee - 4.0) < 0.01, (
         f"fee_1000 יצא {fee}. לפי המדיניות הוא יכול להיות העמלה "
         "הקבועה או 0.4% מהסכום — החלט, ושיהיה עקבי."
+    )
+
+
+def test_fees_printed():
+    """שלוש שורות העמלה מודפסות"""
+    missing = [lbl for lbl in ["עמלה על 600:", "עמלה על 1000:",
+                               "עמלה על 2500:"]
+               if lbl not in OUTPUT]
+    assert not missing, (
+        f"חסרות שורות: {', '.join(missing)} — "
+        "ראה את טבלת התוויות בחלק ג' של ההרחבה."
     )

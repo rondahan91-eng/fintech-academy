@@ -59,9 +59,12 @@ print("נטו:", round(net2, 2))
 
 # --- הרחבה, חלק ב': ההפרש ---
 
+gross_diff = gross2 - gross_salary
+net_diff = net2 - net_salary
+
 print()
-print("הפרש ברוטו:", round(gross2 - gross_salary, 2))
-print("הפרש נטו:", round(net2 - net_salary, 2))
+print("הפרש ברוטו:", round(gross_diff, 2))
+print("הפרש נטו:", round(net_diff, 2))
 
 # --- הרחבה, חלק ג': עמלה מדורגת ---
 # ‏1,000 בדיוק נופל ב"עד" — העמלה הקבועה. ההחלטה עקבית לכל אורך הקוד.

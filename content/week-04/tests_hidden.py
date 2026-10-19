@@ -142,8 +142,15 @@ def test_effective_rate_was_rounded():
 # --- פלט ---
 
 def test_commission_printed():
-    assert "10.0" in OUTPUT or "10 " in OUTPUT, (
-        "לא מצאתי את סכום העמלה בפלט."
+    # ⚠️ **נבדקת שורת העמלה ולא המחרוזת בכל הפלט.** החיפוש הקודם
+    #    אחרי "10 " נכשל אצל מי שהדפיס round(commission) בסוף שורה,
+    #    ועבר אצל מי שבמקרה הדפיס 10 במקום אחר לגמרי.
+    line = next((ln for ln in LINES if ln.strip().startswith("עמלה:")), None)
+    assert line is not None, (
+        "לא מצאתי שורה שמתחילה ב'עמלה:'. זו התווית שבדף המשימה."
+    )
+    assert "10" in line, (
+        f"שורת העמלה היא '{line.strip()}' ואינה מציגה את הסכום שחושב."
     )
 
 
