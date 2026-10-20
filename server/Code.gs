@@ -158,6 +158,7 @@ var ACTIONS = {
   onboard: doOnboard,
   machine: doMachine,
   extensionAccept: doExtensionAccept,
+  promo: doPromo,
   // פאנל המורה. כל אחת מהן דורשת אסימון מורה — ראה readAdminToken.
   adminLogin: doAdminLogin,
   adminData: doAdminData,
@@ -468,15 +469,50 @@ var PAY_EXTENSION = 300;     // בונוס הרחבה
 
 var XP_FULL_TASK = 500;
 var XP_PARTIAL_TASK = 250;   // חצי מהבדיקות ומעלה
-var XP_EXTENSION = 400;
 
+// ⚠️ **הרחבה שווה בדיוק למשימה מלאה, וזה לא נתון שרירותי.** הכלל
+//    שנקבע הוא "דרגה כל ארבעה שבועות עם הרחבות, כל שמונה בלי".
+//    הוא מתקיים רק אם שבוע עם הרחבה שווה כפול משבוע בלי:
+//    500+500 = 1000 מול 500. ב-400 היחס היה 1.8 והסולם היה מחליק.
+var XP_EXTENSION = 500;
+
+// ⚠️ **שמונה דרגות ולא חמש.** בקצב של הרחבה כל שבוע הסולם הישן
+//    נגמר בשבוע 16 מתוך 30, ונשארו ארבעה-עשר שבועות בלי לאן לטפס.
+//    ‏D6–D8 הן מסלול ההרחבות בלבד: בלי הרחבות מגיעים ל-D5 בשבוע 29,
+//    וזה סיום מלא ומכובד של השנה.
 var RANKS = [
   { id: 'D1', title: 'מפתח זוטר', xp: 0, base: 6000 },
-  { id: 'D2', title: 'מפתח', xp: 2500, base: 8000 },
-  { id: 'D3', title: 'מפתח בכיר', xp: 6500, base: 11000 },
-  { id: 'D4', title: 'ראש צוות', xp: 12000, base: 15000 },
-  { id: 'D5', title: 'ארכיטקט', xp: 19000, base: 20000 },
+  { id: 'D2', title: 'מפתח', xp: 2200, base: 8000 },
+  { id: 'D3', title: 'מפתח בכיר', xp: 6200, base: 11000 },
+  { id: 'D4', title: 'ראש צוות', xp: 10200, base: 15000 },
+  { id: 'D5', title: 'ארכיטקט', xp: 14200, base: 20000 },
+  { id: 'D6', title: 'ארכיטקט ראשי', xp: 18200, base: 26000 },
+  { id: 'D7', title: 'סמנכ"ל טכנולוגיות', xp: 22200, base: 33000 },
+  { id: 'D8', title: 'מנהל הטכנולוגיות הראשי', xp: 26200, base: 42000 },
 ];
+
+// מתנת הדרגה. ⚠️ **מה שאין לו ערך כאן אינו מובטח לתלמיד** — אלעד
+//    מקבל את המחרוזת הזאת ואומר אותה כלשונה. דרגה בלי מתנה מוגדרת
+//    היא דרגה שאלעד לא יבטיח בה דבר.
+var RANK_GIFT = {
+  D2: 'עורך קוד צבעוני',
+};
+
+// ⚠️ **‏10% על כל משימה, מצטבר לפי דרגה.** המכפיל נגזר מהדרגה שהתלמיד
+//    החזיק **בשבוע ההגשה** ולא מזו שיש לו היום — אחרת כל קידום היה
+//    מתמחר מחדש גם את כל העבר, והארנק היה משתנה למפרע.
+function payMultiplier(rankIdx) {
+  return Math.pow(1.1, Math.max(0, rankIdx));
+}
+
+function rankIndexOf(id) {
+  for (var i = 0; i < RANKS.length; i++) if (RANKS[i].id === id) return i;
+  return 0;
+}
+
+function taskPayAt(rankIdx) {
+  return Math.round(PAY_FULL_TASK * payMultiplier(rankIdx) / 10) * 10;
+}
 
 function rankFor(xp) {
   var cur = RANKS[0], next = null;
@@ -519,7 +555,13 @@ function walletFor(id) {
     var wk = weeks[j], b = best[wk];
     var done = b.total > 0 && b.pass === b.total;
     var half = b.total > 0 && b.pass * 2 >= b.total;
-    var amount = done ? PAY_FULL_TASK : 0;
+
+    // ⚠️ **הדרגה שלפני השבוע הזה, לא הדרגה של היום.** השבועות נסרקים
+    //    בסדר עולה וה-XP נצבר תוך כדי, ולכן המכפיל שמתמחר את השבוע
+    //    הוא זה שהתלמיד החזיק כשהגיש אותו. בלי זה כל קידום היה מעלה
+    //    למפרע גם את השכר על משימות שכבר שולמו.
+    var idxAt = rankIndexOf(rankFor(xp).id);
+    var amount = done ? taskPayAt(idxAt) : 0;
     var why = done ? 'כל הבדיקות עברו' : 'עברו ' + b.pass + ' מתוך ' + b.total;
     // ⚠️ **חצי מהבדיקות מזכה ב-XP אך לא בכסף.** התקדמות מקצועית קרתה;
     //    תגמול הביצועים לא. ההפרש הוא מה שמתמרץ להשלים ולהגיש שוב.
@@ -534,13 +576,52 @@ function walletFor(id) {
 
     var ext = extensionRow(id, wk);
     var extDone = ext && String(ext.status) === 'done';
-    var bonus = extDone ? (Number(ext.bonus) || PAY_EXTENSION) : 0;
+    var bonus = extDone
+      ? (Number(ext.bonus) || Math.round(PAY_EXTENSION * payMultiplier(idxAt) / 10) * 10)
+      : 0;
     if (extDone) xp += XP_EXTENSION;
 
-    rows.push({ week: wk, amount: amount, bonus: bonus, why: why, done: done });
+    rows.push({ week: wk, amount: amount, bonus: bonus, why: why, done: done,
+                rankAt: RANKS[idxAt].id });
     total += amount + bonus;
   }
-  return { rows: rows, total: total, xp: xp, rank: rankFor(xp) };
+  return { rows: rows, total: total, xp: xp, rank: rankFor(xp),
+           taskPay: taskPayAt(rankIndexOf(rankFor(xp).id)) };
+}
+
+/**
+ * האם ההגשה האחרונה העלתה דרגה, ומה נלווה לה.
+ *
+ * ⚠️ **נקרא פעמיים סביב הכתיבה, לא מחושב מראש.** הקידום נגזר מהפרש
+ *    בין שני מצבי ארנק אמיתיים, ולכן הוא נכון גם כשציון מהמורה או
+ *    הרחבה שנסגרה נכנסו באותו רגע.
+ */
+function promotionBetween(beforeId, afterWallet, week, id) {
+  var toId = afterWallet.rank.id;
+  if (toId === beforeId) return null;
+
+  var toIdx = rankIndexOf(toId);
+  var subs = table('submissions');
+  var tasks = {}, exts = 0;
+  for (var i = 0; i < subs.length; i++) {
+    if (String(subs[i].id) === String(id)) tasks[Number(subs[i].week)] = true;
+  }
+  for (var j = 0; j < afterWallet.rows.length; j++) {
+    if (afterWallet.rows[j].bonus > 0) exts++;
+  }
+
+  return {
+    from: beforeId,
+    to: toId,
+    title: RANKS[toIdx].title,
+    base: RANKS[toIdx].base,
+    taskPay: taskPayAt(toIdx),
+    raise: 10,
+    gift: RANK_GIFT[toId] || '',
+    week: Number(week),
+    tasksDone: Object.keys(tasks).length,
+    extensionsDone: exts
+  };
 }
 
 // ═══ הרחבה ════════════════════════════════════════════════════════════
@@ -598,6 +679,10 @@ function doSubmit(req) {
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
+    // ⚠️ **הדרגה נקראת לפני הכתיבה.** הקידום הוא הפרש בין שני מצבי
+    //    ארנק אמיתיים, ולכן צריך את הקודם לפני שההגשה נכנסת לגיליון.
+    var rankBefore = walletFor(id).rank.id;
+
     sheet('submissions').appendRow([
       new Date(), id, name, week, pass, total, String(req.code || ''),
     ]);
@@ -623,10 +708,108 @@ function doSubmit(req) {
       logChat(id, week, 'elad', said[1]);
       setExtension(id, week, 'pending', '');
     }
-    return { ok: true, eladSaid: said, wallet: walletFor(id) };
+
+    var wallet = walletFor(id);
+    var promo = promotionBetween(rankBefore, wallet, week, id);
+    return { ok: true, eladSaid: said, wallet: wallet, promotion: promo };
   } finally {
     lock.releaseLock();
   }
+}
+
+/**
+ * הודעת הקידום של אלעד — נוצרת פעם אחת, כשהמסך נפתח.
+ *
+ * ⚠️ **לא נכתבת בשרת ולא נשמרת מראש.** הדרישה היא ששתי שיחות קידום
+ *    לא יישמעו זהות, ולכן הטקסט מגיע מהמודל בכל פעם מחדש — בתוך
+ *    הגבולות שהפרומפט מכתיב. הערכים (דרגה, 10%, מתנה) נשלחים אליו
+ *    כנתונים, והוא מצטט אותם; הוא אינו ממציא אותם ואינו ממציא מספרים.
+ */
+function doPromo(req) {
+  var id = readToken(req.token);
+  var name = nameOf(id);
+  var week = weekFor(id);
+  var wallet = walletFor(id);
+  var rank = wallet.rank;
+  var idx = rankIndexOf(rank.id);
+
+  var subs = table('submissions');
+  var weeksSeen = {};
+  for (var i = 0; i < subs.length; i++) {
+    if (String(subs[i].id) === String(id)) weeksSeen[Number(subs[i].week)] = true;
+  }
+  var exts = 0;
+  for (var j = 0; j < wallet.rows.length; j++) if (wallet.rows[j].bonus > 0) exts++;
+
+  var facts =
+    '# ═══ עכשיו: הודעת הקידום ═══\n\n' +
+    'התלמיד זה עתה עלה דרגה. כתוב לו את הודעת הקידום, עכשיו, בהודעה אחת.\n\n' +
+    '## הנתונים שבידך — ואין אחרים\n' +
+    '- שם התלמיד: ' + (name || '') + '\n' +
+    '- הדרגה החדשה: ' + rank.id + ' · ' + rank.title + '\n' +
+    '- הדרגה הקודמת: ' + String(req.from || '') + '\n' +
+    '- השבוע שבו הוא נמצא עכשיו: ' + week + '\n' +
+    '- כמה שבועות הגיש עד כה: ' + Object.keys(weeksSeen).length + '\n' +
+    '- כמה הרחבות השלים: ' + exts + '\n' +
+    '- תוספת השכר: 10% על כל משימה מהיום\n' +
+    '- המתנה: ' + (RANK_GIFT[rank.id] || '(אין מתנה לדרגה הזאת)') + '\n' +
+    '- השכר על משימה מהיום: ' + taskPayAt(idx) + ' ש"ח\n\n' +
+    '## מה חייב להופיע, מילה במילה\n' +
+    'שם הדרגה ומספרה · 10% על כל משימה מהיום · שם המתנה.\n\n' +
+    '## מה חופשי לך\n' +
+    'הפתיחה, הנימוק (מתוך מה שהתלמיד הזה באמת הגיש), והסגירה.\n' +
+    '**עד שלושה משפטים בחלק החופשי.**\n\n' +
+    '## אסור\n' +
+    '- כל מספר שאינו ברשימה למעלה. אם תכתוב "ארבעה שבועות" — זה חייב\n' +
+    '  להיות המספר שקיבלת, לא מספר שנשמע טוב.\n' +
+    '- השוואה לתלמיד אחר, ציון או דירוג.\n' +
+    '- להבטיח דבר שאינו ברשימת הקבועים.\n' +
+    '- לפתוח באותו משפט שפתחת בו קידום קודם.\n';
+
+  var key = prop('ANTHROPIC_API_KEY');
+  // ⚠️ **נפילה של המודל לא מבטלת את הקידום.** הדרגה, ה-10% והמתנה
+  //    כבר אמיתיים ומוצגים במסך; מה שחסר הוא רק הניסוח של אלעד.
+  //    משפט גיבוי קצר עדיף על מסך קידום שנתקע על שגיאה.
+  var fallback = (name ? name + ', ' : '') + 'קודמת ל' + rank.id + ' · ' +
+    rank.title + '. השכר עולה ב-10% על כל משימה מהיום' +
+    (RANK_GIFT[rank.id] ? ', ומחכה לך ' + RANK_GIFT[rank.id] : '') + '.';
+  if (!key) return { ok: true, text: fallback, wallet: wallet };
+
+  var history = loadChat(id, week).map(function (m) {
+    return { role: m.role === 'elad' ? 'assistant' : 'user', content: m.text };
+  });
+  history.push({ role: 'user', content: '(הקידום נכנס לתוקף)' });
+
+  var res = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    payload: JSON.stringify({
+      model: MODEL,
+      max_tokens: MAX_TOKENS,
+      output_config: { effort: EFFORT },
+      system: [{ type: 'text', text: eladPrompt(week),
+                 cache_control: { type: 'ephemeral' } },
+               { type: 'text', text: facts }],
+      messages: history,
+    }),
+    muteHttpExceptions: true,
+  });
+
+  var text = '';
+  if (res.getResponseCode() === 200) {
+    var data = JSON.parse(res.getContentText());
+    for (var k = 0; k < data.content.length; k++) {
+      if (data.content[k].type === 'text') text += data.content[k].text;
+    }
+    text = text.trim();
+  } else {
+    logChat(id, week, 'error', res.getContentText().slice(0, 500));
+  }
+  if (!text) text = fallback;
+
+  logChat(id, week, 'elad', text);
+  return { ok: true, text: text, wallet: wallet };
 }
 
 // ═══ פאנל המורה ═══════════════════════════════════════════════════════

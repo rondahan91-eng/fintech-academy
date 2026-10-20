@@ -272,6 +272,10 @@ export const api = {
     call('submit', { token: session.token, week, code, pass, total, ext })
       .catch((err) => { enqueue('submit', { week, code, pass, total, ext }); throw err; }),
   extensionAccept: () => call('extensionAccept', { token: session.token }),
+  // ⚠️ **הקידום כבר קרה בשרת כשזה נקרא.** הקריאה הזאת מביאה רק את
+  //    הניסוח של אלעד, ולכן כישלון שלה אינו מבטל את הקידום — המסך
+  //    כבר מציג את הדרגה, את ה-10% ואת המתנה מתוך תשובת ההגשה.
+  promo: (from) => call('promo', { token: session.token, from }, { timeout: 60000 }),
   chat: (week, message) =>
     call('chat', { token: session.token, week, message }, { timeout: 60000 }),
 };

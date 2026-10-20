@@ -618,3 +618,90 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
   padding: 7px 11px; font: 400 11px/1.6 var(--mono); direction: ltr;
   white-space: pre; pointer-events: none; opacity: .92;
 }
+
+/* ══ מסך הקידום ═══════════════════════════════════════════════════════
+   תופס את כל המסך אחרי הגשה שמזכה בדרגה. ‏SPEC §2 — שדרוגי דרגה.
+   ⚠️ **המרכוז יושב על .promo-wrap ולא על הכרטיס.** לכרטיס יש
+      אנימציית כניסה שמסתיימת ב-transform: none, וכשהמרכוז היה
+      transform על אותו אלמנט היא מחקה אותו והכרטיס נחת מחוץ למסך. */
+.promo {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(10,15,24,.74);
+}
+.promo[hidden] { display: none; }
+.promo-wrap {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px; box-sizing: border-box;
+}
+.promo-card {
+  width: min(720px, 100%); max-height: 100%; overflow-y: auto;
+  box-sizing: border-box; padding: 28px 40px 26px;
+  background: var(--surface); border-radius: 26px;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,.6);
+  display: flex; flex-direction: column; align-items: center; gap: 13px;
+  animation: promo-rise .42s cubic-bezier(.2,.8,.3,1) both;
+}
+@keyframes promo-rise {
+  from { opacity: 0; transform: translateY(26px) scale(.96); }
+  to   { opacity: 1; transform: none; }
+}
+.promo-face {
+  width: 112px; height: 112px; flex: none; display: block;
+  border-radius: 999px; overflow: hidden; background: #F2F5FD;
+  animation: promo-halo 2.6s ease-in-out infinite;
+}
+@keyframes promo-halo {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,.45), 0 0 0 18px rgba(139,92,246,0); }
+  50%      { box-shadow: 0 0 0 10px rgba(139,92,246,.16), 0 0 0 30px rgba(139,92,246,0); }
+}
+#promo-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.promo-top { text-align: center; }
+.promo-kicker { display: block; font: 600 12px/1 var(--ui); color: var(--accent-end); }
+.promo-top h1 { margin: 8px 0 0; font: 700 29px/1.2 var(--ui); color: var(--navy); }
+.promo-rank { margin-top: 9px; display: inline-flex; align-items: center; gap: 10px; }
+.promo-from { font: 600 15px var(--mono); color: #A9B1C4; text-decoration: line-through; }
+.promo-to {
+  display: inline-block; padding: 6px 17px; border-radius: 999px; color: #fff;
+  font: 700 16px var(--ui);
+  background: linear-gradient(135deg, var(--primary), var(--accent-end));
+}
+.promo-say {
+  margin: 0; max-width: 540px; text-align: center;
+  font-size: 15px; line-height: 1.7; color: #333A48; min-height: 26px;
+}
+.promo-rows { width: 100%; display: flex; flex-direction: column; gap: 9px; margin-top: 2px; }
+.promo-row {
+  display: flex; align-items: center; gap: 13px;
+  padding: 12px 15px; background: #F4F6FC; border-radius: 13px;
+}
+.promo-row.gift { background: #F7F3FF; }
+.promo-row[hidden] { display: none; }
+.promo-ico { flex: none; width: 34px; height: 34px; border-radius: 10px; background: #E4EBFD; }
+.promo-ico.gift { background: #EBE2FD; }
+.promo-txt { flex: 1; min-width: 0; }
+.promo-txt b { display: block; font: 600 14px var(--ui); color: var(--navy); }
+.promo-txt span { display: block; font-size: 12.5px; color: var(--slate); }
+.promo-plus { flex: none; font: 700 16px var(--ui); color: var(--green); }
+.promo-go {
+  margin-top: 3px; height: 46px; padding: 0 32px; border: 0; border-radius: 999px;
+  color: #fff; font: 600 15px var(--ui); cursor: pointer;
+  background: linear-gradient(135deg, var(--primary), var(--accent-end));
+  box-shadow: 0 10px 26px -8px rgba(89,71,235,.6);
+}
+
+/* הקונפטי. החתיכות נוצרות ב-app.js ומקבלות ‎--dx ו-‎--rot משלהן. */
+.promo-sky { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.promo-sky i {
+  position: absolute; top: -40px;
+  animation: promo-fall 3s linear forwards;
+}
+@keyframes promo-fall {
+  0%   { transform: translate3d(0, -80px, 0) rotate(0deg); opacity: 0; }
+  7%   { opacity: 1; }
+  100% { transform: translate3d(var(--dx, 0px), 105vh, 0) rotate(var(--rot, 540deg)); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .promo-sky { display: none; }
+  .promo-card, .promo-face { animation: none; }
+}

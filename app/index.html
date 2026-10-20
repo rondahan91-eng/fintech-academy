@@ -146,6 +146,49 @@
 
 </main>
 
+<!-- ══ מסך הקידום · תופס את המסך אחרי הגשה שמזכה בדרגה ══
+     מוסתר לגמרי עד שהשרת מחזיר promotion בתשובת ההגשה. -->
+<div class="promo" id="promo" hidden>
+  <div class="promo-sky" id="promo-sky" aria-hidden="true"></div>
+  <div class="promo-wrap">
+    <div class="promo-card" role="dialog" aria-modal="true"
+         aria-labelledby="promo-head" id="promo-card">
+      <span class="promo-face">
+        <img id="promo-img" alt="אלעד שגב">
+      </span>
+      <div class="promo-top">
+        <span class="promo-kicker">אלעד שגב · ראש הצוות</span>
+        <h1 id="promo-head">קודמת לדרגה</h1>
+        <div class="promo-rank">
+          <span class="promo-from" id="promo-from"></span>
+          <span aria-hidden="true">←</span>
+          <span class="promo-to" id="promo-to"></span>
+        </div>
+      </div>
+      <!-- הניסוח של אלעד. משתנה מתלמיד לתלמיד — ראה doPromo. -->
+      <p class="promo-say" id="promo-say"></p>
+      <div class="promo-rows">
+        <div class="promo-row">
+          <span class="promo-ico pay" aria-hidden="true"></span>
+          <span class="promo-txt">
+            <b>השכר עולה ב-10%</b>
+            <span id="promo-pay"></span>
+          </span>
+          <span class="promo-plus">‎+10%</span>
+        </div>
+        <div class="promo-row gift" id="promo-gift-row">
+          <span class="promo-ico gift" aria-hidden="true"></span>
+          <span class="promo-txt">
+            <b id="promo-gift"></b>
+            <span id="promo-gift-sub"></span>
+          </span>
+        </div>
+      </div>
+      <button type="button" class="promo-go" id="promo-go">קדימה לעבודה</button>
+    </div>
+  </div>
+</div>
+
 <!-- מד הפריסה — כלי פיתוח, לא חלק מהמוצר -->
 <div class="probe" id="probe" hidden></div>
 

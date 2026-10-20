@@ -162,6 +162,81 @@ function announceUnlock() {
   setTimeout(() => { el.unlockPill.hidden = true; }, 12000);
 }
 
+// ══ מסך הקידום ════════════════════════════════════════════════════════
+// ⚠️ **הערכים מגיעים מתשובת ההגשה, הניסוח מגיע אחר כך.** הדרגה, ה-10%
+//    והמתנה אמיתיים ברגע שהמסך נפתח; המשפט של אלעד נטען לתוכו כשהוא
+//    חוזר. כך נפילה של המודל אינה מעכבת את הקידום ואינה מבטלת אותו.
+const CONFETTI = ['#3D6FE5', '#8B5CF6', '#16A34A', '#F2B873', '#B8860B', '#FFFFFF'];
+
+function rainConfetti(n) {
+  const sky = document.getElementById('promo-sky');
+  if (!sky) return;
+  sky.textContent = '';
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < n; i++) {
+    const w = 6 + Math.round(Math.random() * 7);
+    const tall = Math.random() > 0.45;
+    const p = document.createElement('i');
+    p.style.cssText =
+      `left:${(Math.random() * 100).toFixed(2)}%;` +
+      `width:${w}px;height:${tall ? w + 4 + Math.round(Math.random() * 8) : w}px;` +
+      `background:${CONFETTI[Math.floor(Math.random() * CONFETTI.length)]};` +
+      `border-radius:${Math.random() > 0.78 ? '999px' : '2px'};` +
+      `--dx:${Math.round(Math.random() * 260 - 130)}px;` +
+      `--rot:${Math.round(360 + Math.random() * 900)}deg;` +
+      `animation-duration:${(2.2 + Math.random() * 1.9).toFixed(2)}s;` +
+      `animation-delay:${(Math.random() * 1.1).toFixed(2)}s;`;
+    frag.append(p);
+  }
+  sky.append(frag);
+}
+
+async function showPromotion(promo) {
+  const box = document.getElementById('promo');
+  if (!box || !promo) return;
+
+  document.getElementById('promo-from').textContent = promo.from || '';
+  document.getElementById('promo-to').textContent = `${promo.to} · ${promo.title}`;
+  document.getElementById('promo-pay').textContent =
+    `${(promo.taskPay || 0).toLocaleString('he-IL')} ₪ על משימה מהיום`;
+
+  const giftRow = document.getElementById('promo-gift-row');
+  if (promo.gift) {
+    document.getElementById('promo-gift').textContent = `מתנה · ${promo.gift}`;
+    document.getElementById('promo-gift-sub').textContent =
+      'מחכה לך בעורך — תראה אותו ברגע שתסגור את החלון';
+    giftRow.hidden = false;
+  } else {
+    giftRow.hidden = true;
+  }
+
+  const say = document.getElementById('promo-say');
+  say.textContent = '…';
+  const img = document.getElementById('promo-img');
+  img.src = `${AVATAR_DIR}/${AVATARS.get('impressed') || AVATARS.get(AVATAR_DEFAULT)}`;
+
+  box.hidden = false;
+  rainConfetti(78);
+  document.getElementById('promo-go').focus();
+
+  // הניסוח של אלעד. נכשל — נשאר המשפט שהשרת מחזיר כגיבוי.
+  try {
+    const res = await api.promo(promo.from);
+    if (res && res.text) say.textContent = res.text;
+    if (res && res.wallet) showWallet(res.wallet);
+  } catch {
+    say.textContent = `קודמת ל-${promo.to} · ${promo.title}. ` +
+      'השכר עולה ב-10% על כל משימה מהיום.';
+  }
+}
+
+document.getElementById('promo-go')?.addEventListener('click', () => {
+  const box = document.getElementById('promo');
+  if (box) box.hidden = true;
+  document.getElementById('promo-sky').textContent = '';   // עוצר את האנימציות
+  el.code.focus();
+});
+
 function showWallet(wallet) {
   if (!wallet) return;
   const money = el.wallet || document.getElementById('tf-wallet');
@@ -1048,6 +1123,7 @@ el.btnSubmit.addEventListener('click', async () => {
     (res.eladSaid && res.eladSaid.length ? res.eladSaid : ['קיבלתי. תודה.'])
       .forEach((t) => say(t));
     showWallet(res.wallet);
+    if (res.promotion) showPromotion(res.promotion);
     el.btnSubmit.textContent = 'הוגש ✓';
     setTimeout(() => { el.btnSubmit.textContent = 'הגשה'; el.btnSubmit.disabled = false; }, 4000);
   } catch (err) {
