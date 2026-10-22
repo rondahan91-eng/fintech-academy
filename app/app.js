@@ -28,6 +28,11 @@ const $ = (id) => document.getElementById(id);
 
 const el = {
   chat: $('chat'), chatForm: $('chat-form'), chatText: $('chat-text'),
+  eladDock: $('elad-dock'), eladBubble: $('elad-bubble'),
+  eladPanel: $('elad-panel'), eladClose: $('elad-close'),
+  eladPeek: $('elad-peek'), peekText: $('elad-peek-text'),
+  eladBadge: $('elad-badge'), eladRing: $('elad-ring'),
+  eladFace: $('elad-face'),
   code: $('code'), gutter: $('gutter'), saved: $('saved'),
   handle: $('handle'), results: $('results'),
   rbTests: $('rb-tests'), rbOut: $('rb-out'), rhint: $('rhint'),
@@ -215,6 +220,9 @@ async function showPromotion(promo) {
   const img = document.getElementById('promo-img');
   img.src = `${AVATAR_DIR}/${AVATARS.get('impressed') || AVATARS.get(AVATAR_DEFAULT)}`;
 
+  // ⚠️ **רגע 3 מתוך 3.** אלעד כותב את הודעת הקידום לתוך השיחה,
+  //    והיא צריכה להיות שם כשהתלמיד סוגר את מסך הקידום.
+  openElad();
   box.hidden = false;
   rainConfetti(78);
   document.getElementById('promo-go').focus();
@@ -333,6 +341,9 @@ function setAvatar(state) {
   if (!file) return;
   el.avatar.dataset.state = state;
   el.avatarImg.src = `${AVATAR_DIR}/${file}`;
+  // ⚠️ אותו קובץ גם בעיגול. הוא 64 פיקסלים ולכן המצב הרגשי כמעט
+  //    ואינו נקרא שם — אבל פנים שמתחלפות עדיין אומרות "משהו קרה".
+  if (el.eladFace) el.eladFace.src = `${AVATAR_DIR}/${file}`;
 }
 
 el.avatarImg.addEventListener('load', () => {
@@ -375,6 +386,64 @@ const OPENING = [
 // מעל כל אחת קוראות כשלושה אנשים, ובפאנל של 344 זה גם בזבוז שליש.
 let lastSpeaker = null;
 
+// ══ אלעד הצף ══════════════════════════════════════════════════════════
+//
+// ⚠️ **החלון נפתח מעצמו בשלושה רגעים בלבד**, וזה התנאי שבלעדיו המעבר
+//    לצף שובר את המערכת: מסירת המשימה בתחילת שבוע, הצעת ההרחבה אחרי
+//    הגשה, והקידום. בעמודה הקבועה אי אפשר היה לפספס את אלעד; בפינה
+//    אפשר, ו"אתה כאן?" של ההרחבה היה נעלם בלי שאיש ישים לב.
+//    בכל שאר הזמן: חיווי שקט, ותצוגה מקדימה שנסגרת לבד.
+
+let eladOpen = false;
+let eladUnread = 0;
+let peekTimer;
+let restoring = false;
+
+function paintElad() {
+  el.eladBadge.textContent = eladUnread > 99 ? '99+' : String(eladUnread);
+  el.eladBadge.hidden = eladUnread === 0 || eladOpen;
+  el.eladRing.hidden = el.eladBadge.hidden;
+  el.eladBubble.setAttribute('aria-expanded', String(eladOpen));
+  el.eladBubble.setAttribute('aria-label', eladOpen
+    ? 'סגור את השיחה עם אלעד שגב'
+    : (eladUnread
+        ? `פתח את השיחה עם אלעד שגב · ${eladUnread} שלא נקראו`
+        : 'פתח את השיחה עם אלעד שגב'));
+}
+
+function hidePeek() {
+  clearTimeout(peekTimer);
+  el.eladPeek.hidden = true;
+}
+
+function openElad({ focusInput = false } = {}) {
+  eladOpen = true;
+  eladUnread = 0;
+  hidePeek();
+  el.eladPanel.hidden = false;
+  paintElad();
+  el.chat.scrollTop = el.chat.scrollHeight;
+  if (focusInput) el.chatText.focus();
+}
+
+function closeElad() {
+  eladOpen = false;
+  el.eladPanel.hidden = true;
+  paintElad();
+}
+
+el.eladBubble.addEventListener('click', () => {
+  if (eladOpen) closeElad(); else openElad({ focusInput: true });
+});
+el.eladClose.addEventListener('click', () => { closeElad(); el.code.focus(); });
+el.eladPeek.addEventListener('click', () => openElad({ focusInput: true }));
+
+// ⚠️ ‏Escape סוגר את החלון ולא את מסך מלא, כשהחלון פתוח. סדר הקדימויות
+//    הזה הוא מה שהתלמיד מצפה לו: קודם נסגר מה שנפתח אחרון.
+addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && eladOpen) { e.stopPropagation(); closeElad(); }
+}, true);
+
 function say(text, who = 'אלעד') {
   if (who !== lastSpeaker) {
     const name = document.createElement('div');
@@ -388,6 +457,16 @@ function say(text, who = 'אלעד') {
   bubble.textContent = text;               // ולא innerHTML — התלמיד מקליד לכאן
   el.chat.append(bubble);
   el.chat.scrollTop = el.chat.scrollHeight;
+
+  // אלעד דיבר והחלון סגור — חיווי שקט ותצוגה מקדימה. לא מודאל, לא צליל.
+  if (who === 'אלעד' && !eladOpen && !restoring) {
+    eladUnread += 1;
+    paintElad();
+    el.peekText.textContent = text;
+    el.eladPeek.hidden = false;
+    clearTimeout(peekTimer);
+    peekTimer = setTimeout(hidePeek, 6000);
+  }
 
   // אלעד דיבר והפאנל מקופל — נקודה על הכפתור. לא מודאל, לא צליל.
   if (who === 'אלעד' && document.body.classList.contains('focus')) {
@@ -432,8 +511,16 @@ el.chatForm.addEventListener('submit', async (e) => {
 // רק כשאין כלום מקומית — וזה בדיוק המקרה של מחשב חדש, שהוא הסיבה
 // שיש שרת מלכתחילה.
 
+// ⚠️ **שחזור היסטוריה אינו "הודעה חדשה".** בלי הדגל הזה כל הודעה
+//    ישנה של אלעד הייתה נספרת כלא-נקראה, והחלון היה נפתח מעצמו בכל
+//    טעינה מחדש — בדיוק ההתנהגות שהמעבר לצף בא למנוע.
 function restoreChat(turns) {
-  turns.forEach((t) => say(String(t.text), t.role === 'elad' ? 'אלעד' : 'אתה'));
+  restoring = true;
+  try {
+    turns.forEach((t) => say(String(t.text), t.role === 'elad' ? 'אלעד' : 'אתה'));
+  } finally {
+    restoring = false;
+  }
 }
 
 function applyState(state, { force = false } = {}) {
@@ -471,6 +558,12 @@ if (student && student.name) {
 }
 
 if (!(bootState && applyState(bootState))) OPENING.forEach((t) => say(t));
+
+// ⚠️ **רגע 1 מתוך 3.** ‏applyState מחזיר true רק כששוחזרה היסטוריה,
+//    והשחזור שקט — ולכן unread גדול מאפס כאן פירושו דבר אחד: אלעד
+//    בדיוק מסר את המשימה של השבוע. זו ההודעה היחידה שהתלמיד חייב
+//    לקרוא לפני שהוא מתחיל. בכל טעינה אחרת החלון נשאר סגור.
+if (eladUnread > 0) openElad(); else paintElad();
 
 // מחשב חדש בלי היסטוריה מקומית — מושכים מהשרת
 if (!bootState) {
@@ -1122,6 +1215,9 @@ el.btnSubmit.addEventListener('click', async () => {
     //    השיחה, כדי שאלעד יראה אותו כשהוא ממשיך את השיחה.
     (res.eladSaid && res.eladSaid.length ? res.eladSaid : ['קיבלתי. תודה.'])
       .forEach((t) => say(t));
+    // ⚠️ **רגע 2 מתוך 3 שבהם החלון נפתח מעצמו.** השרת שלח "אתה כאן?"
+    //    כי הוא עומד להציע הרחבה. בעיגול סגור השאלה הזאת מתה בפינה.
+    if (res.eladSaid && res.eladSaid.length > 1) openElad();
     showWallet(res.wallet);
     if (res.promotion) showPromotion(res.promotion);
     el.btnSubmit.textContent = 'הוגש ✓';

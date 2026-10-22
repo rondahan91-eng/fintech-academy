@@ -33,28 +33,6 @@
 
 <main class="work">
 
-  <!-- ══ אלעד · 360px · לעולם אינו מתקפל (§3) ══ -->
-  <section class="panel elad" aria-label="אלעד">
-    <!-- ‏figure-on-white · manifest.yml → display.model. בלי מסגרת, דעיכה בתחתית.
-         ה-img הוא האמיתי; ה-svg נכנס רק אם הקובץ חסר. -->
-    <div class="avatar" id="avatar" data-state="presenting">
-      <img id="avatar-img" alt="אלעד שגב" hidden>
-      <svg id="avatar-fallback" class="avatar-fallback" viewBox="0 0 200 240"
-           role="img" aria-label="מקום לאווטאר של אלעד שגב">
-        <ellipse cx="100" cy="66" rx="34" ry="39" fill="#D8DEF0"/>
-        <path d="M100 108c-30 0-52 17-58 42l-6 26h128l-6-26c-6-25-28-42-58-42z" fill="#C3CBE6"/>
-        <path d="M42 176h116" stroke="#AAB4D6" stroke-width="3" stroke-linecap="round"/>
-        <rect x="18" y="182" width="164" height="7" rx="3.5" fill="#B9C2DE"/>
-      </svg>
-      <span class="avatar-note" id="avatar-note"></span>
-    </div>
-    <div class="chat" id="chat"></div>
-    <form class="chat-input" id="chat-form" autocomplete="off">
-      <input id="chat-text" type="text" placeholder="כתוב לאלעד…" aria-label="כתוב לאלעד">
-      <button type="submit" aria-label="שלח">←</button>
-    </form>
-  </section>
-
   <!-- ══ העורך · גמיש · עורך + ידית + תוצאות + כפתורים ══ -->
   <section class="editor-col">
 
@@ -145,6 +123,60 @@
   </aside>
 
 </main>
+
+<!-- ══ אלעד · עיגול צף ══════════════════════════════════════════════
+     ⚠️ **אלעד אינו יושב יותר בעמודה של 360.** העורך בלע את הרוחב
+        הזה. במקומו: עיגול בפינה שבה ישבה העמודה, כדי שהזיכרון
+        המרחבי של התלמיד לא יישבר.
+     ⚠️ **החלון נפתח מעצמו בשלושה רגעים** — מסירת המשימה, הצעת
+        ההרחבה אחרי הגשה, והקידום. בלי זה "אתה כאן?" נעלם בפינה
+        וזרימת ההרחבה מתה בשקט. ראה openElad() ב-app.js. -->
+<div class="elad-dock" id="elad-dock">
+
+  <!-- התצוגה המקדימה · השורה הראשונה, נסגרת לבד -->
+  <button type="button" class="elad-peek" id="elad-peek" hidden>
+    <span class="elad-peek-who">אלעד שגב</span>
+    <span class="elad-peek-text" id="elad-peek-text"></span>
+  </button>
+
+  <!-- חלון השיחה -->
+  <section class="elad-panel" id="elad-panel" aria-label="אלעד" hidden>
+    <header class="elad-head">
+      <!-- ה-img הוא האמיתי; ה-svg נכנס רק אם הקובץ חסר. -->
+      <div class="avatar" id="avatar" data-state="presenting">
+        <img id="avatar-img" alt="אלעד שגב" hidden>
+        <svg id="avatar-fallback" class="avatar-fallback" viewBox="0 0 200 240"
+             role="img" aria-label="מקום לאווטאר של אלעד שגב">
+          <ellipse cx="100" cy="66" rx="34" ry="39" fill="#D8DEF0"/>
+          <path d="M100 108c-30 0-52 17-58 42l-6 26h128l-6-26c-6-25-28-42-58-42z" fill="#C3CBE6"/>
+          <path d="M42 176h116" stroke="#AAB4D6" stroke-width="3" stroke-linecap="round"/>
+          <rect x="18" y="182" width="164" height="7" rx="3.5" fill="#B9C2DE"/>
+        </svg>
+      </div>
+      <div class="elad-who">
+        <b>אלעד שגב</b>
+        <span>מנהל הצוות שלך</span>
+      </div>
+      <button type="button" class="elad-close" id="elad-close"
+              aria-label="סגור את השיחה">✕</button>
+    </header>
+    <span class="avatar-note" id="avatar-note"></span>
+    <div class="chat" id="chat"></div>
+    <form class="chat-input" id="chat-form" autocomplete="off">
+      <input id="chat-text" type="text" placeholder="כתוב לאלעד…" aria-label="כתוב לאלעד">
+      <button type="submit" aria-label="שלח">←</button>
+    </form>
+  </section>
+
+  <!-- העיגול -->
+  <button type="button" class="elad-bubble" id="elad-bubble"
+          aria-label="פתח את השיחה עם אלעד שגב" aria-expanded="false">
+    <img id="elad-face" alt="">
+    <span class="elad-ring" id="elad-ring" aria-hidden="true" hidden></span>
+    <span class="elad-badge" id="elad-badge" aria-hidden="true" hidden></span>
+  </button>
+
+</div>
 
 <!-- ══ מסך הקידום · תופס את המסך אחרי הגשה שמזכה בדרגה ══
      מוסתר לגמרי עד שהשרת מחזיר promotion בתשובת ההגשה. -->

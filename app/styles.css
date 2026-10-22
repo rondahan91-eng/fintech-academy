@@ -21,7 +21,8 @@
   /* פריסה — layout.md §1–§3 */
   --topbar:       52px;
   --pad:          16px;
-  --panel-elad:  360px;
+  /* ‏--panel-elad בוטל ב-2026-10-22: אלעד עבר לעיגול צף,
+     והעורך בלע את 360 הפיקסלים. ראה .elad-dock. */
   --panel-task:  296px;
   --gap:          16px;
 
@@ -86,6 +87,11 @@ body {
   height: calc(100dvh - var(--topbar));
   display: flex; gap: var(--gap);
   padding: var(--pad);
+  /* ⚠️ **נתיב שמור לעיגול של אלעד.** בלי זה העיגול יושב על כפתור
+     ההגשה ועל צד ימין של אזור התוצאות — כלומר מסתיר פקדים ותוכן.
+     ‏88 = 64 של העיגול ועוד 24 מרווח. ‏padding-right פיזי ולא לוגי:
+     ב-RTL ‏inline-end הוא שמאל, והעיגול יושב בימין. */
+  padding-right: calc(var(--pad) + 88px);
   min-height: 0;
 }
 /* ‏outline ולא border — הפאנלים ממלאים בדיוק 684, ומסגרת הייתה גונבת 2px
@@ -97,54 +103,153 @@ body {
   box-shadow: var(--glow);
 }
 
-/* ══ אלעד · 360 · אווטאר 240 + שיחה + שדה 44 ══ */
-.elad {
-  width: var(--panel-elad); flex: none;
-  display: flex; flex-direction: column; gap: 12px;
-  padding: var(--pad);
-  min-height: 0;
+/* ══ אלעד · עיגול צף ═══════════════════════════════════════════════
+   ⚠️ **עמודת ה-360 בוטלה.** היא תפסה רבע מרוחב המסך והייתה פנויה
+      רוב הזמן; העורך בלע את הרוחב. מה שנשאר כאן הוא אותו תוכן
+      בדיוק — אווטאר, שיחה, שדה — בתוך חלון צף.
+   ⚠️ **הפינה אינה שרירותית.** העיגול יושב היכן שישבה העמודה
+      (ימין־תחתון ב-RTL), כדי שהתלמיד לא יחפש אותו. */
+
+/* ⚠️ **מיקום פיזי ולא לוגי, בכוונה.** ב-RTL ‏inset-inline-end הוא
+   צד שמאל — ועמודת אלעד ישבה בימין. ‏right מפורש הוא מה ששומר
+   את העיגול בפינה שהתלמיד כבר מכיר. */
+.elad-dock { position: fixed; bottom: 24px; right: 24px; z-index: 70; }
+
+.elad-bubble {
+  position: relative; width: 64px; height: 64px; padding: 0;
+  border: 0; border-radius: 999px; cursor: pointer; background: #F2F5FD;
+  box-shadow: 0 0 0 3px var(--surface), 0 14px 32px -10px rgba(30,42,56,.42);
 }
+.elad-bubble:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+#elad-face {
+  width: 100%; height: 100%; border-radius: 999px;
+  object-fit: cover; object-position: top center; display: block;
+}
+#elad-face[hidden] { display: none; }
+
+/* טבעת שמתרחבת — רק כשיש הודעה שלא נקראה */
+.elad-ring {
+  position: absolute; inset: -2px; border-radius: 999px;
+  border: 2px solid var(--accent-end); pointer-events: none;
+  animation: elad-ring 1.9s ease-out infinite;
+}
+.elad-ring[hidden] { display: none; }
+@keyframes elad-ring {
+  0%        { transform: scale(1); opacity: .5; }
+  70%, 100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ⚠️ החיווי בפינה הפנימית של העיגול, לא החיצונית — בפינה החיצונית
+   הוא נחתך בקצה המסך. */
+.elad-badge {
+  /* ⚠️ בפינה הפנימית (שמאל), אחרת החיווי נחתך בקצה המסך. */
+  position: absolute; top: -2px; left: -2px;
+  min-width: 22px; height: 22px; box-sizing: border-box;
+  border-radius: 999px; border: 2px solid var(--canvas);
+  background: linear-gradient(135deg, var(--primary), var(--accent-end));
+  color: #fff; font: 700 12px/18px var(--ui); text-align: center;
+}
+.elad-badge[hidden] { display: none; }
+
+/* התצוגה המקדימה · השורה הראשונה בלבד, ונסגרת לבד */
+.elad-peek {
+  /* ⚠️ **נעצרת באותו גבול של החלון, ולא ליד העיגול.** ליד העיגול
+     היא יושבת בדיוק על שורת הכפתורים — אין שם מקום לכרטיס ברוחב
+     300. כאן היא נפתחת בדיוק במקום שבו ייפתח החלון, וזה גם רומז
+     לאן הלחיצה מובילה. */
+  position: fixed; bottom: 288px; right: 24px;
+  width: 300px; text-align: start; cursor: pointer;
+  background: var(--surface); border: 0;
+  outline: 1px solid var(--line); outline-offset: -1px;
+  border-radius: 16px 16px 4px 16px; padding: 10px 14px;
+  box-shadow: 0 14px 34px -12px rgba(30,42,56,.34);
+  font: 400 13.5px/1.55 var(--ui); color: #22262F;
+  animation: elad-pop .18s ease-out;
+}
+.elad-peek[hidden] { display: none; }
+.elad-peek-who { display: block; font: 600 11.5px var(--ui); color: var(--accent-end); margin-bottom: 3px; }
+.elad-peek-text {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* חלון השיחה */
+.elad-panel {
+  /* ⚠️ **נעוץ בין שתי שורות הפקדים, ולא בגובה קבוע.** גובה קבוע
+     תמיד נגמר על משהו: קצר מדי והוא מכסה את לשוניות התוצאות,
+     ארוך מדי והוא מכסה את "הקוד שלי" ו"קוד פתיחה". עם top ו-bottom
+     הגובה נגזר מהמסך, והחלון מכסה **רק את שטח הקוד** — מקום שבו
+     לא לוחצים בזמן שקוראים את אלעד.
+     ‏112 = סרגל 52 + ריפוד 16 + שורת הלשוניות 36 ועוד 8.
+     ‏280 = אזור התוצאות, הידית, שורת הכפתורים והריפוד התחתון. */
+  position: fixed; top: 112px; bottom: 280px; right: 24px;
+  width: 368px;
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--surface); border-radius: 18px;
+  outline: 1px solid var(--line); outline-offset: -1px;
+  box-shadow: 0 28px 60px -20px rgba(30,42,56,.42), 0 2px 10px rgba(20,20,40,.06);
+  animation: elad-pop .2s ease-out;
+}
+.elad-panel[hidden] { display: none; }
+@keyframes elad-pop {
+  from { opacity: 0; transform: translateY(12px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+.elad-head {
+  flex: none; display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-bottom: 1px solid var(--line);
+}
+/* ⚠️ **האווטאר ירד מ-240 ל-48.** תשעת המצבים הרגשיים כמעט ואינם
+   נקראים בגודל הזה — זו עלות מוצהרת של המעבר לצף, לא תקלה. */
 .avatar {
-  height: 240px; flex: none;
-  background: var(--surface);          /* לבן חובה — האווטאר שקוף */
-  border-radius: var(--radius-md);
-  position: relative; overflow: hidden;
-  display: flex; align-items: flex-end; justify-content: center;
+  width: 48px; height: 48px; flex: none; border-radius: 999px;
+  overflow: hidden; background: var(--surface); cursor: pointer;
+  position: relative;
 }
-.avatar::after {                        /* דעיכה 48px בתחתית */
-  content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 48px;
-  background: linear-gradient(to top, #fff, transparent); pointer-events: none;
-}
-/* ‏panel/ מנורמל ל-656×480, בדיוק היחס של הקופסה — cover ו-contain זהים
-   כאן, ו-cover בטוח יותר אם הרוחב ישתנה. הראש יושב באותה שורה בתשעתם. */
-.avatar { cursor: pointer; }              /* מחליף מצב — כלי פיתוח */
 #avatar-img, .avatar-fallback {
   height: 100%; width: 100%; object-fit: cover; object-position: top center;
 }
 #avatar-img[hidden], .avatar-fallback[hidden] { display: none; }
-.avatar-note {
-  position: absolute; top: 8px; inset-inline-start: 10px;
-  font: 500 10px/1.4 var(--mono); color: #B6BCCB; direction: ltr;
-  max-width: 300px; white-space: pre-line;
+.elad-who { flex: 1; min-width: 0; }
+.elad-who b { display: block; font: 600 14.5px var(--ui); color: #22262F; }
+.elad-who span { display: block; font-size: 12px; color: var(--slate); }
+.elad-close {
+  flex: none; width: 30px; height: 30px; border: 0; border-radius: 999px;
+  background: #F2F4FA; color: var(--slate); font-size: 15px; cursor: pointer;
 }
+.elad-close:hover { background: #E8ECF6; color: #22262F; }
+
+.avatar-note {
+  flex: none; padding: 0 14px; font: 500 10px/1.4 var(--mono);
+  color: #B6BCCB; direction: ltr; white-space: pre-line;
+}
+.avatar-note:empty { display: none; }
+
 .chat { flex: 1; min-height: 0; overflow-y: auto;
-  display: flex; flex-direction: column; gap: 10px; padding-inline-end: 4px; }
+  display: flex; flex-direction: column; gap: 10px; padding: 14px; }
 .who { font-size: 12px; font-weight: 600; color: var(--slate); }
 .bubble {
   background: #F2F5FD; border-radius: 14px; padding: 10px 12px;
   font-size: 13.5px; line-height: 1.6;
 }
 .bubble.me { background: #EDEFF5; margin-inline-start: 40px; }
-.chat-input { height: 44px; flex: none; display: flex; gap: 8px; }
+.chat-input { flex: none; display: flex; gap: 8px; padding: 0 14px 14px; }
 .chat-input input {
-  flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 999px;
+  flex: 1; min-width: 0; height: 40px;
+  border: 1px solid var(--line); border-radius: 999px;
   padding: 0 16px; font: 400 13.5px var(--ui); background: var(--surface);
 }
 .chat-input input:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
 .chat-input button {
-  width: 44px; flex: none; border: 0; border-radius: 999px; cursor: pointer;
+  width: 40px; height: 40px; flex: none; border: 0; border-radius: 999px;
+  cursor: pointer;
   background: linear-gradient(135deg, var(--primary), var(--accent-end));
   color: #fff; font-size: 15px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .elad-ring, .elad-panel, .elad-peek { animation: none; }
 }
 
 /* ══ עמודת העורך ══ */
@@ -192,7 +297,6 @@ body {
 }
 .pip[hidden] { display: none; }
 
-body.focus .elad,
 body.focus .task { display: none; }
 
 .code-wrap { flex: 1; min-height: 0; display: flex; direction: ltr;
