@@ -45,22 +45,22 @@ print("שיעור ניכוי אפקטיבי:", effective_rate)
 # --- הרחבה, חלק א': העובד השני ---
 # ⚠️ אותם משתני שיעור, לא מספרים חדשים.
 
-gross2 = 9400
-income_tax2 = gross2 * tax_rate
-national_insurance2 = gross2 * national_insurance_rate
-net2 = gross2 - income_tax2 - national_insurance2
+gross_salary2 = 9400
+income_tax2 = gross_salary2 * tax_rate
+national_insurance2 = gross_salary2 * national_insurance_rate
+net_salary2 = gross_salary2 - income_tax2 - national_insurance2
 
 print()
 print("=== תלוש משכורת · העובד השני ===")
-print("ברוטו:", gross2)
+print("ברוטו:", gross_salary2)
 print("מס הכנסה:", round(income_tax2, 2))
 print("ביטוח לאומי:", round(national_insurance2, 2))
-print("נטו:", round(net2, 2))
+print("נטו:", round(net_salary2, 2))
 
 # --- הרחבה, חלק ב': ההפרש ---
 
-gross_diff = gross2 - gross_salary
-net_diff = net2 - net_salary
+gross_diff = gross_salary2 - gross_salary
+net_diff = net_salary2 - net_salary
 
 print()
 print("הפרש ברוטו:", round(gross_diff, 2))

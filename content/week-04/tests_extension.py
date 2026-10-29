@@ -5,31 +5,56 @@
 #
 # זמין: OUTPUT · LINES · VARS
 
-SECOND = ["gross2", "income_tax2", "national_insurance2", "net2"]
+# ⚠️ **שני שמות לכל אחד משני המשתנים האלה, וזה תיקון ולא רשלנות.**
+#    המשימה השבועית קוראת למשתנים gross_salary ו-net_salary, וההרחבה
+#    ביקשה gross2 ו-net2 — בזמן ששני האחרים כן נגזרים מהשם השבועי
+#    (income_tax → income_tax2). תלמיד שהסיק את הכלל נכון כתב
+#    gross_salary2 ונפל על "חסר משתנה", כשהקוד שלו תקין.
+#    השבוע כבר פתוח לכיתה, ולכן **שני השמות מתקבלים**: מי שכתב לפי
+#    הכלל צודק, ומי שכתב לפי הטבלה אינו נשבר באמצע.
+SECOND = [
+    ("gross_salary2", "gross2"),
+    ("income_tax2",),
+    ("national_insurance2",),
+    ("net_salary2", "net2"),
+]
+
+
+def _pick(names):
+    """השם הראשון מבין החלופות שהתלמיד באמת הגדיר."""
+    for n in names:
+        if n in VARS:
+            return n
+    return None
 
 
 def _num(name):
-    v = VARS.get(name)
+    names = (name,) if isinstance(name, str) else name
+    found = _pick(names)
+    assert found, f"לא מצאתי משתנה בשם {' או '.join(names)}."
+    v = VARS.get(found)
     assert isinstance(v, (int, float)) and not isinstance(v, bool), (
-        f"{name} אינו מספר."
+        f"{found} אינו מספר."
     )
     return v
 
 
 def test_second_employee_variables():
     """ארבעת משתני העובד השני קיימים"""
-    missing = [n for n in SECOND if n not in VARS]
+    missing = [" או ".join(opts) for opts in SECOND if not _pick(opts)]
     assert not missing, f"חסרים משתנים: {', '.join(missing)}"
 
 
 def test_second_gross():
     """הברוטו של העובד השני"""
-    assert _num("gross2") == 9400, "gross2 אינו הברוטו שבמשימה."
+    assert _num(("gross_salary2", "gross2")) == 9400, (
+        "הברוטו של העובד השני אינו הסכום שבמשימה."
+    )
 
 
 def test_second_deductions_computed():
     """הניכויים שלו חושבו מאותם שיעורים"""
-    gross = _num("gross2")
+    gross = _num(("gross_salary2", "gross2"))
     tax = _num("income_tax2")
     ni = _num("national_insurance2")
     rate = VARS.get("tax_rate")
@@ -47,8 +72,8 @@ def test_second_deductions_computed():
 
 def test_second_net():
     """הנטו שלו חושב"""
-    expected = _num("gross2") - _num("income_tax2") - _num("national_insurance2")
-    assert abs(_num("net2") - expected) < 0.01, (
+    expected = _num(("gross_salary2", "gross2")) - _num("income_tax2") - _num("national_insurance2")
+    assert abs(_num(("net_salary2", "net2")) - expected) < 0.01, (
         "net2 אינו הברוטו פחות שני הניכויים שחישבת."
     )
 
@@ -74,11 +99,11 @@ def test_difference_variables():
 
 def test_differences_computed():
     """ההפרשים חושבו מהמשתנים שלך"""
-    expected_gross = _num("gross2") - _num("gross_salary")
+    expected_gross = _num(("gross_salary2", "gross2")) - _num("gross_salary")
     assert abs(_num("gross_diff") - expected_gross) < 0.01, (
         "gross_diff אינו הברוטו של העובד השני פחות הברוטו שלך."
     )
-    expected_net = _num("net2") - _num("net_salary")
+    expected_net = _num(("net_salary2", "net2")) - _num("net_salary")
     assert abs(_num("net_diff") - expected_net) < 0.01, (
         "net_diff אינו הנטו שלו פחות הנטו שלך."
     )
