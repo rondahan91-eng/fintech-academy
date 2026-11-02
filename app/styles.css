@@ -850,3 +850,12 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
 }
 .step-label button:hover:not([disabled]) { background: #F4F6FC; }
 .step-label button[disabled] { border-color: #E8EBF3; color: #C3CBDA; cursor: default; }
+
+/* כותרת מקטע שמתחיל באמצע מנה. המקטע הראשון במנה אינו מקבל אותה —
+   שמו כבר מופיע בשורת הכותרת של המנה. */
+.task-body .step-sec {
+  font: 600 13px var(--ui); color: var(--navy);
+  margin: 14px 0 6px; padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.task-body .step-sec:first-child { margin-top: 0; padding-top: 0; border-top: 0; }

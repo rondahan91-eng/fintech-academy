@@ -164,22 +164,36 @@ function packSteps() {
   // ⚠️ **טבלה גבוהה מהעמודה נחתכת לשורות, עם כותרת חוזרת.** בכלי
   //    הבנייה אי אפשר לדעת כמה שורות נכנסות — תא עם טקסט ארוך
   //    נשבר לשלוש שורות מסך, ותא קצר לאחת. כאן מודדים.
+  // ⚠️ **טבלה נחתכת כשהיא גדולה מחצי עמודה, לא רק כשהיא חורגת.**
+  //    טבלה בגובה 240 מתוך 262 נכנסת לבדה — ומשאירה את מה שלפניה
+  //    לבד במנה כמעט ריקה. נמדד: מנה אחת בשבוע 4 הגיעה ל-9% מילוי
+  //    בדיוק ככה. חתיכות קטנות יותר מתמלאות טוב יותר.
+  const splitAbove = room * 0.55;
   const units = [];
   for (const blk of BLOCKS) {
     box.innerHTML = blk.html;
-    if (box.scrollHeight <= room + 1) { units.push(blk); continue; }
+    if (box.scrollHeight <= splitAbove) { units.push(blk); continue; }
+    // ⚠️ **טבלה ורשימה נחתכות; פסקה לא.** שורת טבלה ופריט רשימה הם
+    //    יחידות עצמאיות — עם כותרת חוזרת בטבלה, כל חלק נקרא לבדו.
+    //    פסקה שנחתכת באמצע פשוט נהרסת, ולכן היא נשארת שלמה גם
+    //    במחיר מנה שנגללת.
     const holder = document.createElement('div');
     holder.innerHTML = blk.html;
     const table = holder.querySelector('table');
-    const rows = table ? [...table.rows] : [];
-    if (rows.length < 3) { units.push(blk); continue; }
-    const head = rows[0].outerHTML;
+    const list = holder.querySelector('ul, ol');
+    const items = table ? [...table.rows] : (list ? [...list.children] : []);
+    if (items.length < 3) { units.push(blk); continue; }
+
+    const tag = table ? 'table' : list.tagName.toLowerCase();
+    const head = table ? items[0].outerHTML : '';
+    const body = table ? items.slice(1) : items;
     let chunk = [];
-    const push = () => units.push({ sec: blk.sec, html: `<table>${head}${chunk.join('')}</table>` });
-    for (const r of rows.slice(1)) {
+    const push = () => units.push({ sec: blk.sec,
+                                    html: `<${tag}>${head}${chunk.join('')}</${tag}>` });
+    for (const r of body) {
       chunk.push(r.outerHTML);
-      box.innerHTML = `<table>${head}${chunk.join('')}</table>`;
-      if (box.scrollHeight > room + 1 && chunk.length > 1) {
+      box.innerHTML = `<${tag}>${head}${chunk.join('')}</${tag}>`;
+      if (box.scrollHeight > splitAbove && chunk.length > 1) {
         const last = chunk.pop();
         push();
         chunk = [last];
@@ -190,21 +204,41 @@ function packSteps() {
 
   const before = box.innerHTML;
   const out = [];
-  let cur = [], sec = null;
+  let cur = [];
+
+  // ⚠️ **מנה נמלאת עד הסוף, גם על פני כותרות.** הגרסה הראשונה פתחה
+  //    מנה חדשה בכל כותרת, ואז מקטע בן משפט אחד קיבל מנה שלמה
+  //    כמעט ריקה. הכותרת היא רמז לקיבוץ, לא גבול — מה שקובע הוא
+  //    כמה נכנס, והשם מתאר את מה שבפנים.
+  // ⚠️ **מקטע שמתחיל באמצע מנה מקבל כותרת בתוך התוכן.** שם המקטע
+  //    נבלע כנקודת החיתוך ואינו חלק ב-HTML, ולכן בלי זה התלמיד
+  //    רואה תוכן של "מה לבנות" בלי שום סימן שהוא כבר שם.
+  //    המקטע הראשון במנה אינו מקבל כותרת כזאת — הוא שם המנה.
+  // ⚠️ **המדידה והציור משתמשים באותה פונקציה.** כשהן נפרדו, הכותרת
+  //    הפנימית נוספה רק בציור — והמנה שנמדדה כנכנסת יצאה גולשת.
+  const render = (list) => {
+    let html = '';
+    list.forEach((b, i) => {
+      if (i > 0 && b.sec && b.sec !== list[i - 1].sec) {
+        html += `<h2 class="step-sec">${esc(b.sec)}</h2>`;
+      }
+      html += b.html;
+    });
+    return html;
+  };
 
   const flush = () => {
     if (!cur.length) return;
-    const first = out.length === 0 || out[out.length - 1].sec !== sec;
-    out.push({ sec, title: first ? sec : `${sec} · המשך`,
-               html: cur.map((b) => b.html).join('') });
+    const html = render(cur);
+    const mid = out.length && out[out.length - 1].lastSec === cur[0].sec;
+    out.push({ title: mid ? `${cur[0].sec || ''} · המשך` : (cur[0].sec || ''),
+               html, lastSec: cur[cur.length - 1].sec });
     cur = [];
   };
 
   for (const blk of units) {
-    if (sec !== null && blk.sec !== sec) { flush(); }
-    sec = blk.sec;
     cur.push(blk);
-    box.innerHTML = cur.map((b) => b.html).join('');
+    box.innerHTML = render(cur);
     // ⚠️ גוש בודד שגדול מהעמודה נשאר לבדו ונגלל. זה עדיף על חיתוך
     //    באמצע פסקה, וקורה רק כשאין בה שום נקודת חיתוך חוקית.
     if (box.scrollHeight > room + 1 && cur.length > 1) {
@@ -216,7 +250,7 @@ function packSteps() {
       let pair = null;
       if (blk.glue && cur.length > 1) {
         pair = cur.pop();
-        box.innerHTML = [pair, blk].map((b) => b.html).join('');
+        box.innerHTML = render([pair, blk]);
         if (box.scrollHeight > room + 1) { cur.push(pair); pair = null; }
       }
       flush();

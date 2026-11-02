@@ -659,6 +659,190 @@ export const WEEKS = {
         "file": "elad-waiting.png"
       }
     ]
+  },
+  "5": {
+    "week": 5,
+    "title": "מחשבון הפריסה",
+    "xp": "500",
+    "requirements": [],
+    "taskHtml": "<p>בשבוע שעבר חילקת שכר באחוזים. החילוק ההוא החזיר מספר עשרוני, וזה היה בסדר — אחוז הוא עשרוני מטבעו.</p>\n<p><b>השבוע החילוק חייב להחזיר מספר שלם.</b> לקוח פורס קנייה לשישה תשלומים; אי אפשר לחייב אותו ב-808.3333 שקלים. הבנק צריך לדעת שני דברים: <b>כמה בכל תשלום</b>, ו<b>מה נשאר</b>.</p>\n<p>לפייתון יש שני אופרטורים בדיוק לזה.</p>\n<h2>שני האופרטורים החדשים</h2>\n<table><tr><th>האופרטור</th><th>השם</th><th>מה הוא מחזיר</th></tr>\n<tr><td><code>//</code></td><td>מנה שלמה</td><td>כמה פעמים נכנס, בלי השארית</td></tr>\n<tr><td><code>%</code></td><td>שארית</td><td>מה נשאר אחרי שהוציאו את כל השלמים</td></tr>\n</table>\n<pre dir=\"ltr\">print(17 // 5)\nprint(17 % 5)</pre>\n<p>תריץ את שתי השורות האלה לבד לפני שאתה ממשיך. ‏17 מתחלק ב-5 שלוש פעמים ונשארים 2.</p>\n<p>⚠️ <b>שים לב להבדל מ-<code>/</code>.</b> ‏<code>17 / 5</code> מחזיר 3.4 — מספר עשרוני. ‏<code>17 // 5</code> מחזיר 3 — מספר שלם. שני אופרטורים שונים, שתי תשובות שונות, ואף אחת מהן אינה \"עיגול\" של השנייה.</p>\n<h2>חלק א' — הפריסה</h2>\n<p>לקוח פרס קנייה לתשלומים.</p>\n<table><tr><th>מה</th><th>הערך</th><th>שם המשתנה</th></tr>\n<tr><td>סכום הרכישה</td><td>4850</td><td><code>purchase_amount</code></td></tr>\n<tr><td>מספר תשלומים</td><td>6</td><td><code>payments_count</code></td></tr>\n</table>\n<p><b>חשב</b> — אל תקליד את התשובות:</p>\n<table><tr><th>מה</th><th>איך</th><th>שם המשתנה</th></tr>\n<tr><td>התשלום הרגיל</td><td>הסכום <b>מנה שלמה</b> מספר התשלומים</td><td><code>payment</code></td></tr>\n<tr><td>השארית</td><td>הסכום <b>שארית</b> מספר התשלומים</td><td><code>remainder</code></td></tr>\n</table>\n<p>התוויות המדויקות:</p>\n<table><tr><th>מה</th><th>התווית</th></tr>\n<tr><td><code>purchase_amount</code></td><td><code>סכום הרכישה:</code></td></tr>\n<tr><td><code>payments_count</code></td><td><code>מספר תשלומים:</code></td></tr>\n<tr><td><code>payment</code></td><td><code>תשלום רגיל:</code></td></tr>\n<tr><td><code>remainder</code></td><td><code>שארית:</code></td></tr>\n</table>\n<h2>חלק ב' — לאן הולכת השארית</h2>\n<p>שארית של שני שקלים לא יכולה להיעלם, ולא יכולה להתחלק לשישה. <b>הבנק מוסיף אותה לתשלום הראשון.</b></p>\n<table><tr><th>מה</th><th>איך</th><th>שם המשתנה</th></tr>\n<tr><td>התשלום הראשון</td><td>התשלום הרגיל ועוד השארית</td><td><code>first_payment</code></td></tr>\n</table>\n<p>ואז <b>תוכיח שלא איבדת כסף.</b> חשב את הסכום הכולל חזרה מהפריסה שלך — התשלום הראשון, ועוד התשלום הרגיל כפול מספר התשלומים שנותרו:</p>\n<table><tr><th>מה</th><th>שם המשתנה</th></tr>\n<tr><td>הסכום שחוזר מהפריסה</td><td><code>check_total</code></td></tr>\n</table>\n<p>התוויות:</p>\n<table><tr><th>מה</th><th>התווית</th></tr>\n<tr><td><code>first_payment</code></td><td><code>תשלום ראשון:</code></td></tr>\n<tr><td><code>check_total</code></td><td><code>סך הכול:</code></td></tr>\n</table>\n<p>⚠️ <b>‏<code>check_total</code> חייב לצאת שווה בדיוק ל-<code>purchase_amount</code>.</b> אם הוא לא — הפריסה שלך מאבדת או ממציאה כסף, ובבנק זה לא באג קטן. אל תתקן את המספר; תמצא את השורה.</p>\n<h2>חלק ג' — אגורות</h2>\n<p>המערכת מחזירה עמלות בתור <b>מספר אגורות שלם</b>, בלי נקודה. צריך לפרק אותו לשקלים ולאגורות.</p>\n<table><tr><th>מה</th><th>הערך</th><th>שם המשתנה</th></tr>\n<tr><td>סך האגורות</td><td>128745</td><td><code>total_agorot</code></td></tr>\n</table>\n<table><tr><th>מה</th><th>שם המשתנה</th></tr>\n<tr><td>כמה שקלים שלמים</td><td><code>shekels</code></td></tr>\n<tr><td>כמה אגורות נשארו</td><td><code>agorot</code></td></tr>\n</table>\n<p>התוויות: <code>שקלים:</code> ו-<code>אגורות:</code>.</p>\n<p>⚠️ <b>אותם שני אופרטורים, שימוש אחר לגמרי.</b> בחלק א' חילקת לתשלומים; כאן אתה מפרק יחידה גדולה ליחידות קטנות. אם אתה מבין למה שניהם אותו דבר — הבנת את השבוע.</p>\n<blockquote>בשקל יש מאה אגורות. למה בכלל לשמור כסף ככה ולא כמספר עשרוני רגיל? יש לזה תשובה אמיתית, היא שווה שבוע שלם, והיא מגיעה בשבוע 8. תשאל את אלעד אם אתה סקרן.</blockquote>\n<h2>מה נבדק</h2>\n<ul>\n<li>תשעת המשתנים קיימים בשמות המדויקים</li>\n<li><b>הערכים חושבו ולא הוקלדו</b></li>\n<li><code>payment</code> ו-<code>remainder</code> חושבו ב-<code>//</code> וב-<code>%</code> ולא בדרך עקיפה</li>\n<li><code>check_total</code> יוצא בדיוק כמו <code>purchase_amount</code></li>\n<li>כל השורות מודפסות עם התוויות המדויקות</li>\n</ul>\n<h2>מותר להיעזר</h2>\n<ul>\n<li><b>באלעד</b> — במיוחד על ההבדל בין <code>/</code> ל-<code>//</code></li>\n<li>בהרצה חוזרת, בלי הגבלה</li>\n</ul>\n<p><b>אין כאן תנאים.</b> אם אתה מוצא את עצמך רוצה לכתוב \"אם השארית גדולה מאפס אז…\" — עצור. <code>if</code> מגיע בשבוע 11, והמשימה הזאת לא צריכה אותו.</p>",
+    "taskBlocks": [
+      {
+        "sec": "לפני שמתחילים",
+        "html": "<p>בשבוע שעבר חילקת שכר באחוזים. החילוק ההוא החזיר מספר עשרוני, וזה היה בסדר — אחוז הוא עשרוני מטבעו.</p>"
+      },
+      {
+        "sec": "לפני שמתחילים",
+        "html": "<p><b>השבוע החילוק חייב להחזיר מספר שלם.</b> לקוח פורס קנייה לשישה תשלומים; אי אפשר לחייב אותו ב-808.3333 שקלים. הבנק צריך לדעת שני דברים: <b>כמה בכל תשלום</b>, ו<b>מה נשאר</b>.</p>"
+      },
+      {
+        "sec": "לפני שמתחילים",
+        "html": "<p>לפייתון יש שני אופרטורים בדיוק לזה.</p>"
+      },
+      {
+        "sec": "שני האופרטורים החדשים",
+        "html": "<table><tr><th>האופרטור</th><th>השם</th><th>מה הוא מחזיר</th></tr>\n<tr><td><code>//</code></td><td>מנה שלמה</td><td>כמה פעמים נכנס, בלי השארית</td></tr>\n<tr><td><code>%</code></td><td>שארית</td><td>מה נשאר אחרי שהוציאו את כל השלמים</td></tr>\n</table>"
+      },
+      {
+        "sec": "שני האופרטורים החדשים",
+        "html": "<pre dir=\"ltr\">print(17 // 5)\nprint(17 % 5)</pre>"
+      },
+      {
+        "sec": "שני האופרטורים החדשים",
+        "html": "<p>תריץ את שתי השורות האלה לבד לפני שאתה ממשיך. ‏17 מתחלק ב-5 שלוש פעמים ונשארים 2.</p>"
+      },
+      {
+        "sec": "שני האופרטורים החדשים",
+        "html": "<p>⚠️ <b>שים לב להבדל מ-<code>/</code>.</b> ‏<code>17 / 5</code> מחזיר 3.4 — מספר עשרוני. ‏<code>17 // 5</code> מחזיר 3 — מספר שלם. שני אופרטורים שונים, שתי תשובות שונות, ואף אחת מהן אינה \"עיגול\" של השנייה.</p>"
+      },
+      {
+        "sec": "חלק א' — הפריסה",
+        "html": "<p>לקוח פרס קנייה לתשלומים.</p>"
+      },
+      {
+        "sec": "חלק א' — הפריסה",
+        "html": "<table><tr><th>מה</th><th>הערך</th><th>שם המשתנה</th></tr>\n<tr><td>סכום הרכישה</td><td>4850</td><td><code>purchase_amount</code></td></tr>\n<tr><td>מספר תשלומים</td><td>6</td><td><code>payments_count</code></td></tr>\n</table>",
+        "glue": true
+      },
+      {
+        "sec": "חלק א' — הפריסה",
+        "html": "<p><b>חשב</b> — אל תקליד את התשובות:</p>"
+      },
+      {
+        "sec": "חלק א' — הפריסה",
+        "html": "<table><tr><th>מה</th><th>איך</th><th>שם המשתנה</th></tr>\n<tr><td>התשלום הרגיל</td><td>הסכום <b>מנה שלמה</b> מספר התשלומים</td><td><code>payment</code></td></tr>\n<tr><td>השארית</td><td>הסכום <b>שארית</b> מספר התשלומים</td><td><code>remainder</code></td></tr>\n</table>",
+        "glue": true
+      },
+      {
+        "sec": "חלק א' — הפריסה",
+        "html": "<p>התוויות המדויקות:</p>"
+      },
+      {
+        "sec": "חלק א' — הפריסה",
+        "html": "<table><tr><th>מה</th><th>התווית</th></tr>\n<tr><td><code>purchase_amount</code></td><td><code>סכום הרכישה:</code></td></tr>\n<tr><td><code>payments_count</code></td><td><code>מספר תשלומים:</code></td></tr>\n<tr><td><code>payment</code></td><td><code>תשלום רגיל:</code></td></tr>\n<tr><td><code>remainder</code></td><td><code>שארית:</code></td></tr>\n</table>",
+        "glue": true
+      },
+      {
+        "sec": "חלק ב' — לאן הולכת השארית",
+        "html": "<p>שארית של שני שקלים לא יכולה להיעלם, ולא יכולה להתחלק לשישה. <b>הבנק מוסיף אותה לתשלום הראשון.</b></p>"
+      },
+      {
+        "sec": "חלק ב' — לאן הולכת השארית",
+        "html": "<table><tr><th>מה</th><th>איך</th><th>שם המשתנה</th></tr>\n<tr><td>התשלום הראשון</td><td>התשלום הרגיל ועוד השארית</td><td><code>first_payment</code></td></tr>\n</table>",
+        "glue": true
+      },
+      {
+        "sec": "חלק ב' — לאן הולכת השארית",
+        "html": "<p>ואז <b>תוכיח שלא איבדת כסף.</b> חשב את הסכום הכולל חזרה מהפריסה שלך — התשלום הראשון, ועוד התשלום הרגיל כפול מספר התשלומים שנותרו:</p>"
+      },
+      {
+        "sec": "חלק ב' — לאן הולכת השארית",
+        "html": "<table><tr><th>מה</th><th>שם המשתנה</th></tr>\n<tr><td>הסכום שחוזר מהפריסה</td><td><code>check_total</code></td></tr>\n</table>",
+        "glue": true
+      },
+      {
+        "sec": "חלק ב' — לאן הולכת השארית",
+        "html": "<p>התוויות:</p>"
+      },
+      {
+        "sec": "חלק ב' — לאן הולכת השארית",
+        "html": "<table><tr><th>מה</th><th>התווית</th></tr>\n<tr><td><code>first_payment</code></td><td><code>תשלום ראשון:</code></td></tr>\n<tr><td><code>check_total</code></td><td><code>סך הכול:</code></td></tr>\n</table>",
+        "glue": true
+      },
+      {
+        "sec": "חלק ב' — לאן הולכת השארית",
+        "html": "<p>⚠️ <b>‏<code>check_total</code> חייב לצאת שווה בדיוק ל-<code>purchase_amount</code>.</b> אם הוא לא — הפריסה שלך מאבדת או ממציאה כסף, ובבנק זה לא באג קטן. אל תתקן את המספר; תמצא את השורה.</p>"
+      },
+      {
+        "sec": "חלק ג' — אגורות",
+        "html": "<p>המערכת מחזירה עמלות בתור <b>מספר אגורות שלם</b>, בלי נקודה. צריך לפרק אותו לשקלים ולאגורות.</p>"
+      },
+      {
+        "sec": "חלק ג' — אגורות",
+        "html": "<table><tr><th>מה</th><th>הערך</th><th>שם המשתנה</th></tr>\n<tr><td>סך האגורות</td><td>128745</td><td><code>total_agorot</code></td></tr>\n</table>",
+        "glue": true
+      },
+      {
+        "sec": "חלק ג' — אגורות",
+        "html": "<table><tr><th>מה</th><th>שם המשתנה</th></tr>\n<tr><td>כמה שקלים שלמים</td><td><code>shekels</code></td></tr>\n<tr><td>כמה אגורות נשארו</td><td><code>agorot</code></td></tr>\n</table>"
+      },
+      {
+        "sec": "חלק ג' — אגורות",
+        "html": "<p>התוויות: <code>שקלים:</code> ו-<code>אגורות:</code>.</p>"
+      },
+      {
+        "sec": "חלק ג' — אגורות",
+        "html": "<p>⚠️ <b>אותם שני אופרטורים, שימוש אחר לגמרי.</b> בחלק א' חילקת לתשלומים; כאן אתה מפרק יחידה גדולה ליחידות קטנות. אם אתה מבין למה שניהם אותו דבר — הבנת את השבוע.</p>"
+      },
+      {
+        "sec": "חלק ג' — אגורות",
+        "html": "<blockquote>בשקל יש מאה אגורות. למה בכלל לשמור כסף ככה ולא כמספר עשרוני רגיל? יש לזה תשובה אמיתית, היא שווה שבוע שלם, והיא מגיעה בשבוע 8. תשאל את אלעד אם אתה סקרן.</blockquote>"
+      },
+      {
+        "sec": "מה נבדק",
+        "html": "<ul>\n<li>תשעת המשתנים קיימים בשמות המדויקים</li>\n<li><b>הערכים חושבו ולא הוקלדו</b></li>\n<li><code>payment</code> ו-<code>remainder</code> חושבו ב-<code>//</code> וב-<code>%</code> ולא בדרך עקיפה</li>\n<li><code>check_total</code> יוצא בדיוק כמו <code>purchase_amount</code></li>\n<li>כל השורות מודפסות עם התוויות המדויקות</li>\n</ul>"
+      },
+      {
+        "sec": "מותר להיעזר",
+        "html": "<ul>\n<li><b>באלעד</b> — במיוחד על ההבדל בין <code>/</code> ל-<code>//</code></li>\n<li>בהרצה חוזרת, בלי הגבלה</li>\n</ul>"
+      },
+      {
+        "sec": "מותר להיעזר",
+        "html": "<p><b>אין כאן תנאים.</b> אם אתה מוצא את עצמך רוצה לכתוב \"אם השארית גדולה מאפס אז…\" — עצור. <code>if</code> מגיע בשבוע 11, והמשימה הזאת לא צריכה אותו.</p>"
+      }
+    ],
+    "starter": "# ============================================\n#  מחשבון הפריסה\n#  מערכות ליבה · הבנק\n# ============================================\n\n# --- חלק א': הפריסה ---\n\npurchase_amount = 4850\npayments_count = 6\n\n# חשב כאן את התשלום הרגיל ואת השארית.\n\n\nprint(\"=== פריסה לתשלומים ===\")\n\n\n# --- חלק ב': לאן הולכת השארית ---\n\n# חשב כאן את התשלום הראשון, ואז את הסכום שחוזר מהפריסה.\n\n\nprint()\nprint(\"=== בדיקת הפריסה ===\")\n\n\n# --- חלק ג': אגורות ---\n\ntotal_agorot = 128745\n\n# פרק כאן את האגורות לשקלים ולאגורות.\n\n\nprint()\nprint(\"=== פירוק אגורות ===\")\n",
+    "testsVisible": "# בדיקות גלויות — שבוע 5\n#\n# ⛔ **שורה לכל חלק של המשימה.** מד ההתקדמות שהתלמיד רואה הוא מספר\n#    הבדיקות שעברו, ולכן כיסוי חלקי משדר \"סיימת\" למי שסיים שליש.\n#\n# ⚠️ **הערכים נבדקים מול החישוב ולא מול מספר קבוע** בכל מקום שאפשר,\n#    כך שמי שהקליד תוצאה נופל כבר כאן ולא רק בנסתרות.\n#\n# זמין: OUTPUT · LINES · VARS\n\n\ndef test_something_printed():\n    \"\"\"התוכנית מדפיסה משהו\"\"\"\n    assert OUTPUT.strip(), \"התוכנית לא הדפיסה כלום.\"\n\n\n# ── חלק א' ────────────────────────────────────────────────────────────\n\ndef test_split_variables():\n    \"\"\"חלק א': משתני הפריסה קיימים\"\"\"\n    missing = [n for n in [\"purchase_amount\", \"payments_count\",\n                           \"payment\", \"remainder\"] if n not in VARS]\n    assert not missing, f\"חסרים משתנים: {', '.join(missing)}\"\n\n\ndef test_payment_is_whole_division():\n    \"\"\"חלק א': התשלום הרגיל הוא המנה השלמה\"\"\"\n    amount = VARS.get(\"purchase_amount\")\n    count = VARS.get(\"payments_count\")\n    assert amount and count, \"חסר סכום הרכישה או מספר התשלומים.\"\n    assert VARS.get(\"payment\") == amount // count, (\n        f\"payment יצא {VARS.get('payment')}, והמנה השלמה של \"\n        f\"{amount} ב-{count} היא {amount // count}. \"\n        \"שים לב: // ולא /.\"\n    )\n\n\ndef test_payment_is_not_float():\n    \"\"\"חלק א': התשלום הרגיל הוא מספר שלם\"\"\"\n    # ⚠️ **הטעות המרכזית של השבוע.** / מחזיר 808.3333 ו-// מחזיר 808.\n    #    שניהם \"נראים נכון\" למי שלא הסתכל על הטיפוס.\n    value = VARS.get(\"payment\")\n    assert isinstance(value, int) and not isinstance(value, bool), (\n        f\"payment הוא {type(value).__name__} ולא מספר שלם. \"\n        \"אי אפשר לחייב לקוח בשליש שקל — בדוק אם השתמשת ב-/ במקום ב-//.\"\n    )\n\n\ndef test_remainder_is_modulo():\n    \"\"\"חלק א': השארית חושבה באופרטור השארית\"\"\"\n    amount = VARS.get(\"purchase_amount\")\n    count = VARS.get(\"payments_count\")\n    assert amount and count, \"חסר סכום הרכישה או מספר התשלומים.\"\n    assert VARS.get(\"remainder\") == amount % count, (\n        f\"remainder יצא {VARS.get('remainder')}, והשארית של \"\n        f\"{amount} ב-{count} היא {amount % count}.\"\n    )\n\n\ndef test_split_labels():\n    \"\"\"חלק א': ארבע השורות מודפסות עם התוויות\"\"\"\n    missing = [label for label in [\"סכום הרכישה:\", \"מספר תשלומים:\",\n                                   \"תשלום רגיל:\", \"שארית:\"]\n               if label not in OUTPUT]\n    assert not missing, (\n        f\"חסרות תוויות: {', '.join(missing)} — \"\n        \"ראה את טבלת התוויות בחלק א'.\"\n    )\n\n\n# ── חלק ב' ────────────────────────────────────────────────────────────\n\ndef test_first_payment():\n    \"\"\"חלק ב': התשלום הראשון בולע את השארית\"\"\"\n    p = VARS.get(\"payment\")\n    r = VARS.get(\"remainder\")\n    assert p is not None and r is not None, \"חסר payment או remainder.\"\n    assert VARS.get(\"first_payment\") == p + r, (\n        f\"first_payment יצא {VARS.get('first_payment')} \"\n        f\"ואמור להיות {p} ועוד {r}.\"\n    )\n\n\ndef test_check_total_matches():\n    \"\"\"חלק ב': הסכום חוזר מהפריסה בדיוק\"\"\"\n    # ⚠️ **זו הבדיקה שמלמדת את השיעור האמיתי של השבוע.** פריסה שלא\n    #    מחזירה את הסכום המקורי היא פריסה שאיבדה או המציאה כסף.\n    total = VARS.get(\"check_total\")\n    amount = VARS.get(\"purchase_amount\")\n    assert total is not None, (\n        \"חסר המשתנה check_total. חלק ב' מבקש להוכיח שלא אבד כסף.\"\n    )\n    assert total == amount, (\n        f\"check_total יצא {total} וסכום הרכישה הוא {amount}. \"\n        \"הפריסה שלך מאבדת או ממציאה כסף — תמצא את השורה, \"\n        \"אל תתקן את המספר.\"\n    )\n\n\ndef test_check_labels():\n    \"\"\"חלק ב': שתי השורות מודפסות עם התוויות\"\"\"\n    missing = [label for label in [\"תשלום ראשון:\", \"סך הכול:\"]\n               if label not in OUTPUT]\n    assert not missing, f\"חסרות תוויות: {', '.join(missing)}\"\n\n\n# ── חלק ג' ────────────────────────────────────────────────────────────\n\ndef test_agorot_variables():\n    \"\"\"חלק ג': משתני האגורות קיימים\"\"\"\n    missing = [n for n in [\"total_agorot\", \"shekels\", \"agorot\"]\n               if n not in VARS]\n    assert not missing, f\"חסרים משתנים: {', '.join(missing)}\"\n\n\ndef test_agorot_split():\n    \"\"\"חלק ג': הפירוק לשקלים ולאגורות\"\"\"\n    t = VARS.get(\"total_agorot\")\n    assert t is not None, \"חסר total_agorot.\"\n    assert VARS.get(\"shekels\") == t // 100, (\n        f\"shekels יצא {VARS.get('shekels')} ואמור להיות {t // 100}. \"\n        \"בשקל מאה אגורות.\"\n    )\n    assert VARS.get(\"agorot\") == t % 100, (\n        f\"agorot יצא {VARS.get('agorot')} ואמור להיות {t % 100}.\"\n    )\n\n\ndef test_agorot_labels():\n    \"\"\"חלק ג': שתי השורות מודפסות עם התוויות\"\"\"\n    missing = [label for label in [\"שקלים:\", \"אגורות:\"]\n               if label not in OUTPUT]\n    assert not missing, f\"חסרות תוויות: {', '.join(missing)}\"\n",
+    "inject": "",
+    "extension": {
+      "html": "<p><b>מי מקבל:</b> תלמיד שסיים את המשימה השבועית. אלעד מציע לו אותה בשיחה.</p>\n<p><b>תגמול:</b> בונוס, ו-XP מוגדל לקידום בדרגה.</p>\n<p><b>אין כאן מושג חדש.</b> אותם שני אופרטורים — רק פעם אחת על כסף, ופעם אחת על משהו אחר לגמרי.</p>\n<h2>חלק א' — לקוח שני</h2>\n<p>לקוח נוסף פרס קנייה.</p>\n<table><tr><th>מה</th><th>הערך</th><th>שם המשתנה</th></tr>\n<tr><td>סכום הרכישה</td><td>7230</td><td><code>purchase_amount2</code></td></tr>\n<tr><td>מספר תשלומים</td><td>8</td><td><code>payments_count2</code></td></tr>\n</table>\n<p><b>שמות המשתנים כאן הם שמות המשימה ועוד <code>2</code></b> — ככה תמיד תדע איזה משתנה שייך למי בלי לזכור טבלה.</p>\n<p>חשב עבורו בדיוק כמו בחלק א' ו-ב' של המשימה:</p>\n<table><tr><th>מה</th><th>שם המשתנה</th></tr>\n<tr><td>התשלום הרגיל</td><td><code>payment2</code></td></tr>\n<tr><td>השארית</td><td><code>remainder2</code></td></tr>\n<tr><td>התשלום הראשון</td><td><code>first_payment2</code></td></tr>\n<tr><td>הסכום שחוזר מהפריסה</td><td><code>check_total2</code></td></tr>\n</table>\n<p>הדפס את ארבעתם <b>באותן תוויות</b> של המשימה: <code>תשלום רגיל:</code>, <code>שארית:</code>, <code>תשלום ראשון:</code>, <code>סך הכול:</code>.</p>\n<h2>חלק ב' — השוואה</h2>\n<p>הדפס <b>שתי שורות בדיוק</b>, שמעמידות את שתי הפריסות זו מול זו.</p>\n<p><b>כך הן נראות בפלט:</b></p>\n<pre dir=\"ltr\">תשלום רגיל · ראשון: 808 · שני: 903\nשארית · ראשון: 2 · שני: 6</pre>\n<p><b>וכך מדפיסים את הראשונה:</b></p>\n<pre dir=\"ltr\">print(\"תשלום רגיל · ראשון:\", payment, \"· שני:\", payment2)</pre>\n<p>השורה השנייה באותו אופן, עם השארית.</p>\n<h2>חלק ג' — עמלת טיפול</h2>\n<p>הבנק גובה <b>עמלת טיפול אחת על כל שלושה תשלומים</b> שנפרסו. פריסה של שמונה תשלומים אינה מתחלקת בשלוש בלי שארית — וזה בדיוק העניין.</p>\n<table><tr><th>מה</th><th>איך</th><th>שם המשתנה</th></tr>\n<tr><td>כמה פעמים תיגבה העמלה</td><td>מספר התשלומים של הלקוח השני, מנה שלמה שלוש</td><td><code>fee_times</code></td></tr>\n<tr><td>כמה תשלומים נשארים בלי עמלה</td><td>אותו מספר, שארית שלוש</td><td><code>payments_without_fee</code></td></tr>\n</table>\n<p>התוויות: <code>עמלות טיפול:</code> ו-<code>תשלומים בלי עמלה:</code>.</p>\n<p>⚠️ <b>שים לב מה השתנה כאן.</b> בחלק א' חילקת <b>כסף</b> בין תשלומים. כאן אתה סופר <b>כמה פעמים אירוע קורה</b> בתוך טווח. אותם שני אופרטורים בדיוק, שאלה אחרת לגמרי — וזו הסיבה שהם שווים שבוע שלם.</p>\n<h2>מה נבדק</h2>\n<ul>\n<li>ששת משתני הלקוח השני קיימים, בשמות המדויקים</li>\n<li>הערכים <b>חושבו</b> ב-<code>//</code> וב-<code>%</code>, והם מספרים שלמים</li>\n<li><code>check_total2</code> יוצא בדיוק כמו <code>purchase_amount2</code></li>\n<li>שתי שורות ההשוואה מודפסות בתבנית שלמעלה</li>\n<li>שני משתני העמלה נכונים ומודפסים</li>\n</ul>",
+      "tests": "# בדיקות ההרחבה — שבוע 5\n#\n# ⚠️ **גלויות לתלמיד שקיבל את ההרחבה.** הן נשלחות אליו יחד עם המשימה\n#    הנוספת ומשמשות אותו כמד התקדמות, בדיוק כמו הבדיקות השבועיות.\n#\n# ⚠️ **הן רצות לצד הבדיקות השבועיות על אותה תוכנית.** כל ערך שהמשימה\n#    השבועית מקבעת חייב לשרוד גם כאן — ראה tools/check_extension.py.\n#\n# זמין: OUTPUT · LINES · VARS\n\nSECOND = [\"purchase_amount2\", \"payments_count2\", \"payment2\", \"remainder2\",\n          \"first_payment2\", \"check_total2\"]\n\n\ndef _get(name):\n    assert name in VARS, f\"לא מצאתי משתנה בשם {name}.\"\n    return VARS[name]\n\n\ndef _whole(name):\n    value = _get(name)\n    assert isinstance(value, int) and not isinstance(value, bool), (\n        f\"{name} הוא {type(value).__name__} ולא מספר שלם. \"\n        \"‏// מחזיר שלם; / מחזיר עשרוני.\"\n    )\n    return value\n\n\ndef test_second_variables():\n    \"\"\"ששת משתני הלקוח השני קיימים\"\"\"\n    missing = [n for n in SECOND if n not in VARS]\n    assert not missing, f\"חסרים משתנים: {', '.join(missing)}\"\n\n\ndef test_second_source_data():\n    \"\"\"הנתונים של הלקוח השני\"\"\"\n    assert _get(\"purchase_amount2\") == 7230, \"purchase_amount2 אינו הסכום שבהרחבה.\"\n    assert _get(\"payments_count2\") == 8, \"payments_count2 אינו מספר התשלומים שבהרחבה.\"\n\n\ndef test_second_split():\n    \"\"\"הפריסה השנייה חושבה ב-// וב-%\"\"\"\n    amount = _get(\"purchase_amount2\")\n    count = _get(\"payments_count2\")\n    assert _whole(\"payment2\") == amount // count, (\n        f\"payment2 יצא {_get('payment2')}, והמנה השלמה היא {amount // count}.\"\n    )\n    assert _whole(\"remainder2\") == amount % count, (\n        f\"remainder2 יצא {_get('remainder2')}, והשארית היא {amount % count}.\"\n    )\n\n\ndef test_second_first_payment():\n    \"\"\"התשלום הראשון בולע את השארית\"\"\"\n    assert _whole(\"first_payment2\") == _get(\"payment2\") + _get(\"remainder2\"), (\n        \"first_payment2 אינו התשלום הרגיל ועוד השארית.\"\n    )\n\n\ndef test_second_check_total():\n    \"\"\"הסכום השני חוזר מהפריסה בדיוק\"\"\"\n    expected = _get(\"first_payment2\") + _get(\"payment2\") * (_get(\"payments_count2\") - 1)\n    assert _get(\"check_total2\") == expected, (\n        \"check_total2 אינו מורכב מהתשלום הראשון ומשאר התשלומים.\"\n    )\n    assert _get(\"check_total2\") == _get(\"purchase_amount2\"), (\n        f\"check_total2 יצא {_get('check_total2')} וסכום הרכישה השני הוא \"\n        f\"{_get('purchase_amount2')}. הפריסה מאבדת או ממציאה כסף.\"\n    )\n\n\ndef test_second_labels():\n    \"\"\"התלוש השני מודפס באותן תוויות\"\"\"\n    # ⚠️ נספרות שורות שמתחילות בתווית, כי השורות של חלק ב' מכילות\n    #    את אותן מילים (\"תשלום רגיל · ראשון:\") והיו נספרות פעמיים.\n    for lbl in [\"תשלום רגיל:\", \"שארית:\", \"תשלום ראשון:\", \"סך הכול:\"]:\n        rows = [ln for ln in LINES if ln.strip().startswith(lbl)]\n        assert len(rows) >= 2, (\n            f\"התווית '{lbl}' מופיעה בתחילת שורה פעם אחת בלבד. \"\n            \"הפריסה של הלקוח השני מודפסת באותן תוויות.\"\n        )\n\n\ndef test_compare_lines():\n    \"\"\"שתי שורות ההשוואה מודפסות\"\"\"\n    missing = [p for p in [\"תשלום רגיל · ראשון:\", \"שארית · ראשון:\"]\n               if p not in OUTPUT]\n    assert not missing, (\n        f\"חסרות שורות בהשוואה: {', '.join(missing)} — \"\n        \"ראה את שתי השורות לדוגמה בדף ההרחבה.\"\n    )\n    for line in LINES:\n        if \"· ראשון:\" in line:\n            assert \"· שני:\" in line, (\n                \"כל שורת השוואה מציגה את שתי הפריסות זו מול זו: \"\n                f\"בשורה '{line.strip()[:40]}' חסר החלק של השני.\"\n            )\n\n\ndef test_fee_variables():\n    \"\"\"שני משתני העמלה קיימים\"\"\"\n    missing = [n for n in [\"fee_times\", \"payments_without_fee\"] if n not in VARS]\n    assert not missing, f\"חסרים משתנים: {', '.join(missing)}\"\n\n\ndef test_fee_counts():\n    \"\"\"העמלה נספרה ב-// וב-%\"\"\"\n    count = _get(\"payments_count2\")\n    assert _whole(\"fee_times\") == count // 3, (\n        f\"fee_times יצא {_get('fee_times')}. על כל שלושה תשלומים \"\n        f\"מתוך {count} נגבית עמלה אחת.\"\n    )\n    assert _whole(\"payments_without_fee\") == count % 3, (\n        f\"payments_without_fee יצא {_get('payments_without_fee')}, \"\n        f\"והשארית של {count} בשלוש היא {count % 3}.\"\n    )\n\n\ndef test_fee_labels():\n    \"\"\"שתי שורות העמלה מודפסות\"\"\"\n    missing = [lbl for lbl in [\"עמלות טיפול:\", \"תשלומים בלי עמלה:\"]\n               if lbl not in OUTPUT]\n    assert not missing, f\"חסרות שורות: {', '.join(missing)}\"\n\n\ndef test_weekly_split_untouched():\n    \"\"\"הפריסה הראשונה נשארה כפי שהמשימה השבועית קבעה\"\"\"\n    # ⚠️ ההרחבה מוסיפה לקוח שני ואינה נוגעת בראשון. בלי הבדיקה הזאת\n    #    תלמיד שישכתב את המשתנים הקיימים יפיל את הבדיקות השבועיות\n    #    בלי להבין למה.\n    assert _get(\"payment\") == 808 and _get(\"remainder\") == 2, (\n        \"הפריסה של הלקוח הראשון השתנתה. ההרחבה מוסיפה לקוח שני \"\n        \"ואינה נוגעת בראשון.\"\n    )\n"
+    },
+    "manager": [
+      {
+        "kind": "goal",
+        "text": "השבוע אתה פורס קניות לתשלומים. החלוקה הרגילה לא תעזור לך כאן — אי אפשר לחייב לקוח בשליש שקל. יש שני אופרטורים שעושים בדיוק את מה שצריך, ובדף המשימה יש דוגמה להריץ לפני שמתחילים. תתחיל, נדבר תוך כדי."
+      }
+    ],
+    "avatars": [
+      {
+        "id": "concerned",
+        "file": "elad-concerned.png"
+      },
+      {
+        "id": "neutral",
+        "file": "elad-neutral.png",
+        "default": true
+      },
+      {
+        "id": "explaining",
+        "file": "elad-explaining.png"
+      },
+      {
+        "id": "thinking",
+        "file": "elad-thinking.png"
+      },
+      {
+        "id": "presenting",
+        "file": "elad-presenting.png"
+      },
+      {
+        "id": "approve",
+        "file": "elad-approve.png"
+      },
+      {
+        "id": "impressed",
+        "file": "elad-impressed.png"
+      },
+      {
+        "id": "disapprove",
+        "file": "elad-disapprove.png"
+      },
+      {
+        "id": "waiting",
+        "file": "elad-waiting.png"
+      }
+    ]
   }
 };
 
