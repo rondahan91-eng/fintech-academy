@@ -859,3 +859,19 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
   border-top: 1px solid var(--line);
 }
 .task-body .step-sec:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+
+/* ══ תחתית המשימה · דחוסה ═════════════════════════════════════════════
+   ⚠️ **ארבע שורות על פני שתי עמודות.** המידע זהה; הגובה חצי. התחתית
+      תפסה 162 מתוך 566 פיקסלים של העמודה, והם מה שהגביל כמה נכנס
+      בכרטיסייה אחת. */
+.tf-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 10px;
+}
+.tf-cell { display: flex; flex-direction: column; min-width: 0; }
+.tf-cell span { font-size: 11px; color: var(--slate); line-height: 1.3; }
+.tf-cell b { font-size: 12.5px; line-height: 1.35; }
+.tf-cell .dim { color: #A9B1C4; font-weight: 400; }
+.tf-cell.locked b::before { content: "🔒 "; font-size: 10px; }
+.xp { padding: 8px 0 0; gap: 4px; }
+.xp-head { font-size: 11.5px; }

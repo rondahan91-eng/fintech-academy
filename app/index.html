@@ -90,7 +90,6 @@
   <!-- ══ המשימה · 296px · גלויה תמיד (§3) ══ -->
   <aside class="panel task" aria-label="המשימה">
     <div class="task-head">
-      <span class="kicker">המשימה השבועית</span>
       <h1 id="task-title">—</h1>
     </div>
     <!-- ══ המשימה במנות ══════════════════════════════════════════════
@@ -113,12 +112,18 @@
       <span>משימה נוספת, רשותית, על אותם נתונים. מזכה בבונוס.</span>
       <button type="button" id="btn-ext">קבל את ההרחבה</button>
     </div>
+    <!-- ⚠️ **ארבע שורות הפכו לשתי עמודות.** התחתית תפסה 162 פיקסלים
+         מתוך 566 — 29% מהעמודה — למידע שאינו משתנה, והם בדיוק מה
+         שחסר לכרטיסיות כדי להכיל יותר. אותם ארבעה נתונים, חצי גובה. -->
     <div class="task-foot">
-      <div class="tf-row"><span>מועד</span><b>עוד 5 ימים</b></div>
-      <div class="tf-row"><span>שכר על המשימה</span><b>עד 800 ₪</b></div>
-      <!-- ⚠️ **צבירה, לא משכורת.** הסרגל העליון מציג את מה ששולם
-           בפועל ולא זז עד יום התלוש; כאן נצבר הברוטו בין תלוש לתלוש. -->
-      <div class="tf-row"><span>נצבר עד כה</span><b id="tf-wallet">—</b></div>
+      <div class="tf-grid">
+        <div class="tf-cell"><span>מועד</span><b>עוד 5 ימים</b></div>
+        <div class="tf-cell"><span>שכר על המשימה</span><b>עד 800 ₪</b></div>
+        <!-- ⚠️ **צבירה, לא משכורת.** הסרגל העליון מציג את מה ששולם
+             בפועל ולא זז עד יום התלוש; כאן נצבר הברוטו בין תלוש לתלוש. -->
+        <div class="tf-cell"><span>נצבר עד כה</span><b id="tf-wallet">—</b></div>
+        <div class="tf-cell locked"><span>פריטי השבוע</span><b class="dim">אחרי ההגשה</b></div>
+      </div>
       <!-- מד ההתקדמות לדרגה הבאה. ⚠️ **מספר בלי הקשר לא מניע** —
            "1,250" לא אומר כלום; "עוד 1,250 עד מפתח" כן. -->
       <div class="xp">
@@ -127,9 +132,6 @@
           <span id="xp-next"></span>
         </div>
         <div class="xp-bar"><i id="xp-fill"></i></div>
-      </div>
-      <div class="tf-row locked">
-        <span>פריטי השבוע</span><b class="dim">נפתח אחרי ההגשה</b>
       </div>
     </div>
   </aside>
