@@ -46,6 +46,129 @@ def parse_task_md(md: str) -> dict:
     return {"title": title, "requirements": reqs}
 
 
+# ⚠️ **כמה שורות טבלה בגוש אחד.** טבלה אינה ניתנת לחיתוך בזמן ריצה,
+#    ולכן היא נחתכת כאן מראש לגושים שבוודאות נכנסים גם במסך נמוך.
+TABLE_ROWS_PER_BLOCK = 4
+
+
+def _blocks(md: str) -> list:
+    """מפריד markdown לגושים אטומיים, ושומר גוש קוד שלם."""
+    nl = chr(10)
+    out, cur, fence = [], [], False
+    for line in md.split(nl):
+        if line.lstrip().startswith("```"):
+            fence = not fence
+            cur.append(line)
+            if not fence:
+                out.append(nl.join(cur))
+                cur = []
+            continue
+        if fence:
+            cur.append(line)
+            continue
+        if line.strip() == "":
+            if cur:
+                out.append(nl.join(cur))
+                cur = []
+            continue
+        if line.strip() == "---":
+            continue
+        cur.append(line)
+    if cur:
+        out.append(nl.join(cur))
+    return [b for b in out if b.strip()]
+
+
+def _split_tables(blocks: list) -> list:
+    """טבלה ארוכה נחתכת לשורות, וכותרת הטבלה חוזרת בכל חלק.
+
+    ⚠️ **זה החיתוך היחיד שמותר בתוך גוש.** שורות טבלה הן יחידות
+       עצמאיות, ועם כותרת חוזרת כל חלק נקרא לבדו — בניגוד לפסקה,
+       שחיתוך באמצעה הורס אותה.
+    """
+    nl = chr(10)
+    out = []
+    for b in blocks:
+        lines = [ln for ln in b.split(nl) if ln.strip()]
+        if not lines[0].lstrip().startswith("|") or len(lines) - 2 <= TABLE_ROWS_PER_BLOCK:
+            out.append(b)
+            continue
+        head, sep, body = lines[0], lines[1], lines[2:]
+        for i in range(0, len(body), TABLE_ROWS_PER_BLOCK):
+            out.append(nl.join([head, sep] + body[i:i + TABLE_ROWS_PER_BLOCK]))
+    return out
+
+
+def _glue_flags(blocks: list) -> list:
+    """מסמן גוש שרצוי להשאיר צמוד לקודמו, בלי למזג אותם.
+
+    ⚠️ **רמז ולא מיזוג.** פסקה שאחריה טבלה היא המשפט שמסביר אותה
+       ("התוויות המדויקות:"), ולכן עדיף לא לחתוך ביניהן — אבל אם
+       **השתיים יחד** אינן נכנסות בעמודה, מיזוג היה יוצר גוש ענק
+       שאי אפשר לחתוך בכלל. הדפדפן מקבל את הרמז ומכריע לפי הגובה
+       שיש לו באמת.
+    """
+    out = []
+    for i, b in enumerate(blocks):
+        prev = blocks[i - 1].lstrip() if i else ""
+        cur = b.lstrip()
+        follows_text = bool(prev) and not prev.startswith(("|", "```", "- ", "* ", ">", "#"))
+        is_block = cur.startswith(("|", "```", "- ", "* ")) or bool(re.match(r"^\d+\.", cur))
+        out.append({"md": b, "glue": bool(i) and follows_text and is_block})
+    return out
+
+
+def split_task(md: str) -> list:
+    """‏task.md → גושים לעמודת המשימה, עם שם המקטע של כל גוש.
+
+    **כאן לא נקבע כמה מנות יהיו.** הגודל של עמודת המשימה נקבע במסך
+    של התלמיד — גובה חלון, גודל גופן, זום — ולכן האריזה למנות נעשית
+    בדפדפן, שם אפשר למדוד. מה שנקבע כאן הוא רק **איפה מותר לחתוך**.
+
+    ⚠️ **דף בלי אף ``##`` עדיין מוחזר כגושים**, ולכן גם שבוע שנכתב
+       אחרת אינו חוזר לגלילה.
+    """
+    body = re.sub(r"^#\s*שבוע\s*\d+\s*·.*$", "", md, count=1, flags=re.M)
+
+    def chunks(text, mark):
+        nl = chr(10)
+        out, cur_title, cur = [], None, []
+        for line in text.split(nl):
+            m = re.match(r"^" + mark + r"\s+(.+)$", line)
+            if m:
+                if cur_title is not None or "".join(cur).strip():
+                    out.append((cur_title, nl.join(cur)))
+                cur_title, cur = m.group(1).strip(), []
+            else:
+                cur.append(line)
+        if cur_title is not None or "".join(cur).strip():
+            out.append((cur_title, nl.join(cur)))
+        return out
+
+    sections = []
+    for title, section in chunks(body, "##(?!#)"):
+        if title is None:
+            if re.sub(r"[-\s]", "", section):
+                sections.append(("לפני שמתחילים", section))
+            continue
+        subs = chunks(section, "###")
+        if len(subs) > 1:
+            for sub_title, sub in subs:
+                if sub.strip():
+                    sections.append((sub_title or title, sub))
+        else:
+            sections.append((title, section))
+
+    out = []
+    for sec, text in sections:
+        for item in _glue_flags(_split_tables(_blocks(text))):
+            blk = {"sec": sec, "html": md_to_html(item["md"])}
+            if item["glue"]:
+                blk["glue"] = True
+            out.append(blk)
+    return out
+
+
 def md_to_html(md: str) -> str:
     """
     ‏task.md → HTML ללוח המשימה.
@@ -239,6 +362,9 @@ def build_week(week: int):
         # ‏requirements נשאר לתאימות; מה שמוצג בפועל הוא taskHtml.
         "requirements": task["requirements"],
         "taskHtml": md_to_html(task_md),
+        # המנות — מה שעמודת המשימה מציגה בפועל מאז 2026-11-02.
+        # גושים; הדפדפן אורז אותם למנות לפי הגובה שיש לו.
+        "taskBlocks": split_task(task_md),
         "starter": read(d / "starter.py"),
         "testsVisible": read(d / "tests_visible.py"),
         "inject": inject_src,

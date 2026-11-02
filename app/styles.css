@@ -482,11 +482,11 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
   width: var(--panel-task); flex: none;
   display: flex; flex-direction: column; padding: var(--pad); min-height: 0;
 }
-.task-head { flex: none; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.task-head { flex: none; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .kicker { font: 600 11px/1 var(--ui); color: var(--primary);
   text-transform: none; }
-.task h1 { font: 600 19px/1.3 var(--ui); margin-top: 7px; }
-.task-body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 0;
+.task h1 { font: 600 16px/1.25 var(--ui); margin-top: 4px; }
+.task-body { flex: 1; min-height: 0; overflow-y: auto; padding: 9px 0;
   font-size: 13.5px; line-height: 1.6; color: #333A48; }
 .task-body h2 { font: 600 13px var(--ui); color: var(--slate); margin: 12px 0 6px; }
 .task-body h2:first-child { margin-top: 0; }
@@ -818,3 +818,35 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
   .promo-sky { display: none; }
   .promo-card, .promo-face { animation: none; }
 }
+
+/* ══ המשימה במנות ═════════════════════════════════════════════════════
+   ⚠️ **זה מחליף גלילה, ולכן הגוף אינו אמור להיגלל.** המנות נחתכות
+      בכלי הבנייה לפי הכותרות ב-task.md, והסף שם מכוון לכך שמנה
+      נכנסת במסך לפטופ. ‏overflow נשאר auto כרשת ביטחון בלבד: מקטע
+      ארוך שאין בו כותרות משנה עדיף שייגלל מאשר שייחתך באמצע טבלה. */
+.steps { flex: none; display: flex; gap: 3px; margin-top: 12px; }
+.steps[hidden] { display: none; }
+.steps button {
+  flex: 1; height: 6px; padding: 0; border: 0; border-radius: 3px;
+  background: #E8EBF3; cursor: pointer;
+}
+.steps button.seen { background: #BFCAE4; }
+.steps button.now  { background: linear-gradient(135deg, var(--primary), var(--accent-end)); }
+.steps button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.step-label {
+  flex: none; display: flex; align-items: center; gap: 6px; margin-top: 8px;
+}
+.step-label[hidden] { display: none; }
+.step-label b {
+  flex: 1; min-width: 0; font: 600 13px var(--ui); color: var(--navy);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.step-label span { font: 500 11.5px var(--mono); color: #A9B1C4; }
+.step-label button {
+  flex: none; width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
+  border: 1.5px solid #CBD2E0; background: var(--surface);
+  color: var(--primary); font: 600 13px var(--ui); line-height: 1;
+}
+.step-label button:hover:not([disabled]) { background: #F4F6FC; }
+.step-label button[disabled] { border-color: #E8EBF3; color: #C3CBDA; cursor: default; }

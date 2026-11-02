@@ -40,6 +40,9 @@ const el = {
   btnRun: $('btn-run'), btnTests: $('btn-tests'),
   btnReset: $('btn-reset'), btnSubmit: $('btn-submit'),
   taskTitle: $('task-title'), taskBody: $('task-body'),
+  steps: $('steps'), stepLabel: $('step-label'), stepTitle: $('step-title'),
+  stepNo: $('step-no'),
+  stepPrev: $('step-prev'), stepNext: $('step-next'),
   tbWeek: $('tb-week'), probe: $('probe'), btnLogout: $('btn-logout'),
   wallet: $('tf-wallet'), extOffer: $('ext-offer'), btnExt: $('btn-ext'),
   xp: $('tf-xp'), tbRank: $('tb-rank'),
@@ -110,12 +113,185 @@ el.taskTitle.textContent = WEEK.title;
 //    מ-requirements, שנשלף בצורה שהתאימה לשבוע 1 בלבד — ושבועות 2–4
 //    הגיעו לתלמיד **ריקים**, בלי טבלת הממשק ובלי ההוראות. ‏taskHtml
 //    מיוצר מ-task.md בכלי הבנייה; הטקסט שם כבר עבר escaping.
-el.taskBody.innerHTML = WEEK.taskHtml || WEEK.requirements.map((sec) => `
-  <h2>${esc(sec.section)}</h2>
-  ${sec.items.map((it) => `
-    <div class="req"><span>${esc(it.label)}</span><b dir="auto">${esc(it.value)}</b></div>
-  `).join('')}
-`).join('');
+// ══ המשימה במנות ══════════════════════════════════════════════════════
+//
+// ⚠️ **כלי הבנייה קובע איפה מותר לחתוך; הדפדפן קובע כמה נכנס.**
+//    ניסיתי להעריך גבהים בבנייה ונכשלתי פעמיים — טבלה בת ארבע שורות
+//    אינה שווה לשלוש פסקאות, וגובה החלון, גודל הגופן והזום של
+//    התלמיד אינם ידועים שם בכלל. כאן אפשר **למדוד**, ולכן האריזה
+//    נעשית כאן, מחדש בכל שינוי גודל.
+//
+// ⚠️ **שבוע בלי כותרות עדיין עובד**: הוא מגיע כגושים, והם נארזים
+//    לפי אותו כלל. אין מסלול שחוזר לגלילה.
+const BLOCKS = (WEEK.taskBlocks && WEEK.taskBlocks.length)
+  ? WEEK.taskBlocks
+  : [{ sec: '', html: WEEK.taskHtml || WEEK.requirements.map((sec) => `
+      <h2>${esc(sec.section)}</h2>
+      ${sec.items.map((it) => `
+        <div class="req"><span>${esc(it.label)}</span><b dir="auto">${esc(it.value)}</b></div>
+      `).join('')}
+    `).join('') }];
+
+// ⚠️ **המקום נשמר לפי שבוע.** תלמיד שרענן את הדף או חזר אחרי שיעור
+//    חוזר למנה שבה היה, ולא לתחילת המשימה.
+const STEP_KEY = `fintech:step:week-${WEEK.week}`;
+let STEPS = [];
+let step = 0;
+
+/**
+ * אורז את הגושים למנות לפי הגובה שבאמת יש.
+ *
+ * מוסיף גוש, מודד, וכשחורגים — הגוש האחרון פותח מנה חדשה. מקטע
+ * חדש תמיד פותח מנה, כדי ששם המנה יתאר את מה שבתוכה.
+ */
+function packSteps() {
+  const box = el.taskBody;
+
+  // ⚠️ **המד ושורת הכותרת נחשפים לפני המדידה.** בטעינה הם עדיין
+  //    מוסתרים, ואז הגוף מודד כ-45 פיקסלים יותר ממה שיישאר לו
+  //    ברגע שהם יופיעו — וכל המנות נארזות נדיבות מדי. זה בדיוק
+  //    מה שהחזיר גלילה לשתי מנות אחרי שהאריזה כבר עברה לדפדפן.
+  if (BLOCKS.length > 1) {
+    el.steps.hidden = false;
+    el.stepLabel.hidden = false;
+    if (!el.steps.children.length) el.steps.append(document.createElement('button'));
+    if (!el.stepTitle.textContent) el.stepTitle.textContent = BLOCKS[0].sec || '—';
+  }
+
+  const room = box.clientHeight;
+  if (!room) return;                       // העמודה עדיין לא נפרסה
+
+  // ⚠️ **טבלה גבוהה מהעמודה נחתכת לשורות, עם כותרת חוזרת.** בכלי
+  //    הבנייה אי אפשר לדעת כמה שורות נכנסות — תא עם טקסט ארוך
+  //    נשבר לשלוש שורות מסך, ותא קצר לאחת. כאן מודדים.
+  const units = [];
+  for (const blk of BLOCKS) {
+    box.innerHTML = blk.html;
+    if (box.scrollHeight <= room + 1) { units.push(blk); continue; }
+    const holder = document.createElement('div');
+    holder.innerHTML = blk.html;
+    const table = holder.querySelector('table');
+    const rows = table ? [...table.rows] : [];
+    if (rows.length < 3) { units.push(blk); continue; }
+    const head = rows[0].outerHTML;
+    let chunk = [];
+    const push = () => units.push({ sec: blk.sec, html: `<table>${head}${chunk.join('')}</table>` });
+    for (const r of rows.slice(1)) {
+      chunk.push(r.outerHTML);
+      box.innerHTML = `<table>${head}${chunk.join('')}</table>`;
+      if (box.scrollHeight > room + 1 && chunk.length > 1) {
+        const last = chunk.pop();
+        push();
+        chunk = [last];
+      }
+    }
+    if (chunk.length) push();
+  }
+
+  const before = box.innerHTML;
+  const out = [];
+  let cur = [], sec = null;
+
+  const flush = () => {
+    if (!cur.length) return;
+    const first = out.length === 0 || out[out.length - 1].sec !== sec;
+    out.push({ sec, title: first ? sec : `${sec} · המשך`,
+               html: cur.map((b) => b.html).join('') });
+    cur = [];
+  };
+
+  for (const blk of units) {
+    if (sec !== null && blk.sec !== sec) { flush(); }
+    sec = blk.sec;
+    cur.push(blk);
+    box.innerHTML = cur.map((b) => b.html).join('');
+    // ⚠️ גוש בודד שגדול מהעמודה נשאר לבדו ונגלל. זה עדיף על חיתוך
+    //    באמצע פסקה, וקורה רק כשאין בה שום נקודת חיתוך חוקית.
+    if (box.scrollHeight > room + 1 && cur.length > 1) {
+      cur.pop();
+      // ⚠️ **גוש מסומן glue נלקח יחד עם הקודם לו.** הפסקה שלפני
+      //    טבלה היא הכותרת שלה, וחיתוך ביניהן משאיר טבלה בלי הסבר
+      //    בראש מנה. אם השתיים יחד עדיין לא נכנסות — הן נפרדות,
+      //    כי מנה שנגללת גרועה יותר מטבלה בלי משפט מקדים.
+      let pair = null;
+      if (blk.glue && cur.length > 1) {
+        pair = cur.pop();
+        box.innerHTML = [pair, blk].map((b) => b.html).join('');
+        if (box.scrollHeight > room + 1) { cur.push(pair); pair = null; }
+      }
+      flush();
+      cur = pair ? [pair, blk] : [blk];
+    }
+  }
+  flush();
+
+  box.innerHTML = before;
+  STEPS = out.length ? out : [{ sec: '', title: '', html: BLOCKS.map((b) => b.html).join('') }];
+  step = Math.min(Math.max(0, Number(store.get(STEP_KEY)) || 0), STEPS.length - 1);
+}
+
+function drawSteps() {
+  const many = STEPS.length > 1;
+  el.steps.hidden = !many;
+  el.stepLabel.hidden = !many;
+
+  el.taskBody.innerHTML = STEPS[step].html;
+  el.taskBody.scrollTop = 0;
+
+  if (!many) return;
+
+  el.stepTitle.textContent = STEPS[step].title;
+  el.stepNo.textContent = `${step + 1} / ${STEPS.length}`;
+  el.stepPrev.disabled = step === 0;
+  el.stepNext.disabled = step === STEPS.length - 1;
+
+  el.steps.textContent = '';
+  STEPS.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = i === step ? 'now' : (i < step ? 'seen' : '');
+    b.setAttribute('aria-label', `מנה ${i + 1} מתוך ${STEPS.length}: ${s.title}`);
+    b.addEventListener('click', () => goStep(i));
+    el.steps.append(b);
+  });
+}
+
+function goStep(i) {
+  step = Math.max(0, Math.min(STEPS.length - 1, i));
+  store.set(STEP_KEY, String(step));
+  drawSteps();
+}
+
+// ⚠️ **נארז מחדש בשינוי גודל**, אחרת חלון שהוקטן מחזיר את הגלילה.
+//    הפתיחה והסגירה של אלעד משנות רק את הרוחב של העורך, לא של
+//    עמודת המשימה — ולכן אין צורך לארוז שם.
+let packTimer;
+addEventListener('resize', () => {
+  clearTimeout(packTimer);
+  packTimer = setTimeout(() => { packSteps(); drawSteps(); }, 150);
+});
+
+el.stepPrev.addEventListener('click', () => goStep(step - 1));
+el.stepNext.addEventListener('click', () => goStep(step + 1));
+
+// ⚠️ **לא כשהמיקוד בעורך או בשדה של אלעד.** חץ בתוך קוד מזיז סמן,
+//    ואסור שהוא יחליף מנה מתחת לידיים של התלמיד.
+addEventListener('keydown', (e) => {
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  const t = e.target;
+  if (t && (t.tagName === 'TEXTAREA' || t.tagName === 'INPUT')) return;
+  goStep(step + (e.key === 'ArrowLeft' ? 1 : -1));   // ‏RTL: שמאלה = הבא
+});
+
+packSteps();
+drawSteps();
+
+// ⚠️ **ואריזה שנייה אחרי שהגופן נטען.** המדידה הראשונה רצה בזמן
+//    שהדפדפן עדיין מציג גופן גיבוי צר יותר, ולכן היא מעריכה בחסר —
+//    נמדד: שתי מנות חרגו ב-18 וב-43 פיקסלים בדיוק מהסיבה הזאת.
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => { packSteps(); drawSteps(); });
+}
 
 // ══ הארנק וההרחבה ═════════════════════════════════════════════════════
 //
