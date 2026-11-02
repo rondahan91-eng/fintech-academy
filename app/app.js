@@ -416,12 +416,21 @@ function hidePeek() {
   el.eladPeek.hidden = true;
 }
 
+// ⚠️ **פתיחה וסגירה משנות את רוחב העורך**, ולכן drawGutter חייב לרוץ
+//    אחריהן: רוחב אחר שובר שורות במקום אחר, ומונה השורות היה נשאר
+//    מוסט. הוא נקרא אחרי ה-transition ולא לפניו.
+function reflowAfterElad() {
+  document.body.classList.toggle('elad-open', eladOpen);
+  setTimeout(drawGutter, 200);
+}
+
 function openElad({ focusInput = false } = {}) {
   eladOpen = true;
   eladUnread = 0;
   hidePeek();
   el.eladPanel.hidden = false;
   paintElad();
+  reflowAfterElad();
   el.chat.scrollTop = el.chat.scrollHeight;
   if (focusInput) el.chatText.focus();
 }
@@ -430,6 +439,7 @@ function closeElad() {
   eladOpen = false;
   el.eladPanel.hidden = true;
   paintElad();
+  reflowAfterElad();
 }
 
 el.eladBubble.addEventListener('click', () => {
