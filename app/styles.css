@@ -243,6 +243,26 @@ body.elad-open .work { padding-right: 400px; }
   font-size: 13.5px; line-height: 1.6;
 }
 .bubble.me { background: #EDEFF5; margin-inline-start: 40px; }
+/* השורה שהתלמיד לחץ עליה, מוצמדת להודעה הבאה. ⚠️ **הטקסט עצמו מוצג
+   ולא רק המספר** — תלמיד שלחץ על השורה הלא נכונה צריך לראות את זה
+   לפני שהוא שולח, לא אחרי שאלעד עונה על משהו אחר. */
+.ask-line {
+  flex: none; display: flex; align-items: center; gap: 8px;
+  margin: 0 14px 8px; padding: 6px 10px; border-radius: 8px;
+  background: #EEF2FD; border: 1px solid #DCE4F7;
+}
+.ask-line[hidden] { display: none; }
+.ask-line > span { flex: none; font: 600 12px var(--ui); color: var(--primary); }
+.ask-line code {
+  flex: 1; min-width: 0; font: 500 11.5px var(--mono); color: #2B3244;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ask-line button {
+  flex: none; width: 20px; height: 20px; padding: 0; border: 0;
+  border-radius: 999px; background: #DCE4F7; color: #4A5568;
+  font-size: 11px; cursor: pointer;
+}
+
 .chat-input { flex: none; display: flex; gap: 8px; padding: 0 14px 14px; }
 .chat-input input {
   flex: 1; min-width: 0; height: 40px;
@@ -319,7 +339,9 @@ body.focus .task { display: none; }
      בלתי נראים. ‏#8797B5 נותן 5.0:1 ועדיין נסוג מאחורי הקוד. */
   font: 400 13px/1.6 var(--mono); color: #8797B5; text-align: right;
   white-space: pre; user-select: none; overflow: hidden;
+  cursor: pointer;
 }
+.gutter:hover { color: var(--primary); }
 /* ⚠️ **‏plaintext, אחרת הערות בעברית נשברות.** הערה כמו
    `# המחלקה Account כבר טעונה.` נמצאת בהקשר שמאל-לימין, ואז הנקודה
    קופצת לתחילת השורה והמילה הלועזית נוחתת באמצע — זה מה שהתלמידים
@@ -835,7 +857,7 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
 .steps button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 .step-label {
-  flex: none; display: flex; align-items: center; gap: 6px; margin-top: 8px;
+  flex: none; display: flex; align-items: center; gap: 5px; margin-top: 8px;
 }
 .step-label[hidden] { display: none; }
 .step-label b {
@@ -844,12 +866,26 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
 }
 .step-label span { font: 500 11.5px var(--mono); color: #A9B1C4; }
 .step-label button {
-  flex: none; width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
+  /* ‏24 ולא 28: כל פיקסל בשורה הזאת נגרע משם המקטע, ושני הלחצנים
+     נשארים גדולים דיים ללחיצה. */
+  flex: none; width: 24px; height: 24px; border-radius: 7px; cursor: pointer;
   border: 1.5px solid #CBD2E0; background: var(--surface);
   color: var(--primary); font: 600 13px var(--ui); line-height: 1;
 }
 .step-label button:hover:not([disabled]) { background: #F4F6FC; }
 .step-label button[disabled] { border-color: #E8EBF3; color: #C3CBDA; cursor: default; }
+
+/* ══ עמודה נמוכה ══
+   ⚠️ **אותה משימה התחלקה ל-9 מנות אצל תלמיד אחד ול-19 אצל אחר.**
+   ההבדל אינו באג: החלוקה נמדדת בדפדפן, ובמסך נמוך (או בזום 125%)
+   נשאר לגוף פחות ממחצית העמודה. כאן נלקח בחזרה מה שאפשר — בלי
+   להסתיר נתון אחד. */
+.task.compact .task-head h1 { font-size: 14px; }
+.task.compact .task-foot { padding-top: 6px; }
+.task.compact .tf-grid { gap: 2px 10px; }
+.task.compact .xp { flex-direction: row; align-items: center; gap: 8px; padding: 6px 0 0; }
+.task.compact .xp-head { flex: 1; min-width: 0; gap: 6px; }
+.task.compact .xp-bar { flex: 1; min-width: 60px; }
 
 /* כותרת מקטע שמתחיל באמצע מנה. המקטע הראשון במנה אינו מקבל אותה —
    שמו כבר מופיע בשורת הכותרת של המנה. */

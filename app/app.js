@@ -28,6 +28,8 @@ const $ = (id) => document.getElementById(id);
 
 const el = {
   chat: $('chat'), chatForm: $('chat-form'), chatText: $('chat-text'),
+  askLine: $('ask-line'), askLineNo: $('ask-line-no'),
+  askLineText: $('ask-line-text'), askLineClear: $('ask-line-clear'),
   eladDock: $('elad-dock'), eladBubble: $('elad-bubble'),
   eladPanel: $('elad-panel'), eladClose: $('elad-close'),
   eladPeek: $('elad-peek'), peekText: $('elad-peek-text'),
@@ -41,7 +43,6 @@ const el = {
   btnReset: $('btn-reset'), btnSubmit: $('btn-submit'),
   taskTitle: $('task-title'), taskBody: $('task-body'),
   steps: $('steps'), stepLabel: $('step-label'), stepTitle: $('step-title'),
-  stepNo: $('step-no'),
   stepPrev: $('step-prev'), stepNext: $('step-next'),
   tbWeek: $('tb-week'), probe: $('probe'), btnLogout: $('btn-logout'),
   wallet: $('tf-wallet'), extOffer: $('ext-offer'), btnExt: $('btn-ext'),
@@ -159,6 +160,16 @@ function packSteps() {
     if (!el.stepTitle.textContent) el.stepTitle.textContent = BLOCKS[0].sec || '—';
   }
 
+  // ⚠️ **מסך נמוך מקבל תחתית דחוסה, לפני המדידה.** בחלון בגובה 560
+  //    העמודה היא 476 פיקסלים ומתוכם 124 הם התחתית — רבע — והגוף
+  //    נשאר עם 238. שם נולדות 17 ו-19 מנות באותה משימה שבמסך גדול
+  //    מתחלקת ל-9. הדחיסה מחזירה 24 פיקסלים בלי לוותר על שום נתון:
+  //    מד ה-XP עובר לשורה אחת במקום שתיים.
+  // ⚠️ **הסף נבדק על העמודה ולא על הגוף.** הדחיסה מגדילה את הגוף,
+  //    ולכן סף על הגוף היה מדליק ומכבה את עצמו לסירוגין.
+  const aside = box.closest('.task');
+  if (aside) aside.classList.toggle('compact', aside.clientHeight < 620);
+
   const room = box.clientHeight;
   if (!room) return;                       // העמודה עדיין לא נפרסה
   packedRoom = room;
@@ -223,8 +234,12 @@ function packSteps() {
   const flush = () => {
     if (!cur.length) return;
     const html = render(cur);
+    // ⚠️ **"· המשך" ירד מהכותרת והפך לשלוש נקודות.** המילה עלתה 46
+    //    פיקסלים בשורה שממילא חסרה מקום, והיא בדיוק מה שדחף את סופן
+    //    של הכותרות הארוכות אל מחוץ לתצוגה. הסימן נשאר כי בלעדיו
+    //    התלמיד רואה את אותו שם מקטע פעמיים וחושב שחזר אחורה.
     const mid = out.length && out[out.length - 1].lastSec === cur[0].sec;
-    out.push({ title: mid ? `${cur[0].sec || ''} · המשך` : (cur[0].sec || ''),
+    out.push({ title: cur[0].sec || '', cont: !!mid,
                html, lastSec: cur[cur.length - 1].sec });
     cur = [];
   };
@@ -293,8 +308,12 @@ function drawSteps() {
 
   if (!many) return;
 
-  el.stepTitle.textContent = STEPS[step].title;
-  el.stepNo.textContent = `${step + 1} / ${STEPS.length}`;
+  const now = STEPS[step];
+  el.stepTitle.textContent = (now.cont ? '… ' : '') + now.title;
+  // הכותרת עדיין יכולה להיחתך בשם ארוך במיוחד. ‏title נותן אותה במלואה
+  // בריחוף, וגם אומר באיזו מנה אנחנו — מה שהמונה היה אומר.
+  el.stepTitle.title =
+    `${now.cont ? 'המשך · ' : ''}${now.title} — מנה ${step + 1} מתוך ${STEPS.length}`;
   el.stepPrev.disabled = step === 0;
   el.stepNext.disabled = step === STEPS.length - 1;
 
@@ -727,11 +746,55 @@ function say(text, who = 'אלעד') {
   }
 }
 
+// ══ שאלה על שורה ══════════════════════════════════════════════════════
+//
+// לחיצה על מספר שורה בשוליים מצמידה את השורה להודעה הבאה. **זה המקום
+// היחיד שבו התלמיד מצביע על משהו** — בלעדיו הוא כותב "השורה עם
+// ההדפסה" ואלעד מנחש איזו.
+let askLine = 0;
+
+function setAskLine(n) {
+  askLine = n;
+  el.askLine.hidden = !n;
+  if (!n) return;
+  const text = el.code.value.split('\n')[n - 1] || '';
+  el.askLineNo.textContent = n;
+  el.askLineText.textContent = text.trim() || '(שורה ריקה)';
+}
+
+el.askLineClear.addEventListener('click', () => { setAskLine(0); el.chatText.focus(); });
+
+// ⚠️ **השורה נגזרת מה-Y ולא מהטקסט שבשוליים.** מספרי השורות הם טקסט
+//    אחד ארוך, ושורה שנשברת לשתיים תופסת שתי שורות מסך — ספירה לפי
+//    התווים הייתה מחטיאה בדיוק אצל מי שכתב שורה ארוכה.
+el.gutter.addEventListener('click', (e) => {
+  const lh = parseFloat(getComputedStyle(el.code).lineHeight);
+  const top = el.gutter.getBoundingClientRect().top;
+  const row = Math.floor((e.clientY - top + el.gutter.scrollTop) / lh);
+  const nums = el.gutter.textContent.split('\n');
+  // אותו מערך ששורטט: תא עם מספר, ואחריו שורות ריקות לפי הגלישה.
+  let n = 0;
+  for (let i = 0; i <= row && i < nums.length; i++) {
+    const v = Number(nums[i]);
+    if (v) n = v;
+  }
+  if (!n || n > el.code.value.split('\n').length) return;
+  setAskLine(n);
+  openElad({ focusInput: true });
+});
+
 el.chatForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const t = el.chatText.value.trim();
   if (!t) return;
-  say(t, 'אתה');
+
+  // ⚠️ **מספר השורה נכנס לטקסט עצמו ולא רק לבקשה.** ההיסטוריה, יומן
+  //    השיחות בגיליון ופאנל המורה קוראים את הטקסט — בלי זה, "למה זה
+  //    נופל?" בלי הקשר הוא כל מה שיישאר שם מחר.
+  const line = askLine;
+  const msg = line ? `[שורה ${line}] ${t}` : t;
+  setAskLine(0);
+  say(msg, 'אתה');
   el.chatText.value = '';
 
   const input = el.chatText;
@@ -739,7 +802,7 @@ el.chatForm.addEventListener('submit', async (e) => {
   input.placeholder = 'אלעד כותב…';
   setAvatar('thinking');
   try {
-    const { reply, extension } = await api.chat(WEEK.week, t);
+    const { reply, extension } = await api.chat(WEEK.week, msg, el.code.value, line);
     say(reply);
     setAvatar('neutral');
     // אלעד הציע את ההרחבה בהודעה הזאת — הכפתור נפתח עכשיו.

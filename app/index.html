@@ -98,9 +98,12 @@
     <div class="steps" id="steps" role="group" aria-label="מנות המשימה" hidden></div>
     <!-- ⚠️ הניווט יושב בשורת הכותרת ולא בשורה משלו: שורה נפרדת עלתה
          54 פיקסלים, והם בדיוק מה שחסר לגוף כדי לא להיגלל. -->
+    <!-- ⚠️ **אין כאן "7 / 12".** השם של המקטע לא נכנס: הארוך ביותר
+         דורש 234 פיקסלים ונשארו לו 152, ושליש ממנו נמחק. רצועת
+         הנקודות שמעל כבר אומרת איפה אתה ומתוך כמה, והמונה המספרי
+         חזר על אותו מידע במחיר שהכותרת שילמה. -->
     <div class="step-label" id="step-label" hidden>
       <b id="step-title"></b>
-      <span id="step-no"></span>
       <button type="button" id="step-prev" aria-label="המנה הקודמת">→</button>
       <button type="button" id="step-next" aria-label="המנה הבאה">←</button>
     </div>
@@ -176,6 +179,12 @@
     </header>
     <span class="avatar-note" id="avatar-note"></span>
     <div class="chat" id="chat"></div>
+    <!-- לחיצה על מספר שורה בעורך מצמידה אותה להודעה הבאה. -->
+    <div class="ask-line" id="ask-line" hidden>
+      <span>שורה <b id="ask-line-no"></b></span>
+      <code id="ask-line-text" dir="ltr"></code>
+      <button type="button" id="ask-line-clear" aria-label="בטל את הקישור לשורה">✕</button>
+    </div>
     <form class="chat-input" id="chat-form" autocomplete="off">
       <input id="chat-text" type="text" placeholder="כתוב לאלעד…" aria-label="כתוב לאלעד">
       <button type="submit" aria-label="שלח">←</button>

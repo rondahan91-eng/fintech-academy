@@ -276,6 +276,11 @@ export const api = {
   //    הניסוח של אלעד, ולכן כישלון שלה אינו מבטל את הקידום — המסך
   //    כבר מציג את הדרגה, את ה-10% ואת המתנה מתוך תשובת ההגשה.
   promo: (from) => call('promo', { token: session.token, from }, { timeout: 60000 }),
-  chat: (week, message) =>
-    call('chat', { token: session.token, week, message }, { timeout: 60000 }),
+  // ⚠️ **הקוד נשלח בכל הודעה, לא רק כששואלים על שורה.** אלעד שרואה
+  //    את העורך עונה על מה שכתוב ולא על מה שהתלמיד חשב שכתב — וזה
+  //    רוב ההבדל בין רמז שעוזר לרמז שמחטיא. ‏line הוא השורה שהתלמיד
+  //    לחץ עליה, ואפס כשהוא פשוט כותב.
+  chat: (week, message, code, line) =>
+    call('chat', { token: session.token, week, message,
+                   code: code || '', line: line || 0 }, { timeout: 60000 }),
 };
