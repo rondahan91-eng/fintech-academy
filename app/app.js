@@ -137,6 +137,7 @@ const BLOCKS = (WEEK.taskBlocks && WEEK.taskBlocks.length)
 const STEP_KEY = `fintech:step:week-${WEEK.week}`;
 let STEPS = [];
 let step = 0;
+let packedRoom = 0;      // הגובה שלפיו נארזו המנות שמוצגות עכשיו
 
 /**
  * אורז את הגושים למנות לפי הגובה שבאמת יש.
@@ -160,6 +161,7 @@ function packSteps() {
 
   const room = box.clientHeight;
   if (!room) return;                       // העמודה עדיין לא נפרסה
+  packedRoom = room;
 
   // ⚠️ **טבלה גבוהה מהעמודה נחתכת לשורות, עם כותרת חוזרת.** בכלי
   //    הבנייה אי אפשר לדעת כמה שורות נכנסות — תא עם טקסט ארוך
@@ -168,39 +170,30 @@ function packSteps() {
   //    טבלה בגובה 240 מתוך 262 נכנסת לבדה — ומשאירה את מה שלפניה
   //    לבד במנה כמעט ריקה. נמדד: מנה אחת בשבוע 4 הגיעה ל-9% מילוי
   //    בדיוק ככה. חתיכות קטנות יותר מתמלאות טוב יותר.
-  const splitAbove = room * 0.55;
-  const units = [];
-  for (const blk of BLOCKS) {
-    box.innerHTML = blk.html;
-    if (box.scrollHeight <= splitAbove) { units.push(blk); continue; }
-    // ⚠️ **טבלה ורשימה נחתכות; פסקה לא.** שורת טבלה ופריט רשימה הם
-    //    יחידות עצמאיות — עם כותרת חוזרת בטבלה, כל חלק נקרא לבדו.
-    //    פסקה שנחתכת באמצע פשוט נהרסת, ולכן היא נשארת שלמה גם
-    //    במחיר מנה שנגללת.
+  // ⚠️ **טבלה ורשימה נחתכות; פסקה לא.** שורת טבלה ופריט רשימה הם
+  //    יחידות עצמאיות — עם כותרת חוזרת בטבלה, כל חלק נקרא לבדו.
+  //    פסקה שנחתכת באמצע פשוט נהרסת, ולכן היא נשארת שלמה גם
+  //    במחיר מנה שנגללת.
+  //
+  // ⚠️ **שני חלקים, לא אחד.** חיתוך לשורה בודדת מייצר מנה עם כותרת
+  //    טבלה ושורה אחת מתחתיה — זה נראה כמו תקלה, ולכן least=2 כשיש
+  //    כבר תוכן במנה. ‏least=1 שמור למקרה אחד: טבלה שגבוהה מהעמודה
+  //    **כולה**. שם האפשרות השנייה אינה מנה יפה אלא מנה שנגללת.
+  const splitParts = (blk, least) => {
     const holder = document.createElement('div');
     holder.innerHTML = blk.html;
     const table = holder.querySelector('table');
-    const list = holder.querySelector('ul, ol');
-    const items = table ? [...table.rows] : (list ? [...list.children] : []);
-    if (items.length < 3) { units.push(blk); continue; }
-
+    const list = table ? null : holder.querySelector('ul, ol');
+    if (!table && !list) return null;
+    const rows = table ? [...table.rows] : [...list.children];
+    const head = table ? (rows[0] ? rows[0].outerHTML : '') : '';
+    const body = (table ? rows.slice(1) : rows).map((r) => r.outerHTML);
+    if (body.length < least * 2) return null;
     const tag = table ? 'table' : list.tagName.toLowerCase();
-    const head = table ? items[0].outerHTML : '';
-    const body = table ? items.slice(1) : items;
-    let chunk = [];
-    const push = () => units.push({ sec: blk.sec,
-                                    html: `<${tag}>${head}${chunk.join('')}</${tag}>` });
-    for (const r of body) {
-      chunk.push(r.outerHTML);
-      box.innerHTML = `<${tag}>${head}${chunk.join('')}</${tag}>`;
-      if (box.scrollHeight > splitAbove && chunk.length > 1) {
-        const last = chunk.pop();
-        push();
-        chunk = [last];
-      }
-    }
-    if (chunk.length) push();
-  }
+    return { body,
+             wrap: (items) => ({ sec: blk.sec,
+                                 html: `<${tag}>${head}${items.join('')}</${tag}>` }) };
+  };
 
   const before = box.innerHTML;
   const out = [];
@@ -236,26 +229,52 @@ function packSteps() {
     cur = [];
   };
 
-  for (const blk of units) {
-    cur.push(blk);
-    box.innerHTML = render(cur);
+  const fits = (list) => { box.innerHTML = render(list); return box.scrollHeight <= room + 1; };
+
+  // ⚠️ **הטבלה נחתכת מול מה שנשאר במנה, לא מול סף קבוע.** הגרסה
+  //    הקודמת חתכה מראש כל גוש שעבר 55% מהעמודה, ולכן גוש שנשאר
+  //    שלם — למשל טבלה בת שתי שורות — פשוט לא נכנס למה שנותר,
+  //    והמנה נסגרה על משפט מקדים לבדו. **זה מה שהחזיר מנה שמכילה
+  //    שורה אחת ושלושה רבעי חלון ריקים.** כאן נמדד כמה שורות
+  //    נכנסות **עכשיו**, והשאר ממשיך למנה הבאה.
+  const queue = BLOCKS.slice();
+  while (queue.length) {
+    const blk = queue.shift();
+    if (fits([...cur, blk])) { cur.push(blk); continue; }
+
+    const least = cur.length ? 2 : 1;
+    const parts = splitParts(blk, least);
+    if (parts) {
+      let best = 0;
+      for (let n = least; n <= parts.body.length - least; n++) {
+        if (!fits([...cur, parts.wrap(parts.body.slice(0, n))])) break;
+        best = n;
+      }
+      if (best) {
+        cur.push(parts.wrap(parts.body.slice(0, best)));
+        queue.unshift(parts.wrap(parts.body.slice(best)));
+        flush();
+        continue;
+      }
+    }
+
     // ⚠️ גוש בודד שגדול מהעמודה נשאר לבדו ונגלל. זה עדיף על חיתוך
     //    באמצע פסקה, וקורה רק כשאין בה שום נקודת חיתוך חוקית.
-    if (box.scrollHeight > room + 1 && cur.length > 1) {
-      cur.pop();
-      // ⚠️ **גוש מסומן glue נלקח יחד עם הקודם לו.** הפסקה שלפני
-      //    טבלה היא הכותרת שלה, וחיתוך ביניהן משאיר טבלה בלי הסבר
-      //    בראש מנה. אם השתיים יחד עדיין לא נכנסות — הן נפרדות,
-      //    כי מנה שנגללת גרועה יותר מטבלה בלי משפט מקדים.
-      let pair = null;
-      if (blk.glue && cur.length > 1) {
-        pair = cur.pop();
-        box.innerHTML = render([pair, blk]);
-        if (box.scrollHeight > room + 1) { cur.push(pair); pair = null; }
-      }
+    if (!cur.length) { cur.push(blk); flush(); continue; }
+
+    // ⚠️ **גוש מסומן glue נלקח יחד עם הקודם לו.** הפסקה שלפני
+    //    טבלה היא הכותרת שלה, וחיתוך ביניהן משאיר טבלה בלי הסבר
+    //    בראש מנה. אם השתיים יחד עדיין לא נכנסות — הן נפרדות,
+    //    כי מנה שנגללת גרועה יותר מטבלה בלי משפט מקדים.
+    if (blk.glue && cur.length > 1 && fits([cur[cur.length - 1], blk])) {
+      const prev = cur.pop();
       flush();
-      cur = pair ? [pair, blk] : [blk];
+      cur = [prev, blk];
+      continue;
     }
+
+    flush();
+    queue.unshift(blk);
   }
   flush();
 
@@ -300,10 +319,24 @@ function goStep(i) {
 //    הפתיחה והסגירה של אלעד משנות רק את הרוחב של העורך, לא של
 //    עמודת המשימה — ולכן אין צורך לארוז שם.
 let packTimer;
-addEventListener('resize', () => {
+const repack = () => {
   clearTimeout(packTimer);
   packTimer = setTimeout(() => { packSteps(); drawSteps(); }, 150);
-});
+};
+addEventListener('resize', repack);
+
+// ⚠️ **העמודה משנה גובה גם בלי ששום דבר השתנה בחלון.** שורת הבדיקה
+//    של המחשב נעלמת, הארנק מגיע מהשרת ומוסיף שורה, הסרגל העליון
+//    נשבר לשתי שורות — וכל אחד מאלה משנה את מה שנשאר לתוכן. האריזה
+//    רצה פעם אחת בטעינה, ומאז החזיקה חלוקה שהתאימה לגובה **אחר**.
+//    ככה נוצרה מנה עם משפט אחד וחלון ריק מתחתיו: היא נארזה כשהיה
+//    שם פחות מקום. ‏ResizeObserver סוגר את הפער — האריזה עוקבת אחרי
+//    הגובה האמיתי במקום לנחש אותו פעם אחת.
+if (window.ResizeObserver) {
+  new ResizeObserver(() => {
+    if (Math.abs(el.taskBody.clientHeight - packedRoom) > 6) repack();
+  }).observe(el.taskBody);
+}
 
 el.stepPrev.addEventListener('click', () => goStep(step - 1));
 el.stepNext.addEventListener('click', () => goStep(step + 1));
