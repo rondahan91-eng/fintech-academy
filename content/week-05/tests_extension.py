@@ -35,7 +35,7 @@ def test_second_variables():
 def test_second_source_data():
     """הנתונים של הלקוח השני"""
     assert _get("purchase_amount2") == 7230, "purchase_amount2 אינו הסכום שבהרחבה."
-    assert _get("payments_count2") == 8, "payments_count2 אינו מספר התשלומים שבהרחבה."
+    assert _get("payments_count2") == 7, "payments_count2 אינו מספר התשלומים שבהרחבה."
 
 
 def test_second_split():
@@ -105,6 +105,9 @@ def test_fee_variables():
 
 def test_fee_counts():
     """העמלה נספרה ב-// וב-%"""
+    # ⚠️ **מספר התשלומים נבחר כך ש-// ו-% ייתנו תשובות שונות.** עם
+    #    שמונה תשלומים שניהם מחזירים 2, ואז תלמיד שחישב את אותו דבר
+    #    פעמיים עובר את הבדיקה — והיא בדיוק הבדיקה שאמורה לתפוס את זה.
     count = _get("payments_count2")
     assert _whole("fee_times") == count // 3, (
         f"fee_times יצא {_get('fee_times')}. על כל שלושה תשלומים "

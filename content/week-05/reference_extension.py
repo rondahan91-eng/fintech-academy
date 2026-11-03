@@ -47,7 +47,7 @@ print("אגורות:", agorot)
 # --- הרחבה, חלק א': לקוח שני ---
 
 purchase_amount2 = 7230
-payments_count2 = 8
+payments_count2 = 7
 
 payment2 = purchase_amount2 // payments_count2
 remainder2 = purchase_amount2 % payments_count2
