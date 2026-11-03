@@ -3,7 +3,8 @@
 //
 // נוצר מ-config.example.js. אם החלפת פריסה, החלף רק את המחרוזת.
 //
-// עודכן 2026-11-03 · פריסה חדשה (גרסה 29), עם תדריך שבוע 5 של אלעד.
+// עודכן 2026-11-03 · פריסה חדשה (גרסה 30), ‏Code.gs 2026-11-03a —
+// אלעד מקבל את הקוד שבעורך.
 // לוודא שהכתובת נכונה: פתח אותה בדפדפן — היא מחזירה version ו-hasKey.
 //
 // ⚠️ **הפריסה הקודמת מתה ברגע שנוצרה החדשה** — שתי פעמים ברציפות,
@@ -11,4 +12,4 @@
 //    הכיתה מול שרת שאינו קיים.
 
 window.FINTECH_ENDPOINT =
-  'https://script.google.com/macros/s/AKfycby9w0CdDkXrwT5cZ4mdkP3uE630VYJQTLV0oY--5534DwqFTko7a7ViFNJTy4vVAGb8/exec';
+  'https://script.google.com/macros/s/AKfycbxVUoQZ62v4q5lBnNHWGTCOpFAC5vsczc1Ok5LdPAoXLZZ5na0N3Z-Nzwojh9UKdaje/exec';
