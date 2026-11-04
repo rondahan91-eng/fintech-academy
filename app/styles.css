@@ -872,6 +872,8 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
   flex: 1; min-width: 0; font: 600 13px var(--ui); color: var(--navy);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+/* מנה שממשיכה את המקטע הקודם. אותו שם, בצבע שקט יותר. */
+.step-label b.cont { color: var(--slate); }
 .step-label span { font: 500 11.5px var(--mono); color: #A9B1C4; }
 .step-label button {
   /* ‏24 ולא 28: כל פיקסל בשורה הזאת נגרע משם המקטע, ושני הלחצנים

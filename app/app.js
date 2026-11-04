@@ -309,7 +309,13 @@ function drawSteps() {
   if (!many) return;
 
   const now = STEPS[step];
-  el.stepTitle.textContent = (now.cont ? '… ' : '') + now.title;
+  // ⚠️ **אין סימן "המשך" בתוך הכותרת.** קודם היה " · המשך" שאכל 46
+  //    פיקסלים, ואחריו שלוש נקודות — ומכיוון שרוב המנות הן המשך של
+  //    המקטע שלפניהן, הן הופיעו כמעט בכל כותרת ונראו כמו תקלה.
+  //    ההמשכיות נאמרת בצבע הכותרת ובריחוף, ורצועת הנקודות ממילא
+  //    מראה שהמיקום התקדם.
+  el.stepTitle.textContent = now.title;
+  el.stepTitle.classList.toggle('cont', !!now.cont);
   // הכותרת עדיין יכולה להיחתך בשם ארוך במיוחד. ‏title נותן אותה במלואה
   // בריחוף, וגם אומר באיזו מנה אנחנו — מה שהמונה היה אומר.
   el.stepTitle.title =
