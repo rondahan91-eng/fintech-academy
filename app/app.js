@@ -395,8 +395,18 @@ let extensionState = '';     // '' · pending · offered · accepted · done
 // ⚠️ **נשמר מקומית כי הארנק מגיע מהשרת באיחור.** בלי זה התלמיד היה
 //    רואה חצי שנייה של עורך לבן בכל טעינה, ובמחשב מעבדה בלי רשת
 //    היה מאבד את השדרוג לגמרי. דרגה לא יורדת, ולכן מטמון בטוח כאן.
-const UPGRADE_KEY = 'fintech.upgrades';
-const SEEN_KEY = 'fintech.upgrades.seen';
+// ⚠️⚠️ **המפתח נושא את מזהה התלמיד, ופעם אחת הוא לא נשא.** הוא נקרא
+//    ‏'fintech.upgrades' גלובלית, ו-localStorage שייך לדפדפן ולא
+//    למשתמש — כלומר במחשב מעבדה שבו ישב פעם אחת תלמיד בדרגה D2,
+//    **כל מי שהתחבר אחריו קיבל עורך צבעוני.** ככה מפתח זוטר קיבל
+//    מתנה של דרגה שלא הגיע אליה. המפתח הישן נמחק כאן כדי לנקות את
+//    המחשבים שכבר נדבקו.
+const UPGRADE_KEY = `fintech:${session.student?.id ?? 'anon'}:upgrades`;
+const SEEN_KEY = `fintech:${session.student?.id ?? 'anon'}:upgrades.seen`;
+try {
+  localStorage.removeItem('fintech.upgrades');
+  localStorage.removeItem('fintech.upgrades.seen');
+} catch { /* אחסון חסום — אין מה לנקות */ }
 
 // ⚠️ **מוכרז כאן ולא לצד paintCode, למרות ששם מקומו העניינית.**
 //    ‏showWallet רץ כבר בעליית הדף מ-bootState, והוא מגיע דרך
@@ -410,14 +420,16 @@ function rankIndex(id) {
   return Number.isFinite(n) && n > 0 ? n : 1;
 }
 
+// ⚠️ **השרת קובע; המטמון רק מונע הבזק.** הגרסה הקודמת לקחה
+//    ‏Math.max של השרת והמטמון — כלומר המטמון יכול היה רק להעלות
+//    דרגה, לעולם לא להוריד, ושום דבר לא כיבה את הצבע אחרי שנדלק.
+//    שדרוג שנדלק בטעות נשאר דלוק לנצח, גם אחרי שהשרת ענה D1.
 function applyUpgrades(rank) {
-  const level = Math.max(rankIndex(rank && rank.id),
-                         rankIndex(store.get(UPGRADE_KEY)));
-  if (level >= 2) {
-    store.set(UPGRADE_KEY, `D${level}`);
-    setHighlight(true);
-    announceUnlock();
-  }
+  const fromServer = rank && rank.id;
+  const level = fromServer ? rankIndex(rank.id) : rankIndex(store.get(UPGRADE_KEY));
+  if (fromServer) store.set(UPGRADE_KEY, `D${level}`);
+  setHighlight(level >= 2);
+  if (level >= 2) announceUnlock();
 }
 
 // ההודעה מופיעה פעם אחת בלבד. אחרי שנראתה, הצבע מדבר בעד עצמו.

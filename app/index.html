@@ -52,7 +52,8 @@
         <div class="gutter" id="gutter" aria-hidden="true"></div>
         <!-- שכבת הצבע · שדרוג D2. יושבת מתחת ל-textarea ומחזיקה את
              אותו טקסט בדיוק. ריקה ובלתי נראית עד שהשדרוג נפתח. -->
-        <pre class="code-hl" id="code-hl" dir="ltr" aria-hidden="true"></pre>
+        <!-- מתחיל מוסתר, כמו hlOn. רק דרגה D2 ומעלה מדליקה אותו. -->
+        <pre class="code-hl" id="code-hl" dir="ltr" aria-hidden="true" hidden></pre>
         <textarea id="code" spellcheck="false" dir="ltr" aria-label="עורך הקוד"></textarea>
         <!-- מודד את גובה כל שורה לוגית אחרי שבירה. מחוץ למסך, לא נקרא. -->
         <div class="code-mirror" id="mirror" aria-hidden="true"></div>
