@@ -690,6 +690,13 @@ function hidePeek() {
   el.eladPeek.hidden = true;
 }
 
+// ⚠️ **נסגרת ברגע שנוגעים בעורך.** היא יכולה להיפתח רגע לפני
+//    שהתלמיד חוזר להקליד, ואז היא יושבת על השורה שלו.
+// ⚠️ ארבעה אירועים ולא אחד: ‏focus אינו נורה כשהמיקוד כבר בעורך,
+//    ו-input אינו נורה על חץ או על גלילה. כל נגיעה בעורך סוגרת.
+['focus', 'input', 'keydown', 'pointerdown'].forEach((ev) =>
+  el.code.addEventListener(ev, hidePeek));
+
 // ⚠️ **פתיחה וסגירה משנות את רוחב העורך**, ולכן drawGutter חייב לרוץ
 //    אחריהן: רוחב אחר שובר שורות במקום אחר, ומונה השורות היה נשאר
 //    מוסט. הוא נקרא אחרי ה-transition ולא לפניו.
@@ -746,10 +753,16 @@ function say(text, who = 'אלעד') {
   if (who === 'אלעד' && !eladOpen && !restoring) {
     eladUnread += 1;
     paintElad();
-    el.peekText.textContent = text;
-    el.eladPeek.hidden = false;
-    clearTimeout(peekTimer);
-    peekTimer = setTimeout(hidePeek, 6000);
+    // ⚠️ **לא בזמן שהתלמיד מקליד.** הכרטיסייה רחבה 300 ונוחתת בתוך
+    //    שטח העורך — היא כיסתה שורות קוד בדיוק כשהן נכתבו. כשהמיקוד
+    //    בעורך נשארים הטבעת והמונה על העיגול, והתצוגה המקדימה
+    //    מחכה. אלעד לא נעלם; הוא רק לא מדבר לתוך היד.
+    if (document.activeElement !== el.code) {
+      el.peekText.textContent = text;
+      el.eladPeek.hidden = false;
+      clearTimeout(peekTimer);
+      peekTimer = setTimeout(hidePeek, 6000);
+    }
   }
 
   // אלעד דיבר והפאנל מקופל — נקודה על הכפתור. לא מודאל, לא צליל.

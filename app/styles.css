@@ -129,6 +129,11 @@ body.elad-open .work { padding-right: 400px; }
   box-shadow: 0 0 0 3px var(--surface), 0 14px 32px -10px rgba(30,42,56,.42);
 }
 .elad-bubble:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+/* ⚠️ **נעלם כשהחלון פתוח.** העיגול יושב ב-x 1192..1256 ושדה הכתיבה
+   נגמר ב-1250 — כלומר 58 פיקסלים מתחילת השורה שהתלמיד מקליד היו
+   מתחת לפרצוף של אלעד. כשהחלון פתוח יש בו ✕ משלו, ולעיגול אין
+   תפקיד: הוא רק מכסה את מה שכותבים. */
+body.elad-open .elad-bubble { display: none; }
 #elad-face {
   width: 100%; height: 100%; border-radius: 999px;
   object-fit: cover; object-position: top center; display: block;
@@ -165,7 +170,10 @@ body.elad-open .work { padding-right: 400px; }
      היא יושבת בדיוק על שורת הכפתורים — אין שם מקום לכרטיס ברוחב
      300. כאן היא נפתחת בדיוק במקום שבו ייפתח החלון, וזה גם רומז
      לאן הלחיצה מובילה. */
-  position: fixed; bottom: 288px; right: 24px;
+  /* ⚠️ **ירדה מ-288 ל-100.** ב-288 היא נחתה באמצע שטח העורך — נמדד:
+     ‏x 961..1252 בתוך עורך שרוחבו 372..1176, כלומר ארבע שורות קוד
+     מכוסות מצד ימין. כאן היא נשארת בפינה, מעל העיגול. */
+  position: fixed; bottom: 100px; right: 24px;
   width: 300px; text-align: start; cursor: pointer;
   background: var(--surface); border: 0;
   outline: 1px solid var(--line); outline-offset: -1px;
