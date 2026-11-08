@@ -874,6 +874,12 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
 }
 /* מנה שממשיכה את המקטע הקודם. אותו שם, בצבע שקט יותר. */
 .step-label b.cont { color: var(--slate); }
+/* מנות ההרחבה. ⚠️ **סגול ולא שם ארוך יותר** — "ההרחבה · חלק א'…"
+   לא נכנס בשורה, והצבע אומר את אותו דבר בחינם. */
+.step-label b.ext, .step-label b.ext.cont { color: #8B5CF6; }
+.steps button.ext { background: #E6DEFB; }
+.steps button.ext.seen { background: #C4B2F3; }
+.steps button.ext.now { background: linear-gradient(135deg, #8B5CF6, var(--accent-end)); }
 .step-label span { font: 500 11.5px var(--mono); color: #A9B1C4; }
 .step-label button {
   /* ‏24 ולא 28: כל פיקסל בשורה הזאת נגרע משם המקטע, ושני הלחצנים

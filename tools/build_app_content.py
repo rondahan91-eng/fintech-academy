@@ -350,8 +350,13 @@ def build_week(week: int):
     extension = None
     ext_md, ext_tests = d / "extension.md", d / "tests_extension.py"
     if ext_md.is_file():
+        # ⚠️ **גושים, ולא רק HTML אחד.** עד 2026-11-08 ההרחבה נדחפה
+        #    כמחרוזת אחת לתוך גוף המשימה — ומאז שהגוף מציג מנה אחת
+        #    בכל רגע, הדחיפה הזאת נמחקה בכל מעבר מנה. ‏extensionBlocks
+        #    נכנסים לאותה אריזה של המשימה ומקבלים מנות משלהם.
         extension = {
             "html": md_to_html(read(ext_md)),
+            "blocks": split_task(read(ext_md)),
             "tests": read(ext_tests) if ext_tests.is_file() else "",
         }
 

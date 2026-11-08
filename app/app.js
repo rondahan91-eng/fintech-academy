@@ -140,6 +140,7 @@ const STEP_KEY = `fintech:step:week-${WEEK.week}`;
 let STEPS = [];
 let step = 0;
 let packedRoom = 0;      // הגובה שלפיו נארזו המנות שמוצגות עכשיו
+let wantExtJump = false; // ההרחבה נפתחה ועוד לא קפצנו אליה
 
 /**
  * אורז את הגושים למנות לפי הגובה שבאמת יש.
@@ -240,7 +241,7 @@ function packSteps() {
     //    של הכותרות הארוכות אל מחוץ לתצוגה. הסימן נשאר כי בלעדיו
     //    התלמיד רואה את אותו שם מקטע פעמיים וחושב שחזר אחורה.
     const mid = out.length && out[out.length - 1].lastSec === cur[0].sec;
-    out.push({ title: cur[0].sec || '', cont: !!mid,
+    out.push({ title: cur[0].sec || '', cont: !!mid, ext: !!cur[0].ext,
                html, lastSec: cur[cur.length - 1].sec });
     cur = [];
   };
@@ -297,6 +298,17 @@ function packSteps() {
   box.innerHTML = before;
   STEPS = out.length ? out : [{ sec: '', title: '', html: BLOCKS.map((b) => b.html).join('') }];
   step = Math.min(Math.max(0, Number(store.get(STEP_KEY)) || 0), STEPS.length - 1);
+
+  // ⚠️ **הקפיצה להרחבה נעשית כאן ולא אצל הקורא.** כל אריזה מחדש
+  //    מסדרת את המנות מחדש, ואינדקס שנשמר לפני האריזה כבר אינו
+  //    מצביע על אותה מנה. הדגל נשאר דלוק עד שהתלמיד מזיז מנה בעצמו.
+  if (wantExtJump) {
+    const first = STEPS.findIndex((s) => s.ext);
+    if (first >= 0) {
+      step = first;
+      store.set(STEP_KEY, String(first));
+    }
+  }
 }
 
 function drawSteps() {
@@ -317,6 +329,7 @@ function drawSteps() {
   //    מראה שהמיקום התקדם.
   el.stepTitle.textContent = now.title;
   el.stepTitle.classList.toggle('cont', !!now.cont);
+  el.stepTitle.classList.toggle('ext', !!now.ext);
   // הכותרת עדיין יכולה להיחתך בשם ארוך במיוחד. ‏title נותן אותה במלואה
   // בריחוף, וגם אומר באיזו מנה אנחנו — מה שהמונה היה אומר.
   el.stepTitle.title =
@@ -328,14 +341,16 @@ function drawSteps() {
   STEPS.forEach((s, i) => {
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = i === step ? 'now' : (i < step ? 'seen' : '');
-    b.setAttribute('aria-label', `מנה ${i + 1} מתוך ${STEPS.length}: ${s.title}`);
+    b.className = (i === step ? 'now' : (i < step ? 'seen' : '')) + (s.ext ? ' ext' : '');
+    b.setAttribute('aria-label',
+      `${s.ext ? 'הרחבה · ' : ''}מנה ${i + 1} מתוך ${STEPS.length}: ${s.title}`);
     b.addEventListener('click', () => goStep(i));
     el.steps.append(b);
   });
 }
 
 function goStep(i) {
+  wantExtJump = false;       // התלמיד בחר מנה — מכאן הבחירה שלו
   step = Math.max(0, Math.min(STEPS.length - 1, i));
   store.set(STEP_KEY, String(step));
   drawSteps();
@@ -393,6 +408,7 @@ if (document.fonts && document.fonts.ready) {
 //    ששולם בפועל, והוא זז רק ביום התלוש.
 
 let extensionState = '';     // '' · pending · offered · accepted · done
+let extensionOpen = false;   // הגושים שלה כבר נכנסו ל-BLOCKS
 
 // ══ שדרוגי דרגה ═══════════════════════════════════════════════════════
 // שדרוג נפתח בעלייה בדרגה ונשאר פתוח. **לא פריט חנות ולא הגדרה** —
@@ -595,13 +611,44 @@ function showExtension(state) {
   if (extensionState === 'accepted' || extensionState === 'done') openExtension();
 }
 
-/** פותח את ההרחבה בפאנל המשימה, מתחת למשימה השבועית. */
+/**
+ * פותח את ההרחבה בפאנל המשימה, כמנות נוספות בסוף.
+ *
+ * ⛔ **הגרסה הקודמת דחפה את ההרחבה לתוך el.taskBody ישירות.** זה עבד
+ *    כשהגוף היה דף אחד ארוך — ומאז שהוא מציג **מנה אחת בכל רגע**,
+ *    ‏drawSteps דרס את ההדבקה בכל מעבר מנה, והדגל dataset.ext מנע
+ *    פתיחה חוזרת. כלומר: ההרחבה נפתחה, ונעלמה בלחיצה הראשונה על
+ *    החץ — **בלי שום הודעה.** זה מה שקרה בשבוע 5.
+ *
+ * כאן היא נכנסת ל-BLOCKS ונארזת יחד עם המשימה, ולכן היא שורדת כל
+ * מעבר מנה, כל שינוי גודל וכל אריזה מחדש.
+ */
 function openExtension() {
-  if (!WEEK.extension || el.taskBody.dataset.ext === '1') return;
-  el.taskBody.dataset.ext = '1';
-  el.taskBody.insertAdjacentHTML('beforeend',
-    '<h2 style="color:#8B5CF6">ההרחבה</h2>' + WEEK.extension.html);
+  if (!WEEK.extension || extensionOpen) return;
+  const blocks = WEEK.extension.blocks && WEEK.extension.blocks.length
+    ? WEEK.extension.blocks
+    // רשת ביטחון לחבילה ישנה שאין בה גושים: מנה אחת שנגללת עדיפה
+    // על הרחבה שלא נפתחת.
+    : [{ sec: 'ההרחבה', html: WEEK.extension.html }];
+  extensionOpen = true;
+  // ⚠️ **הסימון הוא דגל ולא תוספת לשם.** "ההרחבה · חלק א' — לקוח שני"
+  //    לא נכנס בשורת הכותרת והיה נחתך; הצבע אומר את אותו דבר בלי
+  //    לגזול אף פיקסל.
+  // הפתיח של דף ההרחבה נושא את אותו שם מקטע כמו הפתיח של המשימה.
+  // שני "לפני שמתחילים" באותה רצועה מבלבלים; לזה יש שם משלו.
+  BLOCKS.push(...blocks.map((b) => ({
+    ...b, ext: true,
+    sec: b.sec === 'לפני שמתחילים' ? 'ההרחבה' : b.sec,
+  })));
   if (el.extOffer) el.extOffer.hidden = true;
+  // ⚠️ **קופץ למנה הראשונה של ההרחבה.** בלי זה התלמיד לוחץ "קבל את
+  //    ההרחבה", המסך לא זז, והוא לא יודע שקרה משהו.
+  // ⚠️ **דגל ולא השמה.** ‏packSteps מסיים בשחזור המנה מהאחסון, ואחרי
+  //    הפתיחה עוד מובטחת אריזה אחת — טעינת הגופנים — שגם מזיזה את
+  //    האינדקסים. השמה כאן הייתה מוחזרת בשקט למנה הראשונה.
+  wantExtJump = true;
+  packSteps();
+  drawSteps();
 }
 
 /**
