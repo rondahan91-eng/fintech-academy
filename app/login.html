@@ -21,6 +21,10 @@
 </head>
 <body class="login-page">
 
+<!-- רקע בלבד. ‏aria-hidden כי אין כאן מידע — מי שמקשיב למסך לא צריך
+     לשמוע רשימת סמלי מטבע לפני שדה השם. ראה .coins ב-styles.css. -->
+<div class="coins" id="coins" aria-hidden="true"></div>
+
 <!-- ‏layout.md §16 · 400px ממורכז · אין סרגל עליון · אין ניווט -->
 <main class="login">
   <h1 class="login-brand">FinTech Academy</h1>
@@ -91,6 +95,72 @@
       ' · אפשר להיכנס ולדבר עם אלעד, אבל לא להריץ קוד מהמחשב הזה.'));
     box.className = 'mc-warn on';
   } catch (e) { /* שתיקה מכוונת. הכניסה חשובה מהאזהרה. */ }
+})();
+
+/* ══ מטבעות הרקע ═══════════════════════════════════════════════════
+   שמונה עשר סמלים, מסלול לכל אחד, נופלים מלמעלה למטה.
+   ⚠️ **ES5 ועטוף ב-try, כמו בדיקת המחשב שמעליו.** זה רקע — הוא לא
+      יפיל את מסך הכניסה בשום מצב ובשום דפדפן. */
+(function () {
+  try {
+    /* ⚠️ **רק סמלים שקיימים בגופן בוודאות.** ‏₮ ו-◎ היו בדמו וירדו:
+       הם נדירים מספיק כדי להיות תלויים בגופן המערכת, וסמל שחסר
+       מצויר כמלבן ריק. ארבעת הקריפטו שנשארו מוכרים ונתמכים. */
+    var FIAT   = ['₪', '$', '€', '£', '¥', '₩', '₹'];
+    var CRYPTO = ['₿', 'Ξ', 'Ł', 'Ð'];
+    var COUNT = 18, TIME = 26;
+
+    var layer = document.getElementById('coins');
+    if (!layer) return;
+
+    function rand(a, b) { return a + Math.random() * (b - a); }
+
+    function build() {
+      layer.innerHTML = '';
+      var w = Math.max(window.innerWidth, 320);
+      var travel = window.innerHeight + 240;
+
+      for (var i = 0; i < COUNT; i++) {
+        /* שליש קריפטו, בפיזור קבוע ולא אקראי — כדי שתמיד יהיו
+           כמה סגולים על המסך ולא במקרה אף אחד. */
+        var crypto = i % 3 === 1;
+        var pool = crypto ? CRYPTO : FIAT;
+        var el = document.createElement('span');
+
+        el.className = crypto ? 'coin crypto' : 'coin';
+        el.appendChild(document.createTextNode(
+          pool[Math.floor(Math.random() * pool.length)]));
+
+        /* ⚠️ **מסלול לכל סמל, ולא מיקום אקראי.** בלי חלוקה לרוחב הם
+           מתקבצים בשליש אחד של המסך ומשאירים את השאר ריק. */
+        var lane = (i + 0.5) / COUNT;
+        var x = lane * w + rand(-w / COUNT / 2, w / COUNT / 2);
+
+        el.style.fontSize = rand(18, 58).toFixed(0) + 'px';
+        el.style.setProperty('--x', x.toFixed(0) + 'px');
+        el.style.setProperty('--travel', travel.toFixed(0) + 'px');
+        el.style.setProperty('--sway', rand(-40, 40).toFixed(0) + 'px');
+        el.style.setProperty('--frozen', rand(0.15, 0.85).toFixed(2));
+
+        /* ⚠️ **ההדרגתיות נמצאת כאן.** משך שונה לכל סמל והשהיה שלילית
+           שמתחילה אותו באמצע הדרך — אחרת כולם נכנסים יחד בטעינה,
+           וזה נראה כמו גל שנופל ולא כמו רקע. */
+        var dur = TIME * rand(0.75, 1.45);
+        el.style.animationDuration = dur.toFixed(1) + 's';
+        el.style.animationDelay = (-rand(0, dur)).toFixed(1) + 's';
+
+        layer.appendChild(el);
+      }
+    }
+
+    var t;
+    window.addEventListener('resize', function () {
+      clearTimeout(t);
+      t = setTimeout(build, 200);
+    });
+
+    build();
+  } catch (e) { /* שתיקה מכוונת. רקע אינו סיבה לא להיכנס. */ }
 })();
 </script>
 

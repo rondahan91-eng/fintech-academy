@@ -606,8 +606,51 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
       48  מרווחים
    ─────
      352  מתוך 684 · ממורכז                                        */
-.login-page { display: grid; place-items: center; height: 100dvh; }
-.login { width: 400px; }
+/* ⚠️ **הרוחב גמיש, ויש שוליים.** ‏400 קבוע על מסך צר מ-400 הוסיף
+   גלילה אופקית למסך הכניסה — נמדד 401 מול חלון 375, גם בלי מטבעות
+   ברקע. ‏§16 מדבר על 400 כרוחב המקסימלי, לא כרוחב קשיח. */
+.login-page {
+  display: grid; place-items: center; height: 100dvh;
+  padding-inline: 16px; box-sizing: border-box;
+}
+.login { width: min(400px, 100%); position: relative; z-index: 1; }
+
+/* ══ מטבעות הרקע · מסך הכניסה בלבד ═══════════════════════════════════
+   סמלי מטבע — שקלים ומטבעות קריפטו — נופלים לאט מלמעלה למטה ומתמוססים.
+   ⚠️ **עדין בכוונה.** התלמיד מקליד כאן קוד בן שש ספרות, לעיתים מול
+      שכן שרואה את המסך. הרקע צריך להיאמר, לא להיקרא: שיא השקיפות
+      הוא 0.12, ומעליו הכרטיסייה נשארת הדבר היחיד שהעין נעצרת עליו.
+   ⚠️ **overflow: hidden** — בלעדיו הסמלים מרחיבים את הדף ומסך הכניסה
+      מקבל גלילה אופקית. */
+.coins {
+  position: fixed; inset: 0; overflow: hidden;
+  pointer-events: none; z-index: 0;
+}
+.coin {
+  position: absolute; top: -90px; left: var(--x);
+  font-weight: 600; line-height: 1; opacity: 0;
+  color: var(--primary);
+  animation: coin-fall linear infinite;
+}
+.coin.crypto { color: var(--accent-end); }
+
+/* המעבר וההיעלמות הם אנימציה אחת: הסמל נכנס שקוף מלמעלה, מתבהר
+   בשישית הדרך, ומתמוסס לפני שהוא יוצא מלמטה. ‏--sway הוא סטייה קטנה
+   הצידה, אחרת כל סמל יורד בקו סרגל ישר וזה נראה מכני. */
+@keyframes coin-fall {
+  0%   { transform: translate(0, 0) scale(1);              opacity: 0; }
+  14%  {                                                   opacity: .12; }
+  72%  {                                                   opacity: .12; }
+  100% { transform: translate(var(--sway), var(--travel)) scale(.92); opacity: 0; }
+}
+
+/* ⚠️ מי שביקש פחות תנועה מקבל את אותו רקע, עומד. */
+@media (prefers-reduced-motion: reduce) {
+  .coin {
+    animation: none; opacity: .08;
+    transform: translate(0, calc(var(--travel) * var(--frozen)));
+  }
+}
 .login-brand {
   height: 80px; display: flex; align-items: center; justify-content: center;
   font: 700 26px var(--ui);
