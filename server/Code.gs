@@ -69,7 +69,7 @@ var SHEETS = {
 //    ‏2026-10-04: קוד הגיבוי נוסף בלי העלאת המספר, ואז הקובץ בתיקייה
 //    והקוד בעורך הראו **אותה גרסה והיו שונים ב-75 שורות** — בדיוק
 //    השאלה שהחותמת אמורה לענות עליה.
-var VERSION = '2026-11-03a';
+var VERSION = '2026-11-08a';
 
 function doGet(e) {
   // ⚠️ **בלי שמות וקודים.** האבחון אומר כמה שורות ואיזה כותרות, ולא
@@ -585,8 +585,13 @@ function walletFor(id) {
                 rankAt: RANKS[idxAt].id });
     total += amount + bonus;
   }
+  // ⚠️ **ערכי ה-XP נשלחים ואינם משוכפלים בלקוח.** הם נזקפים כאן,
+  //    ומסך העבודה מציג אותם לתלמיד — "כמה אני מרוויח על המשימה"
+  //    הייתה שאלה שלא נענתה בשום מקום במסך.
   return { rows: rows, total: total, xp: xp, rank: rankFor(xp),
-           taskPay: taskPayAt(rankIndexOf(rankFor(xp).id)) };
+           taskPay: taskPayAt(rankIndexOf(rankFor(xp).id)),
+           xpTask: XP_FULL_TASK, xpPartial: XP_PARTIAL_TASK,
+           xpExtension: XP_EXTENSION };
 }
 
 /**

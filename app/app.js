@@ -45,7 +45,8 @@ const el = {
   steps: $('steps'), stepLabel: $('step-label'), stepTitle: $('step-title'),
   stepPrev: $('step-prev'), stepNext: $('step-next'),
   tbWeek: $('tb-week'), probe: $('probe'), btnLogout: $('btn-logout'),
-  wallet: $('tf-wallet'), extOffer: $('ext-offer'), btnExt: $('btn-ext'),
+  pay: $('tb-pay'), xpTask: $('tf-xp-task'),
+  extOffer: $('ext-offer'), btnExt: $('btn-ext'),
   xp: $('tf-xp'), tbRank: $('tb-rank'),
   avatar: $('avatar'), avatarImg: $('avatar-img'),
   avatarFallback: $('avatar-fallback'), avatarNote: $('avatar-note'),
@@ -527,15 +528,30 @@ document.getElementById('promo-go')?.addEventListener('click', () => {
 
 function showWallet(wallet) {
   if (!wallet) return;
-  const money = el.wallet || document.getElementById('tf-wallet');
-  if (money) {
-    money.textContent = `${wallet.total.toLocaleString('he-IL')} ₪`;
+  if (el.pay) {
+    el.pay.textContent = `${wallet.total.toLocaleString('he-IL')} ₪`;
     const earned = wallet.rows.filter((r) => r.done).length;
-    money.title = earned ? `${earned} משימות שהושלמו` : 'עדיין לא הושלמה משימה';
+    el.pay.title = earned
+      ? `סך הכול שהרווחת עד היום · ${earned} משימות שהושלמו`
+      : 'סך הכול שהרווחת עד היום · עדיין לא הושלמה משימה';
   }
 
-  // ⚠️ **הדרגה גלויה, השכר לא.** ‏SPEC §1: הדרגה היא תפקיד ולכן היא
-  //    בסרגל; הכסף פרטי לתלמיד, ולכן הוא יושב בפאנל ולא בכותרת.
+  // ⚠️ **המספרים מגיעים מהשרת ולא מ-meta.yml.** ‏XP_FULL_TASK יושב
+  //    ב-Code.gs, והוא זה שבאמת נזקף; עותק שני בקובץ תוכן היה נפרד
+  //    ממנו בשקט ביום שבו אחד מהם ישתנה. ‏WEEK.xp הוא רק רשת ביטחון
+  //    לשרת שלא ענה.
+  if (el.xpTask) {
+    const xpTask = Number(wallet.xpTask) || Number(WEEK.xp) || 0;
+    el.xpTask.textContent = xpTask ? `${xpTask.toLocaleString('he-IL')} XP` : '—';
+    const half = Number(wallet.xpPartial) || 0;
+    const ext = Number(wallet.xpExtension) || 0;
+    el.xpTask.title = [
+      `${xpTask.toLocaleString('he-IL')} XP כשכל הבדיקות עוברות`,
+      half ? `${half.toLocaleString('he-IL')} XP מחצי מהבדיקות ומעלה` : '',
+      ext ? `ועוד ${ext.toLocaleString('he-IL')} XP על משימת הרחבה` : '',
+    ].filter(Boolean).join('\n');
+  }
+
   const rank = wallet.rank;
   if (!rank) return;
 
