@@ -667,15 +667,19 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
 .field input:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
 
 /* ══ גילוי הקוד ══════════════════════════════════════════════════════
-   ⚠️ **המעטפת RTL והשדה LTR, ולכן "הסוף" שלהם הפוך.** ‏inset-inline-end
-      על המעטפת שם את הכפתור משמאל, בעוד padding-inline-end על השדה
-      מרפד מימין — והספרות נכנסו מתחת לכפתור. שניהם מיושרים עכשיו
-      לצד הימני, שהוא סוף הטקסט של קוד שנקרא משמאל לימין. */
+   ⚠️ **הטקסט מימין, הכפתור משמאל — ושניהם נקבעים בתכונות פיזיות.**
+      המעטפת RTL והשדה LTR, ולכן inset-inline ו-padding-inline
+      מתפרשים כאן לשני כיוונים הפוכים: הכפתור נחת בדיוק על הצד שבו
+      יושב הכיתוב "שש ספרות", וכיסה אותו. ‏left ו-padding-left אינם
+      משתמעים לשתי פנים.
+   ⚠️ **ושתי השורות מיושרות אותו דבר.** שדה השם RTL ולכן הכתב שלו
+      נצמד לימין; שדה הקוד היה LTR עם יישור להתחלה, כלומר לשמאל,
+      ושתי השורות נראו כאילו הן שייכות לשני טפסים שונים. */
 .field-wrap { display: block; position: relative; }
-.field-wrap input { padding-inline-end: 46px; }
+.field-wrap input { padding-left: 46px; padding-right: 14px; }
 
 .peek {
-  position: absolute; inset-inline-start: 6px; top: 50%;
+  position: absolute; left: 6px; top: 50%;
   transform: translateY(-50%);
   width: 34px; height: 34px; padding: 7px;
   border: 0; border-radius: 50%; background: transparent;
@@ -689,8 +693,11 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
 .peek [hidden] { display: none; }
 
 /* ‏type=password מציג נקודות; הן RTL-ניטרליות, אבל הספרות הגלויות
-   אינן — נועלים את השדה ל-LTR כדי שהקוד ייקרא באותו סדר בשני המצבים. */
-#f-code { direction: ltr; text-align: start; }
+   אינן — נועלים את השדה ל-LTR כדי שהקוד ייקרא באותו סדר בשני המצבים.
+   ⚠️ **‏direction נשאר LTR, היישור עובר לימין.** הכיוון קובע את סדר
+      הספרות; היישור קובע רק מאיזה צד הן מתחילות. ‏start היה שולח
+      אותן שמאלה, הפוך משדה השם שמעליו. */
+#f-code { direction: ltr; text-align: right; }
 
 /* §16.3 · הגובה שמור גם כשאין שגיאה. אחרת הכפתור קופץ למטה בדיוק
    ברגע שבו המשתמש טעה — כשהוא הכי צריך יציבות. */
