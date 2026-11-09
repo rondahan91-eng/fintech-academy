@@ -38,6 +38,17 @@
     <i id="mc-code"></i>
   </div>
 
+  <!-- ⚠️ **בורר תפקיד, בניגוד למה ש-§16.1 קבע במקור.** הנימוק שם היה
+       שתלמיד שילחץ "מורה" יקבל שגיאה שנראית כמו תקלה; לכן הצד הזה
+       אומר במפורש שצריך סיסמה, ושאין לו אחת. ‏layout.md §16.1 עודכן
+       עם ההכרעה החדשה ועם מה שמגן על הדלת הזאת. -->
+  <div class="role" role="tablist" aria-label="סוג הכניסה">
+    <button type="button" role="tab" id="role-student"
+            aria-selected="true" aria-controls="login-form">תלמיד</button>
+    <button type="button" role="tab" id="role-teacher"
+            aria-selected="false" aria-controls="teacher-form">מורה</button>
+  </div>
+
   <form id="login-form" autocomplete="off">
     <!-- ⚠️ לא required. **הקוד הוא המפתח** — השם כאן רק כדי שהמסך
          ירגיש כמו כניסה ולא כמו פתיחת כספת. ראה doLogin. -->
@@ -69,6 +80,19 @@
     <div class="login-error" id="err" role="alert"></div>
 
     <button class="btn primary login-go" id="go" type="submit">כניסה</button>
+  </form>
+
+  <!-- צד המורה. סיסמה אחת, ומשם ישר לפאנל. -->
+  <form id="teacher-form" autocomplete="off" hidden>
+    <label class="field">
+      <span>סיסמת מורה</span>
+      <input id="t-pass" type="password" autocomplete="current-password"
+             placeholder="הסיסמה שקבעת בגיליון">
+    </label>
+
+    <div class="login-error" id="t-err" role="alert"></div>
+
+    <button class="btn primary login-go" id="t-go" type="submit">כניסה לפאנל</button>
   </form>
 </main>
 
