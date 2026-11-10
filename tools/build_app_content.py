@@ -360,8 +360,14 @@ def build_week(week: int):
             "tests": read(ext_tests) if ext_tests.is_file() else "",
         }
 
+    # מצגת השיעור, אם יוצאה לכאן. ⚠️ **רק הנתיב נשלח, לא התוכן** —
+    #    כל קובץ כזה הוא כרבע מגהבייט, והוא נטען רק אם התלמיד פותח.
+    slides_rel = f"slides/week-{int(meta['week']):02d}.html"
+    has_slides = (ROOT / "app" / slides_rel).is_file()
+
     payload = {
         "week": meta["week"],
+        "slides": slides_rel if has_slides else "",
         "title": meta.get("title", task["title"]),
         "xp": meta.get("xp"),
         # ‏requirements נשאר לתאימות; מה שמוצג בפועל הוא taskHtml.

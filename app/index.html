@@ -100,6 +100,14 @@
     <!-- ══ המשימה במנות ══════════════════════════════════════════════
          המנות נגזרות מהכותרות ב-task.md בכלי הבנייה. דף בלי כותרות
          מחזיר מנה אחת, והפקדים כאן נעלמים — ההתנהגות שהייתה קודם. -->
+    <!-- ⚠️ **מתג ולא עוד מנות.** ההרחבה נדחפה פעם לאותה רצועה, ואז
+         היו שם שלושים נקודות בלי גבול בין המשימה להרחבה. מופיע רק
+         אחרי שההרחבה נפתחה. -->
+    <div class="task-switch" id="task-switch" hidden role="tablist"
+         aria-label="המשימה או ההרחבה">
+      <button type="button" role="tab" id="sw-task" aria-selected="true">המשימה</button>
+      <button type="button" role="tab" id="sw-ext" aria-selected="false">ההרחבה</button>
+    </div>
     <div class="steps" id="steps" role="group" aria-label="מנות המשימה" hidden></div>
     <!-- ⚠️ הניווט יושב בשורת הכותרת ולא בשורה משלו: שורה נפרדת עלתה
          54 פיקסלים, והם בדיוק מה שחסר לגוף כדי לא להיגלל. -->
@@ -198,6 +206,16 @@
     </form>
   </section>
 
+  <!-- מצגת השיעור. יושבת מעל העיגול של אלעד, ברצועה שממילא פנויה,
+       ומופיעה רק בשבוע שיש לו מצגת. -->
+  <button type="button" class="slides-bubble" id="slides-bubble" hidden
+          aria-label="המצגת של השיעור" title="המצגת של השיעור">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="2.5" y="4" width="19" height="12.5" rx="1.6"></rect>
+      <path d="M12 16.5v3.5M8.5 20h7"></path>
+    </svg>
+  </button>
+
   <!-- העיגול -->
   <button type="button" class="elad-bubble" id="elad-bubble"
           aria-label="פתח את השיחה עם אלעד שגב" aria-expanded="false">
@@ -210,6 +228,20 @@
 
 <!-- ══ מסך הקידום · תופס את המסך אחרי הגשה שמזכה בדרגה ══
      מוסתר לגמרי עד שהשרת מחזיר promotion בתשובת ההגשה. -->
+<!-- ══ מצגת השיעור ══════════════════════════════════════════════════
+     ⚠️ **ה-iframe נטען רק בפתיחה הראשונה.** הקובץ הוא כרבע מגהבייט,
+     ובמעבדה עם רשת איטית טעינה אוטומטית הייתה מעכבת את מסך העבודה
+     בדיוק כשהתלמיד רוצה להתחיל לעבוד. -->
+<div class="slides-modal" id="slides-modal" hidden role="dialog"
+     aria-modal="true" aria-label="המצגת של השיעור">
+  <header>
+    <b id="slides-title">המצגת של השיעור</b>
+    <a id="slides-tab" href="" target="_blank" rel="noopener">פתח בלשונית נפרדת ↗</a>
+    <button type="button" id="slides-close" aria-label="סגור את המצגת">✕</button>
+  </header>
+  <iframe id="slides-frame" title="המצגת של השיעור"></iframe>
+</div>
+
 <div class="promo" id="promo" hidden>
   <div class="promo-sky" id="promo-sky" aria-hidden="true"></div>
   <div class="promo-wrap">

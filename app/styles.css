@@ -134,6 +134,52 @@ body.elad-open .work { padding-right: 400px; }
    מתחת לפרצוף של אלעד. כשהחלון פתוח יש בו ✕ משלו, ולעיגול אין
    תפקיד: הוא רק מכסה את מה שכותבים. */
 body.elad-open .elad-bubble { display: none; }
+
+/* ══ מצגת השיעור ═════════════════════════════════════════════════════
+   ⚠️ **‏bottom: 200 ולא 112.** ברצועה הזאת יושבים שני דברים נוספים:
+      העיגול של אלעד (‏24–88) וכרטיסיית ההצצה שלו (‏100–180). עיגול
+      שלישי ביניהם היה נבלע בכרטיסייה בכל פעם שאלעד מדבר. */
+.slides-bubble {
+  position: fixed; bottom: 200px; right: 28px; z-index: 70;
+  width: 56px; height: 56px; padding: 15px;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--primary); cursor: pointer;
+  box-shadow: 0 10px 24px -10px rgba(30, 42, 56, .34);
+}
+.slides-bubble[hidden] { display: none; }
+.slides-bubble:hover { background: #F4F6FC; }
+.slides-bubble:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.slides-bubble svg {
+  width: 100%; height: 100%; display: block;
+  fill: none; stroke: currentColor; stroke-width: 1.7;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+.slides-modal {
+  position: fixed; inset: 16px; z-index: 95;
+  background: var(--surface); border-radius: var(--radius-lg);
+  box-shadow: 0 30px 80px -20px rgba(20, 20, 40, .45);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.slides-modal[hidden] { display: none; }
+.slides-modal header {
+  flex: none; height: 48px; display: flex; align-items: center; gap: 14px;
+  padding: 0 14px; border-bottom: 1px solid var(--line);
+}
+.slides-modal header b { font: 600 14px var(--ui); color: var(--navy); }
+.slides-modal header a {
+  margin-inline-start: auto; font: 500 12.5px var(--ui);
+  color: var(--primary); text-decoration: none;
+}
+.slides-modal header a:hover { text-decoration: underline; }
+.slides-modal header button {
+  flex: none; width: 30px; height: 30px; padding: 0;
+  border: 0; border-radius: 999px; background: #F2F5FD;
+  color: var(--slate); font-size: 14px; cursor: pointer;
+}
+.slides-modal header button:hover { background: #E6ECFA; }
+/* ⚠️ המצגת עצמה כהה ומגיעה עד הקצוות — בלי רקע משלנו מתחתיה. */
+.slides-modal iframe { flex: 1; width: 100%; border: 0; display: block; }
 #elad-face {
   width: 100%; height: 100%; border-radius: 999px;
   object-fit: cover; object-position: top center; display: block;
@@ -935,6 +981,25 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
       בכלי הבנייה לפי הכותרות ב-task.md, והסף שם מכוון לכך שמנה
       נכנסת במסך לפטופ. ‏overflow נשאר auto כרשת ביטחון בלבד: מקטע
       ארוך שאין בו כותרות משנה עדיף שייגלל מאשר שייחתך באמצע טבלה. */
+/* ══ המתג · המשימה או ההרחבה ══════════════════════════════════════
+   מופיע רק אחרי שההרחבה נפתחה. אותה שפה של הבורר במסך הכניסה. */
+.task-switch {
+  flex: none; display: flex; gap: 3px; margin-top: 10px;
+  background: #EEF1F8; border-radius: 999px; padding: 3px;
+}
+.task-switch[hidden] { display: none; }
+.task-switch button {
+  flex: 1; height: 28px; padding: 0; border: 0; border-radius: 999px;
+  background: transparent; color: var(--slate);
+  font: 600 12.5px var(--ui); cursor: pointer;
+}
+.task-switch button[aria-selected="true"] {
+  background: var(--surface); color: var(--navy);
+  box-shadow: 0 1px 3px rgba(30, 42, 56, .12);
+}
+.task-switch #sw-ext[aria-selected="true"] { color: #8B5CF6; }
+.task-switch button:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+
 .steps { flex: none; display: flex; gap: 3px; margin-top: 12px; }
 .steps[hidden] { display: none; }
 .steps button {

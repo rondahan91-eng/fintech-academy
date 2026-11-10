@@ -43,6 +43,7 @@ const el = {
   btnReset: $('btn-reset'), btnSubmit: $('btn-submit'),
   taskTitle: $('task-title'), taskBody: $('task-body'),
   steps: $('steps'), stepLabel: $('step-label'), stepTitle: $('step-title'),
+  taskSwitch: $('task-switch'), swTask: $('sw-task'), swExt: $('sw-ext'),
   stepPrev: $('step-prev'), stepNext: $('step-next'),
   tbWeek: $('tb-week'), probe: $('probe'), btnLogout: $('btn-logout'),
   pay: $('tb-pay'), xpTask: $('tf-xp-task'),
@@ -136,11 +137,20 @@ const BLOCKS = (WEEK.taskBlocks && WEEK.taskBlocks.length)
 
 // ⚠️ **המקום נשמר לפי שבוע.** תלמיד שרענן את הדף או חזר אחרי שיעור
 //    חוזר למנה שבה היה, ולא לתחילת המשימה.
-const STEP_KEY = `fintech:step:week-${WEEK.week}`;
+// ⚠️ **שני אוספים, ולא אחד שמתארך.** ההרחבה נדחפה פעם ל-BLOCKS,
+//    ואז רצועת הנקודות הציגה שלושים מנות ברצף — המשימה וההרחבה
+//    בלי גבול ביניהן. כאן כל אחת היא תצוגה בפני עצמה, עם המנות
+//    שלה ועם המקום השמור שלה, והמתג מחליף ביניהן.
+const TASK_BLOCKS = BLOCKS;
+let EXT_BLOCKS = [];
+let view = 'task';                       // task · ext
+
+const activeBlocks = () => (view === 'ext' ? EXT_BLOCKS : TASK_BLOCKS);
+const stepKey = () =>
+  `fintech:step:week-${WEEK.week}${view === 'ext' ? ':ext' : ''}`;
 let STEPS = [];
 let step = 0;
 let packedRoom = 0;      // הגובה שלפיו נארזו המנות שמוצגות עכשיו
-let wantExtJump = false; // ההרחבה נפתחה ועוד לא קפצנו אליה
 
 /**
  * אורז את הגושים למנות לפי הגובה שבאמת יש.
@@ -155,11 +165,11 @@ function packSteps() {
   //    מוסתרים, ואז הגוף מודד כ-45 פיקסלים יותר ממה שיישאר לו
   //    ברגע שהם יופיעו — וכל המנות נארזות נדיבות מדי. זה בדיוק
   //    מה שהחזיר גלילה לשתי מנות אחרי שהאריזה כבר עברה לדפדפן.
-  if (BLOCKS.length > 1) {
+  if (activeBlocks().length > 1) {
     el.steps.hidden = false;
     el.stepLabel.hidden = false;
     if (!el.steps.children.length) el.steps.append(document.createElement('button'));
-    if (!el.stepTitle.textContent) el.stepTitle.textContent = BLOCKS[0].sec || '—';
+    if (!el.stepTitle.textContent) el.stepTitle.textContent = activeBlocks()[0].sec || '—';
   }
 
   // ⚠️ **מסך נמוך מקבל תחתית דחוסה, לפני המדידה.** בחלון בגובה 560
@@ -241,7 +251,7 @@ function packSteps() {
     //    של הכותרות הארוכות אל מחוץ לתצוגה. הסימן נשאר כי בלעדיו
     //    התלמיד רואה את אותו שם מקטע פעמיים וחושב שחזר אחורה.
     const mid = out.length && out[out.length - 1].lastSec === cur[0].sec;
-    out.push({ title: cur[0].sec || '', cont: !!mid, ext: !!cur[0].ext,
+    out.push({ title: cur[0].sec || '', cont: !!mid,
                html, lastSec: cur[cur.length - 1].sec });
     cur = [];
   };
@@ -254,7 +264,7 @@ function packSteps() {
   //    והמנה נסגרה על משפט מקדים לבדו. **זה מה שהחזיר מנה שמכילה
   //    שורה אחת ושלושה רבעי חלון ריקים.** כאן נמדד כמה שורות
   //    נכנסות **עכשיו**, והשאר ממשיך למנה הבאה.
-  const queue = BLOCKS.slice();
+  const queue = activeBlocks().slice();
   while (queue.length) {
     const blk = queue.shift();
     if (fits([...cur, blk])) { cur.push(blk); continue; }
@@ -296,19 +306,9 @@ function packSteps() {
   flush();
 
   box.innerHTML = before;
-  STEPS = out.length ? out : [{ sec: '', title: '', html: BLOCKS.map((b) => b.html).join('') }];
-  step = Math.min(Math.max(0, Number(store.get(STEP_KEY)) || 0), STEPS.length - 1);
-
-  // ⚠️ **הקפיצה להרחבה נעשית כאן ולא אצל הקורא.** כל אריזה מחדש
-  //    מסדרת את המנות מחדש, ואינדקס שנשמר לפני האריזה כבר אינו
-  //    מצביע על אותה מנה. הדגל נשאר דלוק עד שהתלמיד מזיז מנה בעצמו.
-  if (wantExtJump) {
-    const first = STEPS.findIndex((s) => s.ext);
-    if (first >= 0) {
-      step = first;
-      store.set(STEP_KEY, String(first));
-    }
-  }
+  STEPS = out.length ? out
+    : [{ sec: '', title: '', html: activeBlocks().map((b) => b.html).join('') }];
+  step = Math.min(Math.max(0, Number(store.get(stepKey())) || 0), STEPS.length - 1);
 }
 
 function drawSteps() {
@@ -329,7 +329,7 @@ function drawSteps() {
   //    מראה שהמיקום התקדם.
   el.stepTitle.textContent = now.title;
   el.stepTitle.classList.toggle('cont', !!now.cont);
-  el.stepTitle.classList.toggle('ext', !!now.ext);
+  el.stepTitle.classList.toggle('ext', view === 'ext');
   // הכותרת עדיין יכולה להיחתך בשם ארוך במיוחד. ‏title נותן אותה במלואה
   // בריחוף, וגם אומר באיזו מנה אנחנו — מה שהמונה היה אומר.
   el.stepTitle.title =
@@ -341,18 +341,16 @@ function drawSteps() {
   STEPS.forEach((s, i) => {
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = (i === step ? 'now' : (i < step ? 'seen' : '')) + (s.ext ? ' ext' : '');
-    b.setAttribute('aria-label',
-      `${s.ext ? 'הרחבה · ' : ''}מנה ${i + 1} מתוך ${STEPS.length}: ${s.title}`);
+    b.className = (i === step ? 'now' : (i < step ? 'seen' : '')) + (view === 'ext' ? ' ext' : '');
+    b.setAttribute('aria-label', `מנה ${i + 1} מתוך ${STEPS.length}: ${s.title}`);
     b.addEventListener('click', () => goStep(i));
     el.steps.append(b);
   });
 }
 
 function goStep(i) {
-  wantExtJump = false;       // התלמיד בחר מנה — מכאן הבחירה שלו
   step = Math.max(0, Math.min(STEPS.length - 1, i));
-  store.set(STEP_KEY, String(step));
+  store.set(stepKey(), String(step));
   drawSteps();
 }
 
@@ -378,6 +376,9 @@ if (window.ResizeObserver) {
     if (Math.abs(el.taskBody.clientHeight - packedRoom) > 6) repack();
   }).observe(el.taskBody);
 }
+
+el.swTask?.addEventListener('click', () => setView('task'));
+el.swExt?.addEventListener('click', () => setView('ext'));
 
 el.stepPrev.addEventListener('click', () => goStep(step - 1));
 el.stepNext.addEventListener('click', () => goStep(step + 1));
@@ -625,31 +626,34 @@ function showExtension(state) {
  */
 function openExtension() {
   if (!WEEK.extension || extensionOpen) return;
-  const blocks = WEEK.extension.blocks && WEEK.extension.blocks.length
+  EXT_BLOCKS = (WEEK.extension.blocks && WEEK.extension.blocks.length
     ? WEEK.extension.blocks
     // רשת ביטחון לחבילה ישנה שאין בה גושים: מנה אחת שנגללת עדיפה
     // על הרחבה שלא נפתחת.
-    : [{ sec: 'ההרחבה', html: WEEK.extension.html }];
+    : [{ sec: 'ההרחבה', html: WEEK.extension.html }]).map((b) => ({ ...b }));
   extensionOpen = true;
-  // ⚠️ **הסימון הוא דגל ולא תוספת לשם.** "ההרחבה · חלק א' — לקוח שני"
-  //    לא נכנס בשורת הכותרת והיה נחתך; הצבע אומר את אותו דבר בלי
-  //    לגזול אף פיקסל.
-  // הפתיח של דף ההרחבה נושא את אותו שם מקטע כמו הפתיח של המשימה.
-  // שני "לפני שמתחילים" באותה רצועה מבלבלים; לזה יש שם משלו.
-  BLOCKS.push(...blocks.map((b) => ({
-    ...b, ext: true,
-    sec: b.sec === 'לפני שמתחילים' ? 'ההרחבה' : b.sec,
-  })));
   if (el.extOffer) el.extOffer.hidden = true;
-  // ⚠️ **קופץ למנה הראשונה של ההרחבה.** בלי זה התלמיד לוחץ "קבל את
-  //    ההרחבה", המסך לא זז, והוא לא יודע שקרה משהו.
-  // ⚠️ **דגל ולא השמה.** ‏packSteps מסיים בשחזור המנה מהאחסון, ואחרי
-  //    הפתיחה עוד מובטחת אריזה אחת — טעינת הגופנים — שגם מזיזה את
-  //    האינדקסים. השמה כאן הייתה מוחזרת בשקט למנה הראשונה.
-  wantExtJump = true;
+  if (el.taskSwitch) el.taskSwitch.hidden = false;
+  // ההרחבה נפתחת מוצגת. התלמיד ביקש אותה עכשיו, וזה מה שהוא רוצה לראות.
+  setView('ext');
+}
+
+/**
+ * מחליף בין המשימה השבועית לבין ההרחבה.
+ *
+ * ⚠️ **כל תצוגה אורזת מחדש ושומרת את המקום שלה בנפרד.** המנות נגזרות
+ *    מהגובה שיש, וגובה זהה אינו אומר חלוקה זהה לשני אוספי גושים
+ *    שונים — ולכן אין כאן "אותו אינדקס" לשתיהן.
+ */
+function setView(next) {
+  view = next;
+  if (el.swTask) el.swTask.setAttribute('aria-selected', String(next === 'task'));
+  if (el.swExt) el.swExt.setAttribute('aria-selected', String(next === 'ext'));
+  document.body.classList.toggle('view-ext', next === 'ext');
   packSteps();
   drawSteps();
 }
+
 
 /**
  * ⚠️ **מתחבר ברגע החשיפה, ולא בעליית המודול.** ‏el נתפס פעם אחת
@@ -668,6 +672,52 @@ async function acceptExtension(btn) {
     btn.textContent = 'קבל את ההרחבה';
     alert('לא הצלחתי לפתוח את ההרחבה: ' + err.message);
   }
+}
+
+// ══ מצגת השיעור ═══════════════════════════════════════════════════════
+//
+// אותה מצגת שהוצגה על המקרן, זמינה לתלמיד בלוח העבודה. ⚠️ **העיגול
+// מופיע רק בשבוע שיש לו מצגת** — כלי הבנייה שולח נתיב רק אם הקובץ
+// באמת יושב ב-app/slides, ואחרת העיגול אינו קיים במסך.
+const slidesBubble = $('slides-bubble');
+const slidesModal = $('slides-modal');
+
+if (slidesBubble && slidesModal && WEEK.slides) {
+  const frame = $('slides-frame');
+  const tab = $('slides-tab');
+  const title = $('slides-title');
+
+  slidesBubble.hidden = false;
+  tab.href = WEEK.slides;
+  title.textContent = `מצגת · ${WEEK.title}`;
+
+  const openSlides = () => {
+    // ⚠️ **נטען כאן ולא בעליית הדף.** רבע מגהבייט שלא נדרש הוא רבע
+    //    מגהבייט שגונב רוחב פס ממה שכן — הבדיקות, הקוד, אלעד.
+    if (!frame.src) frame.src = WEEK.slides;
+    slidesModal.hidden = false;
+    $('slides-close').focus();
+  };
+  const closeSlides = () => {
+    slidesModal.hidden = true;
+    slidesBubble.focus();
+  };
+
+  slidesBubble.addEventListener('click', openSlides);
+  $('slides-close').addEventListener('click', closeSlides);
+
+  // ⚠️⚠️ **‏stopImmediatePropagation, ולא stopPropagation.** המאזין של
+  //    אלעד יושב על אותו חלון ובאותו שלב לכידה, ו-stopPropagation
+  //    **אינו** עוצר מאזין אחר על אותו צומת ואותו שלב — רק את מה
+  //    שאחרי. התוצאה שנמדדה: ‏Escape אחד סגר גם את המצגת וגם את
+  //    אלעד. גם בדיקה אצל אלעד "האם המצגת פתוחה" לא הספיקה, כי
+  //    המאזין הזה רץ ראשון וכבר סגר אותה — הוא קרא מצב שהשתנה.
+  //    סדר הקדימויות נשמר: קודם נסגר מה שנפתח אחרון.
+  addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || slidesModal.hidden) return;
+    e.stopImmediatePropagation();
+    closeSlides();
+  }, true);
 }
 
 // ══ האווטאר ═══════════════════════════════════════════════════════════
@@ -800,8 +850,17 @@ el.eladPeek.addEventListener('click', () => openElad({ focusInput: true }));
 
 // ⚠️ ‏Escape סוגר את החלון ולא את מסך מלא, כשהחלון פתוח. סדר הקדימויות
 //    הזה הוא מה שהתלמיד מצפה לו: קודם נסגר מה שנפתח אחרון.
+// ⚠️ **ולכן גם המצגת גוברת על אלעד.** שני המאזינים רשומים על window
+//    באותו שלב לכידה, ו-stopPropagation **אינו** עוצר מאזין נוסף על
+//    אותו צומת ואותו שלב — רק stopImmediatePropagation היה עוצר, והוא
+//    לא יעזור כאן כי המאזין הזה נרשם ראשון. **נבדק: Escape אחד סגר את
+//    שניהם.** הבדיקה כאן היא מה שמחזיר את סדר הקדימויות.
 addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && eladOpen) { e.stopPropagation(); closeElad(); }
+  if (e.key !== 'Escape' || !eladOpen) return;
+  const slides = document.getElementById('slides-modal');
+  if (slides && !slides.hidden) return;        // המצגת נפתחה אחרונה
+  e.stopPropagation();
+  closeElad();
 }, true);
 
 function say(text, who = 'אלעד') {

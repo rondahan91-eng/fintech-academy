@@ -1,0 +1,803 @@
+<title>תדריך מצגת הפתיחה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Heebo:wght@500;700;800&display=swap">
+
+<style>
+:root{
+  --ground:#F5F7FB;
+  --surface:#FFFFFF;
+  --surface-2:#EDF1F8;
+  --ink:#16222F;
+  --ink-2:#3B4A5C;
+  --ink-3:#6B7A8D;
+  --line:#DCE3EE;
+  --line-strong:#C1CBDB;
+  --accent:#3D6FE5;
+  --accent-soft:#E7EDFC;
+  --navy:#1E2A38;
+  --on-navy:#E4EAF4;
+  --sand:#F4EBE4;
+  --sand-ink:#6F5F53;
+  --sand-line:#E0D0C1;
+  --green:#16A34A;
+  --green-soft:#E6F4EB;
+  --code-bg:#1E2A38;
+  --code-ink:#DCE5F2;
+  --shadow:0 1px 2px rgba(20,32,48,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#111821;
+    --surface:#18212C;
+    --surface-2:#1E2835;
+    --ink:#E9EEF6;
+    --ink-2:#B3BFCE;
+    --ink-3:#8493A5;
+    --line:#2A3543;
+    --line-strong:#3A4757;
+    --accent:#83A5F2;
+    --accent-soft:#1C2A44;
+    --navy:#0B121C;
+    --on-navy:#DCE4F0;
+    --sand:#2A231E;
+    --sand-ink:#D2BFAD;
+    --sand-line:#3D332B;
+    --green:#4ADE80;
+    --green-soft:#14271C;
+    --code-bg:#0D141D;
+    --code-ink:#CFDBEB;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#111821;
+  --surface:#18212C;
+  --surface-2:#1E2835;
+  --ink:#E9EEF6;
+  --ink-2:#B3BFCE;
+  --ink-3:#8493A5;
+  --line:#2A3543;
+  --line-strong:#3A4757;
+  --accent:#83A5F2;
+  --accent-soft:#1C2A44;
+  --navy:#0B121C;
+  --on-navy:#DCE4F0;
+  --sand:#2A231E;
+  --sand-ink:#D2BFAD;
+  --sand-line:#3D332B;
+  --green:#4ADE80;
+  --green-soft:#14271C;
+  --code-bg:#0D141D;
+  --code-ink:#CFDBEB;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box}
+
+body{
+  direction:rtl;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Assistant","Segoe UI",Arial,sans-serif;
+  font-size:16.5px;
+  line-height:1.72;
+  letter-spacing:0;
+  padding-inline:20px;
+  padding-block:0 72px;
+  -webkit-font-smoothing:antialiased;
+}
+
+.wrap{max-width:840px;margin-inline:auto}
+
+h1,h2,h3,h4{font-family:"Heebo","Assistant",Arial,sans-serif;letter-spacing:0;text-wrap:balance;margin:0}
+
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+/* ── כותרת ─────────────────────────────── */
+.masthead{
+  border-bottom:2px solid var(--ink);
+  padding-block:44px 22px;
+  margin-bottom:34px;
+}
+.eyebrow{
+  font-family:"Heebo",Arial,sans-serif;
+  font-size:13px;font-weight:700;
+  color:var(--accent);
+  margin-bottom:12px;
+}
+.masthead h1{font-size:clamp(32px,7vw,46px);font-weight:800;line-height:1.15}
+.lede{
+  font-size:18px;color:var(--ink-2);
+  max-width:60ch;margin-top:14px;
+}
+.lede b{color:var(--ink);font-weight:600}
+.facts{
+  display:flex;flex-wrap:wrap;gap:8px 10px;
+  margin-top:20px;
+  font-family:"Heebo",Arial,sans-serif;font-size:13px;font-weight:500;
+}
+.facts span{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:999px;padding:4px 13px;color:var(--ink-2);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ── מבנה כללי ──────────────────────────── */
+section{margin-top:56px}
+h2{
+  font-size:13px;font-weight:700;color:var(--ink-3);
+  padding-bottom:9px;border-bottom:1px solid var(--line-strong);
+  margin-bottom:26px;
+}
+h2 em{font-style:normal;color:var(--accent)}
+h3{font-size:24px;font-weight:700;margin-bottom:8px}
+p{margin:0 0 14px}
+p:last-child{margin-bottom:0}
+ul{margin:0 0 14px;padding-inline-start:20px}
+li{margin-bottom:6px}
+li::marker{color:var(--ink-3)}
+
+/* ── שלושת הכללים ───────────────────────── */
+.rule{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:24px 26px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.rule > h3{
+  display:flex;align-items:baseline;gap:12px;
+  font-size:21px;margin-bottom:12px;
+}
+.rule > h3 .k{
+  font-family:"Heebo",Arial,sans-serif;
+  font-size:14px;font-weight:800;
+  color:var(--accent);
+  flex:none;
+}
+.reasons{counter-reset:r;list-style:none;padding:0;margin:14px 0}
+.reasons li{
+  counter-increment:r;
+  display:grid;grid-template-columns:26px 1fr;gap:12px;
+  margin-bottom:12px;
+}
+.reasons li::before{
+  content:counter(r);
+  font-family:"Heebo",Arial,sans-serif;font-weight:800;font-size:14px;
+  color:var(--accent);
+  border:1px solid var(--line-strong);border-radius:50%;
+  width:26px;height:26px;display:grid;place-items:center;
+  margin-top:3px;
+}
+
+/* ── בלוקים מיוחדים ─────────────────────── */
+.critical{
+  background:var(--navy);color:var(--on-navy);
+  border-radius:10px;padding:20px 22px;margin:18px 0;
+}
+.critical b,.critical strong{color:#fff}
+:root[data-theme="dark"] .critical b,
+:root[data-theme="dark"] .critical strong{color:var(--on-navy)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .critical b,
+  :root:not([data-theme="light"]) .critical strong{color:var(--on-navy)}
+}
+.critical p:last-child{margin-bottom:0}
+
+.note{
+  background:var(--surface-2);
+  border-inline-start:3px solid var(--accent);
+  border-radius:0 8px 8px 0;
+  padding:14px 18px;margin:16px 0;
+  color:var(--ink-2);font-size:15.5px;
+}
+.note b{color:var(--ink)}
+
+.nope{
+  background:var(--sand);
+  border-inline-start:3px solid var(--sand-line);
+  border-radius:0 8px 8px 0;
+  padding:14px 18px;margin:16px 0;
+  color:var(--sand-ink);font-size:15.5px;
+}
+.nope b{color:var(--sand-ink);font-weight:700}
+.nope .hd{
+  font-family:"Heebo",Arial,sans-serif;font-size:12px;font-weight:700;
+  display:block;margin-bottom:5px;opacity:.75;
+}
+
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 6px;padding:0;list-style:none}
+.chips li{
+  background:var(--sand);color:var(--sand-ink);
+  border:1px solid var(--sand-line);
+  border-radius:6px;padding:3px 11px;
+  font-size:14.5px;margin:0;
+}
+
+/* ── טבלאות ─────────────────────────────── */
+.scroller{overflow-x:auto;margin:18px 0;border-radius:10px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;background:var(--surface);font-size:15.5px}
+th,td{padding:11px 15px;text-align:right;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{
+  font-family:"Heebo",Arial,sans-serif;font-size:12.5px;font-weight:700;
+  color:var(--ink-3);background:var(--surface-2);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+td.num,th.num{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink-2)}
+.act-row td{
+  background:var(--navy);color:var(--on-navy);
+  font-family:"Heebo",Arial,sans-serif;font-weight:700;font-size:13.5px;
+}
+.yes{color:var(--green);font-weight:700}
+.no{color:var(--ink-3);font-weight:700}
+
+/* ── דגימות צבע ─────────────────────────── */
+.sw{
+  display:inline-block;width:14px;height:14px;border-radius:3px;
+  border:1px solid rgba(120,130,150,.45);
+  vertical-align:-2px;margin-inline-start:8px;
+}
+code.hex{font-family:Consolas,"Courier New",ui-monospace,monospace;font-size:14px;direction:ltr;unicode-bidi:isolate}
+
+/* ── קוד ופלט ───────────────────────────── */
+pre{
+  background:var(--code-bg);color:var(--code-ink);
+  border-radius:10px;padding:16px 18px;margin:16px 0;
+  overflow-x:auto;
+  font-family:Consolas,"Courier New",ui-monospace,monospace;
+  font-size:15px;line-height:1.65;
+}
+pre.py{direction:ltr;text-align:left}
+pre.out{direction:rtl;text-align:right;unicode-bidi:plaintext}
+p code,li code,td code{
+  font-family:Consolas,"Courier New",ui-monospace,monospace;
+  font-size:.92em;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:5px;padding:1px 5px;
+  direction:ltr;unicode-bidi:isolate;
+}
+
+/* ── שקפים ──────────────────────────────── */
+.slide{
+  display:grid;grid-template-columns:62px 1fr;gap:22px;
+  padding-block:30px;
+  border-top:1px solid var(--line);
+}
+.slide:first-of-type{border-top:0}
+.rail{position:sticky;top:12px;align-self:start;text-align:center}
+.rail .n{
+  font-family:"Heebo",Arial,sans-serif;font-size:30px;font-weight:800;
+  line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;
+  display:block;
+}
+.rail .t{
+  font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums;
+  display:block;margin-top:6px;direction:ltr;
+}
+.bridge .rail .n{color:var(--accent)}
+.bridge .body > h3{color:var(--accent)}
+.body > h3{font-size:22px}
+.body > p:first-of-type{margin-top:6px}
+
+.act{
+  background:var(--navy);color:var(--on-navy);
+  border-radius:8px;padding:11px 18px;
+  margin:34px 0 6px;
+  font-family:"Heebo",Arial,sans-serif;font-size:14px;font-weight:700;
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.act .r{font-weight:500;opacity:.72;font-variant-numeric:tabular-nums;direction:ltr}
+
+/* ── צ'קליסט ────────────────────────────── */
+.check{list-style:none;padding:0;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.check li{margin:0;border-bottom:1px solid var(--line)}
+.check li:last-child{border-bottom:0}
+.check label{
+  display:grid;grid-template-columns:20px 1fr;gap:13px;align-items:start;
+  padding:13px 18px;cursor:pointer;
+}
+.check input{
+  width:18px;height:18px;margin:4px 0 0;accent-color:var(--green);cursor:pointer;
+}
+.check input:checked + span{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line-strong)}
+.check span{font-size:15.5px}
+
+/* ── הקישור ─────────────────────────────── */
+.link-card{
+  background:var(--surface);border:1px solid var(--line-strong);
+  border-radius:14px;padding:28px;box-shadow:var(--shadow);
+}
+.link-card h3{font-size:20px;margin-bottom:6px}
+.url{
+  display:block;direction:ltr;text-align:left;unicode-bidi:isolate;
+  font-family:Consolas,"Courier New",ui-monospace,monospace;
+  font-size:clamp(13px,3.1vw,17px);
+  background:var(--code-bg);color:var(--code-ink);
+  border-radius:9px;padding:15px 17px;margin:16px 0 14px;
+  overflow-x:auto;white-space:nowrap;
+  text-decoration:none;
+}
+.url:hover{color:#fff}
+.copy{
+  font-family:"Heebo",Arial,sans-serif;font-size:14px;font-weight:700;
+  background:var(--accent);color:#fff;border:0;border-radius:999px;
+  padding:9px 22px;cursor:pointer;
+}
+.copy:active{transform:translateY(1px)}
+
+.foot{
+  margin-top:56px;padding-top:20px;border-top:1px solid var(--line);
+  font-size:14px;color:var(--ink-3);
+}
+
+@media (max-width:520px){
+  body{font-size:16px}
+  .slide{grid-template-columns:44px 1fr;gap:14px}
+  .rail .n{font-size:24px}
+  .rule{padding:20px 18px}
+  .link-card{padding:20px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{
+  /* הדפסה תמיד בהיר, גם אם המערכת במצב כהה, וגם אם הרקעים כבויים. */
+  :root{
+    color-scheme:light;
+    --ground:#FFFFFF; --surface:#FFFFFF; --surface-2:#F1F4FA;
+    --ink:#16222F; --ink-2:#3B4A5C; --ink-3:#5C6B7D;
+    --line:#D2DAE6; --line-strong:#B4BECE;
+    --accent:#2C58C4; --accent-soft:#E7EDFC;
+    --navy:#1E2A38; --on-navy:#FFFFFF;
+    --sand:#F4EBE4; --sand-ink:#5E4F44; --sand-line:#DCC9B8;
+    --green:#15803D; --green-soft:#E6F4EB;
+    --code-bg:#1E2A38; --code-ink:#E8EFF9;
+    --shadow:none;
+  }
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{margin:14mm 12mm}
+  body{background:#fff;font-size:10.5pt;line-height:1.6;padding-inline:0;padding-block:0}
+  .wrap{max-width:none}
+  .masthead{padding-block:0 18px}
+  .rail{position:static}
+  .copy{display:none}
+  .url{white-space:normal;word-break:break-all}
+  .slide,.rule,.link-card,.scroller,.critical,.nope,.note{break-inside:avoid}
+  .act,h2,h3{break-after:avoid}
+  .scroller{overflow:visible}
+  section{margin-top:30px}
+  .foot{margin-top:28px}
+}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">FinTech Academy · שבוע 1 · שיעור פתיחה</div>
+  <h1>תדריך מצגת הפתיחה</h1>
+  <p class="lede">הוראות בנייה למצגת. <b>זו לא המצגת עצמה.</b> המערך הוא מה שאתה אומר; המצגת היא רק מה שרואים מאחוריך.</p>
+  <div class="facts">
+    <span>17 שקפים</span>
+    <span>45 דקות מתוך 90</span>
+    <span>3 מערכות + גשר</span>
+    <span>מלווה את lesson-plan.md</span>
+  </div>
+</header>
+
+<!-- ═══ שלושת הכללים ═══ -->
+<section>
+  <h2>שלושה כללים שקובעים את כל השאר</h2>
+
+  <div class="rule">
+    <h3><span class="k">א</span> המצגת מכסה 45 דקות — ונכבית</h3>
+    <p>חלק א' של השיעור פרונטלי. חלק ב' התלמידים עובדים במערכת. <b>ברגע שהם מתחברים, המקרן נכבה.</b> שלושת השקפים האחרונים הם גשר, לא המשך — הם אומרים איך נכנסים ומה מחכה שם, ונגמרים.</p>
+    <p>מצגת שממשיכה לרוץ בחלק ב' תגרום לתלמידים להסתכל עליך במקום על המסך שלהם. זה בדיוק מה שאנחנו לא רוצים בשבוע הראשון.</p>
+  </div>
+
+  <div class="rule">
+    <h3><span class="k">ב</span> הדוגמאות בשקפים אינן הדוגמאות שבמערכת</h3>
+    <p>המשימה הראשונה במערכת עוסקת בתוכן פיננסי. <b>המצגת לא נוגעת בו.</b> היא מלמדת את אותה מיומנות טכנית בדיוק — כמה <code>print</code>, שורות נפרדות, טקסט מובנה — על תוכן ניטרלי לגמרי.</p>
+    <ol class="reasons">
+      <li><b>תפקידו של אלעד.</b> הוא בנקאי שיודע לתכנת, לא מורה לתכנות. התוכן הפיננסי הוא כל מה שיש לו. אם תלמד אותו לפניו, הוא הופך לקישוט כבר בשבוע הראשון.</li>
+      <li><b>המדידה.</b> בשיחת הקליטה נשאלות שש שאלות שנשאלות שוב בשבוע 30.</li>
+    </ol>
+    <div class="critical">
+      <p><b>הפער בין שתי המדידות הוא הראיה היחידה שיהיה לך שהחינוך הפיננסי עבד</b> — זה מה שתראה להורים ולפיקוח. שיעור פרונטלי שיקדים את שש השאלות מוחק את המדידה של השנה כולה, <b>ואי אפשר לתקן את זה בדיעבד.</b></p>
+      <p style="margin-top:12px">והשאלות נשאלות <b>באותו שיעור</b>, כמה דקות אחריך.</p>
+    </div>
+    <p><b>מה שאסור שיופיע על שקף</b> — לא כדוגמה, לא כבדיחה, לא בשקף שער:</p>
+    <ul class="chips">
+      <li>ברוטו</li><li>נטו</li><li>ניכוי</li><li>מס הכנסה</li><li>ביטוח לאומי</li>
+      <li>תלוש</li><li>אחוזים של כסף</li><li>ריבית</li><li>הלוואה</li><li>דמי ניהול</li>
+    </ul>
+    <p style="margin-top:14px"><b>גם לא מספרים.</b> בשקף התרגול אל תכתוב שום מספר שנראה כמו סכום כסף. אם צריך מספר — שיהיה כיתה, שנה, או מספר טלפון.</p>
+  </div>
+
+  <div class="rule">
+    <h3><span class="k">ג</span> אחידות חזותית עם המערכת</h3>
+    <p>התלמיד עובר מהמקרן למסך תוך שנייה. אם שני הדברים נראים כמו שני עולמות, המסגרת נסדקת.</p>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>רכיב</th><th>ערך</th></tr></thead>
+        <tbody>
+          <tr><td>רקע שקף</td><td><code class="hex">#F8F9FD</code><span class="sw" style="background:#F8F9FD"></span></td></tr>
+          <tr><td>טקסט ראשי</td><td><code class="hex">#1E2A38</code><span class="sw" style="background:#1E2A38"></span></td></tr>
+          <tr><td>צבע מותג / כותרות</td><td><code class="hex">#3D6FE5</code><span class="sw" style="background:#3D6FE5"></span></td></tr>
+          <tr><td>צבע משני (הדגשה נדירה)</td><td><code class="hex">#8B5CF6</code><span class="sw" style="background:#8B5CF6"></span></td></tr>
+          <tr><td>הצלחה</td><td><code class="hex">#16A34A</code><span class="sw" style="background:#16A34A"></span></td></tr>
+          <tr><td>גופן</td><td>Assistant או Heebo. <b>רק הם</b> — לא Calibri, לא Arial</td></tr>
+          <tr><td>קוד</td><td>Consolas, שמאל־לימין, על רקע כהה בטקסט בהיר</td></tr>
+          <tr><td>כיווניות</td><td>הכל ימין־לשמאל, למעט בלוקי קוד</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><b>מרווח אותיות אפס.</b> עברית מתפרקת כשמרווחים אותה; זה כלל לאורך כל המערכת.</p>
+    <p><b>שקף אחד = רעיון אחד.</b> בלי תבליטים מקוננים, בלי שקף עם שבע נקודות. אם צריך שבע — אלה שבעה שקפים, או שזה לא שייך לשקף בכלל.</p>
+  </div>
+</section>
+
+<!-- ═══ מפה ═══ -->
+<section>
+  <h2>המפה — <em>17 שקפים</em></h2>
+  <div class="scroller">
+    <table>
+      <thead>
+        <tr><th class="num">#</th><th>שקף</th><th class="num">דקות</th><th class="num">מערך</th></tr>
+      </thead>
+      <tbody>
+        <tr class="act-row"><td colspan="4">מערכה א' — למה אנחנו כאן</td></tr>
+        <tr><td class="num">1</td><td>שער</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td class="num">2</td><td>"המחשב עושה בדיוק מה שאמרת"</td><td class="num">0:00–0:04</td><td class="num">§1</td></tr>
+        <tr><td class="num">3</td><td>מה זו שפת תכנות</td><td class="num">0:04–0:08</td><td class="num">§1</td></tr>
+        <tr class="act-row"><td colspan="4">מערכה ב' — המסגרת</td></tr>
+        <tr><td class="num">4</td><td>מהיום אתם עובדים בבנק</td><td class="num">0:08–0:11</td><td class="num">§2</td></tr>
+        <tr><td class="num">5</td><td>הדרגות</td><td class="num">0:11–0:14</td><td class="num">§2</td></tr>
+        <tr><td class="num">6</td><td>מודל הציון</td><td class="num">0:14–0:18</td><td class="num">§2</td></tr>
+        <tr><td class="num">7</td><td>ארבע אמירות</td><td class="num">0:18–0:20</td><td class="num">§2</td></tr>
+        <tr class="act-row"><td colspan="4">מערכה ג' — התוכנית הראשונה</td></tr>
+        <tr><td class="num">8</td><td>אלגוריתם מילולי (שקף כמעט ריק)</td><td class="num">0:20–0:30</td><td class="num">§3</td></tr>
+        <tr><td class="num">9</td><td>ההוראה הראשונה</td><td class="num">0:30–0:33</td><td class="num">§4</td></tr>
+        <tr><td class="num">10</td><td>שוברים בכוונה</td><td class="num">0:33–0:37</td><td class="num">§4</td></tr>
+        <tr><td class="num">11</td><td>כותבים ← מריצים ← בודקים ← מתקנים</td><td class="num">0:37–0:38</td><td class="num">§4</td></tr>
+        <tr><td class="num">12</td><td>תרגול מודרך</td><td class="num">0:38–0:43</td><td class="num">§4</td></tr>
+        <tr><td class="num">13</td><td>שלוש מלכודות</td><td class="num">0:43–0:45</td><td class="num">§4</td></tr>
+        <tr><td class="num">14</td><td>מי שסיים מהר (שקף המתנה)</td><td class="num">—</td><td class="num">§4</td></tr>
+        <tr class="act-row"><td colspan="4">הגשר — ואז מכבים</td></tr>
+        <tr><td class="num">15</td><td>איך נכנסים</td><td class="num">0:45–0:47</td><td class="num">§5</td></tr>
+        <tr><td class="num">16</td><td>מי מחכה לכם שם</td><td class="num">0:47–0:48</td><td class="num">§5</td></tr>
+        <tr><td class="num">17</td><td>הבית</td><td class="num">סוף</td><td class="num">§7</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ שקף אחר שקף ═══ -->
+<section>
+  <h2>שקף אחר שקף — <em>מה על השקף, ומה לא</em></h2>
+
+  <div class="act"><span>מערכה א' · למה אנחנו כאן</span><span class="r">0:00–0:08</span></div>
+
+  <article class="slide">
+    <div class="rail"><span class="n">1</span><span class="t">—</span></div>
+    <div class="body">
+      <h3>שער</h3>
+      <p><b>על השקף:</b> שם המערכת, שם הקורס, הכיתה. לוגו אם יש.</p>
+      <p>רקע <code class="hex">#1E2A38</code> מלא, טקסט לבן. זה השקף היחיד שהוא כהה — הוא מסמן שמשהו מתחיל.</p>
+      <div class="nope"><span class="hd">לא על השקף</span>תאריך · שם בית ספר · "מצגת מספר 1" · סילבוס</div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">2</span><span class="t">0:00</span></div>
+    <div class="body">
+      <h3>המחשב עושה בדיוק מה שאמרת</h3>
+      <p><b>על השקף:</b> משפט אחד, גדול, במרכז:</p>
+      <div class="critical"><p><b>מחשב עושה בדיוק מה שאומרים לו.<br>לא מה שהתכוונתם — מה שאמרתם.</b></p></div>
+      <p>שום דבר אחר. גודל גופן 44pt ומעלה.</p>
+      <div class="nope"><span class="hd">לא על השקף</span>תמונה של מחשב · איור של רובוט · אימוג'י</div>
+      <div class="note">זה השקף שקובע את הטון של השנה. <b>אם הוא עמוס, הוא לא עובד.</b></div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">3</span><span class="t">0:04</span></div>
+    <div class="body">
+      <h3>מה זו שפת תכנות</h3>
+      <p><b>על השקף:</b> שלוש שורות, לא יותר:</p>
+      <ul>
+        <li>שפה שבה כותבים הוראות למחשב</li>
+        <li>יש הרבה, כי לכל אחת יש מה שהיא עושה טוב</li>
+        <li>שלנו נקראת <b>Python</b> — והיא זו שבנקים באמת משתמשים בה</li>
+      </ul>
+      <p>השורה השלישית היא היחידה שחשובה. <b>הדגש אותה.</b></p>
+      <div class="nope"><span class="hd">לא על השקף</span>היסטוריה · גרסאות · השוואת שפות · תרשים</div>
+    </div>
+  </article>
+
+  <div class="act"><span>מערכה ב' · המסגרת</span><span class="r">0:08–0:20</span></div>
+
+  <article class="slide">
+    <div class="rail"><span class="n">4</span><span class="t">0:08</span></div>
+    <div class="body">
+      <h3>מהיום אתם עובדים בבנק</h3>
+      <p><b>על השקף:</b> משפט אחד + כרטיס תפקיד ויזואלי:</p>
+      <div class="note">
+        <b>מהיום אתם עובדים בבנק.</b><br>
+        תפקיד: מפתח זוטר · צוות: מערכות ליבה · ראש צוות: אלעד שגב
+      </div>
+      <p>עצב את שלוש השורות האלה <b>כמו תג עובד</b> — מסגרת, רקע לבן, קו כחול. זה הרגע שהמסגרת נולדת.</p>
+      <div class="nope"><span class="hd">לא על השקף</span><b>תמונה של אלעד.</b> הוא נפגש איתם בחלק ב', ופגישה ראשונה קורית פעם אחת. אל תשרוף אותה על מקרן.</div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">5</span><span class="t">0:11</span></div>
+    <div class="body">
+      <h3>הדרגות</h3>
+      <p><b>על השקף:</b> סולם הדרגות כרצף ויזואלי אחד — התחלה, אמצע, סוף — כשהראשונה מסומנת "אתם כאן".</p>
+      <p>שורה אחת מתחת: משימה אחת בשבוע. מי שמבצע, מתקדם.</p>
+      <div class="nope"><span class="hd">לא על השקף</span>טבלה עם כל הדרגות והתנאים. זה נמצא במערכת ולא צריך לשנן אותו ביום הראשון.</div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">6</span><span class="t">0:14</span></div>
+    <div class="body">
+      <h3>מודל הציון</h3>
+      <p><b>זה השקף החשוב במצגת מבחינה מנהלתית.</b> הוא נשאר על המסך הכי הרבה זמן, והוא זה שתשלח להורים.</p>
+      <div class="scroller">
+        <table>
+          <thead><tr><th>רכיב</th><th class="num">משקל</th><th>ניתן לתיקון?</th></tr></thead>
+          <tbody>
+            <tr><td>הערכות שליטה (5 בשנה)</td><td class="num">50%</td><td><span class="yes">✓</span> חזרה אחת לכל הערכה</td></tr>
+            <tr><td>פרויקט הגמר</td><td class="num">25%</td><td><span class="yes">✓</span> סבב אחד</td></tr>
+            <tr><td>פנסיה (התמדה)</td><td class="num">20%</td><td><span class="no">✕</span> לא</td></tr>
+            <tr><td>איכות ביקורת עמיתים</td><td class="num">5%</td><td><span class="yes">✓</span> מצטבר · נפתח בדרגה D3</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><b>עיצוב:</b> עמודת "ניתן לתיקון" בירוק <code class="hex">#16A34A</code> לסימני ה-✓ ובאפור כהה ל-✕. <b>אל תצבע את ה-✕ באדום</b> — זו לא שגיאה, זו עובדה.</p>
+      <div class="nope"><span class="hd">לא על השקף</span><b>אנימציה.</b> השורות מופיעות יחד, כי השאלה הראשונה שתישאל תהיה על השורה האחרונה.</div>
+      <div class="note"><b>השקף הזה נשאר גלוי גם אחרי שעברת הלאה</b> — או שהעתקת אותו ללוח. תלמידים חוזרים אליו לאורך כל השיעור.</div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">7</span><span class="t">0:18</span></div>
+    <div class="body">
+      <h3>ארבע אמירות</h3>
+      <p><b>על השקף:</b> ארבע שורות קצרות בלבד — הכותרות. הניסוח המלא נאמר בקול ונמצא במערך, לא על השקף:</p>
+      <ol>
+        <li>חזרה אחת לכל הערכה — <b>הציון הגבוה נספר</b></li>
+        <li>התמדה לא מתקנים בדיעבד</li>
+        <li>5% נפתחים בדרגה D3 — בלעדיהם התקרה היא 95</li>
+        <li>שכר הוא פרטי. דרגה גלויה</li>
+      </ol>
+      <div class="critical">
+        <p><b>את 3 אמור במפורש, היום.</b> תלמיד שיגלה את תקרת ה-95 בשבוע 25 יבוא בטענה מוצדקת.</p>
+        <p style="margin-top:10px"><b>את 4 אמור עכשיו</b>, לא כשמישהו כבר נעלב.</p>
+      </div>
+      <div class="nope"><span class="hd">לא על השקף</span>להסביר כל אחת בכתב. השקף הוא תזכורת לך, לא טקסט לקריאה.</div>
+    </div>
+  </article>
+
+  <div class="act"><span>מערכה ג' · התוכנית הראשונה</span><span class="r">0:20–0:45</span></div>
+
+  <article class="slide">
+    <div class="rail"><span class="n">8</span><span class="t">0:20</span></div>
+    <div class="body">
+      <h3>אלגוריתם מילולי</h3>
+      <p><b>על השקף:</b> שאלה אחת, ענקית, על רקע ריק:</p>
+      <div class="critical"><p><b>תגידו לי איך להכין כוס קפה.</b></p></div>
+      <p><b>זה כל השקף.</b> עשר הדקות הבאות הן הצגה שאתה מבצע. השקף לא אמור לעזור לך; הוא אמור להיעלם.</p>
+      <p><b>שקף המשך אחד</b> אחרי ההצגה, עם המסקנה בלבד:</p>
+      <div class="note"><b>אלגוריתם מילולי</b> — כותבים במילים את סדר הפעולות, לפני הקוד.</div>
+      <div class="nope"><span class="hd">לא על השקף</span>דוגמה לאלגוריתם · רשימת שלבים · תרשים זרימה.<br><b>אם תראה להם את התשובה, ההצגה מתה.</b></div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">9</span><span class="t">0:30</span></div>
+    <div class="body">
+      <h3>ההוראה הראשונה</h3>
+      <p><b>על השקף:</b> בלוק קוד אחד, גדול, שמאל־לימין, על רקע כהה:</p>
+      <pre class="py">print("שלום")</pre>
+      <p>מתחתיו, בקטן: מה שבתוך הגרשיים — מודפס. הגרשיים אומרים לפייתון "זה טקסט".</p>
+      <div class="note"><b>עדיף:</b> אל תשתמש בשקף בכלל — הקלד את זה חי מול הכיתה בעורך אמיתי. השקף הוא גיבוי אם ההקרנה החיה לא מתאפשרת.</div>
+      <div class="nope"><span class="hd">לא על השקף</span>שלוש דוגמאות. מספיקה אחת.</div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">10</span><span class="t">0:33</span></div>
+    <div class="body">
+      <h3>שוברים בכוונה</h3>
+      <p><b>על השקף:</b> אותו קוד, בלי הגרשיים, ומתחתיו הודעת השגיאה האמיתית — <b>מועתקת מריצה אמיתית, לא כתובה מהזיכרון</b>:</p>
+      <pre class="py">print(שלום)</pre>
+      <p>ומתחת, בתיבה נפרדת, טקסט השגיאה כפי שהוא באמת יוצא.</p>
+      <div class="critical"><p><b>"שגיאה היא לא כישלון. זה המחשב מספר לכם מה הוא לא הבין."</b></p><p style="margin-top:10px">שים אותו על השקף. הוא המשפט היחיד במצגת שכדאי שיישאר להם בראש עד סוף השנה.</p></div>
+      <div class="nope"><span class="hd">לא על השקף</span>רשימת סוגי שגיאות · טבלת שגיאות נפוצות. הם יפגשו אותן בעצמם, וזה עדיף.</div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">11</span><span class="t">0:37</span></div>
+    <div class="body">
+      <h3>המחזור</h3>
+      <p><b>על השקף:</b> ארבע מילים ברצף, עם חצים, וחץ חוזר מהאחרונה לראשונה:</p>
+      <div class="critical"><p><b>כותבים ← מריצים ← בודקים ← מתקנים</b></p></div>
+      <p>זה שקף דיאגרמה טהור. אפס טקסט נוסף.</p>
+      <div class="note"><b>זה גם נכתב על הלוח ונשאר שם.</b> השקף יורד; הלוח לא.</div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">12</span><span class="t">0:38</span></div>
+    <div class="body">
+      <h3>תרגול מודרך</h3>
+      <p><b>על השקף:</b> הפלט הרצוי בלבד — <b>לא הקוד שמייצר אותו</b>:</p>
+      <pre class="out">=== כרטיס ביקור ===
+שם: ...
+כיתה: י'
+בית ספר: ...</pre>
+      <p>מתחת, שורה אחת: <b>כמה <code>print</code>? כמה שורות?</b></p>
+      <p><b>התלמיד מגיע לקוד בעצמו.</b> אם תראה לו את הקוד, הפכת תרגיל לתעתיק.</p>
+      <div class="nope"><span class="hd">לא על השקף</span><b>הקוד.</b> לא חלקית, לא "רק השורה הראשונה".<br><b>ולא מספרים שנראים כמו סכומי כסף</b> — כרטיס ביקור, לא כרטיס עובד ולא חשבון.</div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">13</span><span class="t">0:43</span></div>
+    <div class="body">
+      <h3>שלוש מלכודות</h3>
+      <p><b>על השקף:</b> שלוש שורות, כל אחת עם סימן ויזואלי:</p>
+      <ul>
+        <li><b>גרשיים מעוקלים</b> — <code>”</code> אינו <code>"</code>. החשוד הראשון בכל שגיאה בלתי מוסברת</li>
+        <li><b>כיווניות</b> — עברית ומספרים עשויים להיראות הפוכים במסך. <b>זו תצוגה, לא באג</b></li>
+        <li><b><code>print()</code> ריק</b> — מייצר שורה ריקה. שימושי להפרדה</li>
+      </ul>
+      <p>הצג את הגרשיים המעוקלים והישרים <b>זה לצד זה ומוגדלים</b>, אחרת ההבדל לא נראה מהשולחן האחרון.</p>
+      <div class="note"><b>את השורה השנייה אמור לפני שמישהו נתקע בה</b> — אחרת תאבד עשרים דקות כיתתיות על באג שלא קיים.</div>
+    </div>
+  </article>
+
+  <article class="slide">
+    <div class="rail"><span class="n">14</span><span class="t">המתנה</span></div>
+    <div class="body">
+      <h3>מי שסיים מהר</h3>
+      <p><b>שקף המתנה</b> — נשאר על המסך בזמן שהכיתה עובדת, ומחליף אותך כשאתה מסתובב.</p>
+      <p><b>על השקף:</b> משימת המשך ניטרלית, בניסוח קצר. למשל: רשימת ציוד לטיול — שלושה פריטים, כל אחד בשורה, וכותרת מעל.</p>
+      <div class="nope"><span class="hd">לא על השקף</span>שום דבר עם מחיר, סכום או חישוב. <b>גם לא "סה"כ".</b> התלמיד המהיר הוא בדיוק זה שיזהה את התבנית ויגיע לבנק עם התשובה ביד.</div>
+    </div>
+  </article>
+
+  <div class="act"><span>הגשר · ואז מכבים את המקרן</span><span class="r">0:45–0:48</span></div>
+
+  <article class="slide bridge">
+    <div class="rail"><span class="n">15</span><span class="t">0:45</span></div>
+    <div class="body">
+      <h3>איך נכנסים</h3>
+      <p><b>זה השקף שהמצגת קיימת בשבילו.</b> הוא נשאר גלוי עד שהתלמיד האחרון בפנים.</p>
+      <p><b>על השקף, שלושה דברים ותו לא:</b></p>
+      <ol>
+        <li><b>הקישור</b>, בגופן ענק, ברור, שמאל־לימין</li>
+        <li><b>קוד QR</b> של אותה כתובת — חצי מהכיתה תקליד אותה לא נכון</li>
+        <li>שתי שורות הוראה:
+          <ul>
+            <li><b>שם:</b> השם שלך, כפי שהוא ברשימת הכיתה</li>
+            <li><b>קוד:</b> תאריך הלידה שלך — יום, חודש, שנה — שש ספרות רצופות, בלי נקודות ובלי רווחים</li>
+          </ul>
+        </li>
+      </ol>
+      <p><b>הוסף שורה אחת בקטן:</b> הקוד מוסתר בזמן ההקלדה. יש כפתור עין לצידו אם רוצים לוודא מה הוקלד.</p>
+      <div class="nope"><span class="hd">לא על השקף</span>צילום מסך של מסך הכניסה. הם מסתכלים עליו ממש עכשיו.</div>
+      <div class="critical"><p><b>בדוק את הקישור ואת ה-QR ממכשיר אחר בבוקר השיעור.</b> קישור שבור בשקף הזה עוצר 30 תלמידים בבת אחת.</p></div>
+    </div>
+  </article>
+
+  <article class="slide bridge">
+    <div class="rail"><span class="n">16</span><span class="t">0:47</span></div>
+    <div class="body">
+      <h3>מי מחכה לכם שם</h3>
+      <p><b>על השקף:</b> שלוש שורות, ואז מכבים:</p>
+      <div class="note">
+        אלעד יקבל אתכם בשיחה קצרה.<br>
+        הוא ישאל אתכם כמה שאלות. <b>זה לא מבחן, ואין לזה קשר לציון.</b><br>
+        אחרי השיחה הוא ימסור לכם את המשימה הראשונה.
+      </div>
+      <p><b>את השורה האמצעית אמור גם בקול, לכל הכיתה, פעם אחת.</b> מישהו ישאל אם זה מבחן, ועדיף שהתשובה תגיע לפני השאלה.</p>
+      <p><b>ואז — כבה את המקרן.</b> מכאן אתה לא מלמד, אתה מסתובב.</p>
+      <div class="nope"><span class="hd">לא על השקף</span>מה השאלות · כמה יש · באיזה נושא. אפילו לא "על כסף".<br>תמונה של אלעד — ההיכרות שלהם איתו קורית על המסך שלהם, בשיחה, ולא מראש.</div>
+      <div class="critical"><p><b>ואם תלמיד שואל אותך תוך כדי מה משמעות מושג שאלעד הזכיר — אל תענה.</b></p><p style="margin-top:10px">"תשאל את אלעד, זה התחום שלו." זה לא התחמקות; זה מה שמחזיק את התפקיד שלו לאורך שלושים שבועות.</p></div>
+    </div>
+  </article>
+
+  <article class="slide bridge">
+    <div class="rail"><span class="n">17</span><span class="t">סוף</span></div>
+    <div class="body">
+      <h3>הבית</h3>
+      <p><b>מדליקים שוב לדקה אחת בסוף השיעור.</b></p>
+      <div class="note">
+        מי שלא סיים — ממשיך בבית.<br>
+        <b>המערכת זוכרת בדיוק איפה עצרת</b>, כולל השיחה עם אלעד.<br>
+        נכנסים באותו קישור, ופשוט ממשיכים.<br>
+        המשימה פתוחה עד סוף השבוע.
+      </div>
+      <p>מתחת, שוב, הקישור וה-QR. <b>אותם בדיוק כמו בשקף 15</b> — לא גרסה מקוצרת, לא כתובת אחרת.</p>
+      <div class="nope"><span class="hd">לא על השקף</span><b>"שיעורי בית".</b> זו לא שפת המסגרת. זו משימה בעבודה, והיא פתוחה עד סוף השבוע.</div>
+    </div>
+  </article>
+</section>
+
+<!-- ═══ מה לא ייכנס ═══ -->
+<section>
+  <h2>מה לא ייכנס למצגת <em>בשום שלב</em></h2>
+  <div class="scroller">
+    <table>
+      <thead><tr><th>מה</th><th>למה</th></tr></thead>
+      <tbody>
+        <tr><td><b>כל מושג פיננסי</b></td><td>אלעד מלמד אותו, והוא נמדד לפני שהוא נלמד</td></tr>
+        <tr><td>צילומי מסך של המערכת</td><td>היא מולם בעוד רגע. צילום מסך רק גורם להם להפסיק להקשיב</td></tr>
+        <tr><td>תמונה של אלעד</td><td>פגישה ראשונה קורית פעם אחת</td></tr>
+        <tr><td>הקוד של התרגיל</td><td>הפלט כן, הקוד לא</td></tr>
+        <tr><td>סילבוס, רשימת נושאים שנתית</td><td>"נלמד השנה 14 נושאים" הוא המשפט שמכבה כיתה י'</td></tr>
+        <tr><td>אימוג'ים, gif, אנימציות מעבר</td><td>המערכת נקייה. המצגת צריכה להיראות כמוה</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ צ'קליסט ═══ -->
+<section>
+  <h2>רשימת בדיקה <em>לפני השיעור</em></h2>
+  <ul class="check" id="check">
+    <li><label><input type="checkbox" id="c1"><span>הגופן (Assistant/Heebo) <b>מוטמע בקובץ</b> או מותקן על מחשב הכיתה — אחרת הכל יתחלף ל-Arial ויקפוץ שורה</span></label></li>
+    <li><label><input type="checkbox" id="c2"><span>המצגת נפתחה <b>על מחשב הכיתה</b>, לא רק על שלך</span></label></li>
+    <li><label><input type="checkbox" id="c3"><span>הקישור בשקף 15 נפתח בפועל <b>ממכשיר שאינו שלך</b></span></label></li>
+    <li><label><input type="checkbox" id="c4"><span>ה-QR נסרק בפועל מטלפון</span></label></li>
+    <li><label><input type="checkbox" id="c5"><span><b>אין ולו מילה פיננסית אחת בכל 17 השקפים</b> — עבור עליהם פעם אחת רק בשביל זה</span></label></li>
+    <li><label><input type="checkbox" id="c6"><span>שקף 6 ניתן להקרנה ממושכת, או מועתק ללוח</span></label></li>
+    <li><label><input type="checkbox" id="c7"><span>הודעת ההורים על מודל הציון מוכנה לשליחה באותו יום</span></label></li>
+  </ul>
+</section>
+
+<!-- ═══ הקישור ═══ -->
+<section>
+  <h2>הקישור</h2>
+  <div class="link-card">
+    <h3>לשקפים 15 ו-17</h3>
+    <p>וגם הקישור שתשלח להורים ולתלמידים שיעבדו מהבית. <b>קבוע, ולא משתנה בין פריסות.</b></p>
+    <a class="url" id="url" href="https://rondahan91-eng.github.io/fintech-academy/app/login.html">https://rondahan91-eng.github.io/fintech-academy/app/login.html</a>
+    <button class="copy" id="copy" type="button">העתק קישור</button>
+  </div>
+</section>
+
+<p class="foot">המקור: <code>content/week-01/presentation-brief.md</code> · מלווה את <code>content/week-01/lesson-plan.md</code></p>
+
+</div>
+
+<script>
+(function(){
+  var K='fintech:presentation-brief:check';
+  var boxes=Array.prototype.slice.call(document.querySelectorAll('#check input'));
+  var saved={};
+  try{ saved=JSON.parse(localStorage.getItem(K)||'{}')||{}; }catch(e){ saved={}; }
+  boxes.forEach(function(b){ if(saved[b.id]) b.checked=true; });
+  function save(){
+    var o={}; boxes.forEach(function(b){ if(b.checked) o[b.id]=1; });
+    try{ localStorage.setItem(K,JSON.stringify(o)); }catch(e){}
+  }
+  boxes.forEach(function(b){ b.addEventListener('change',save); });
+
+  var btn=document.getElementById('copy');
+  var url=document.getElementById('url').href;
+  btn.addEventListener('click',function(){
+    var done=function(){ btn.textContent='הועתק'; setTimeout(function(){ btn.textContent='העתק קישור'; },1600); };
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done,function(){ btn.textContent='העתק ידנית מהתיבה'; });
+    } else {
+      btn.textContent='העתק ידנית מהתיבה';
+    }
+  });
+})();
+</script>
