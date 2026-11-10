@@ -516,7 +516,13 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
 .kicker { font: 600 11px/1 var(--ui); color: var(--primary);
   text-transform: none; }
 .task h1 { font: 600 16px/1.25 var(--ui); margin-top: 4px; }
-.task-body { flex: 1; min-height: 0; overflow-y: auto; padding: 9px 0;
+/* ⚠️⚠️ **‏overflow-x: hidden, ובלעדיו הפאנל קופץ בלי שליטה.** כש-
+   ‏overflow-y הוא auto, הדפדפן הופך גם את overflow-x ל-auto — וטבלה
+   רחבה מ-296 מוסיפה פס גלילה אופקי שגונב 15 פיקסלים מהגובה.
+   ‏ResizeObserver רואה שינוי גובה, אורז מחדש, הטבלה נוחתת במנה אחרת,
+   הפס נעלם, הגובה חוזר, וזה אורז שוב — **לולאה.** כאן הגובה אינו
+   יכול להשתנות בגלל רוחב. ראה גם overflow-wrap על התאים למטה. */
+.task-body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 9px 0;
   font-size: 13.5px; line-height: 1.6; color: #333A48; }
 .task-body h2 { font: 600 13px var(--ui); color: var(--slate); margin: 12px 0 6px; }
 .task-body h2:first-child { margin-top: 0; }
@@ -535,6 +541,9 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
      ‏()acc.owner. ‏direction: ltr מכריע אותם לצד הנכון, והבידוד מונע
      מהם לגרור איתם את המשפט העברי שמסביב. */
   display: inline-block; direction: ltr; unicode-bidi: isolate;
+  /* ‏inline-block אינו נשבר מעצמו, ושם משתנה ארוך בתוך תא צר הוא מה
+     שמותח את הטבלה. ‏anywhere מרשה לו להישבר במקום לדחוף. */
+  overflow-wrap: anywhere;
 }
 .task-body table {
   width: 100%; border-collapse: collapse; margin: 0 0 10px; font-size: 12.5px;
@@ -542,6 +551,10 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
 .task-body th, .task-body td {
   text-align: right; padding: 5px 6px; border-bottom: 1px solid #F1F3F8;
   vertical-align: top;
+  /* ⚠️ **‏anywhere ולא break-word.** רק anywhere מקטין גם את הרוחב
+     המינימלי של התא, ולכן רק הוא מונע מטבלה עם שם משתנה ארוך
+     להידחף מעבר ל-296 ולהוסיף פס גלילה אופקי. */
+  overflow-wrap: anywhere;
 }
 .task-body th { color: var(--slate); font-weight: 600; font-size: 12px; }
 /* הלוח צר, ושורת קוד ארוכה נחתכה והסתירה את סופה. גלישה עדיפה על
