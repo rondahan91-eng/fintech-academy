@@ -3,8 +3,7 @@
 //
 // נוצר מ-config.example.js. אם החלפת פריסה, החלף רק את המחרוזת.
 //
-// עודכן 2026-11-08 · פריסה חדשה (גרסה 31), ‏Code.gs 2026-11-08a —
-// הארנק מחזיר את ערכי ה-XP, ותדריך שבוע 6 נטען.
+// עודכן 2026-11-10 · פריסה 34 — זהות אלעד ותדריך שבוע 6.
 // לוודא שהכתובת נכונה: פתח אותה בדפדפן — היא מחזירה version ו-hasKey.
 //
 // ⚠️ **הפריסה הקודמת מתה ברגע שנוצרה החדשה** — שתי פעמים ברציפות,
@@ -12,4 +11,4 @@
 //    הכיתה מול שרת שאינו קיים.
 
 window.FINTECH_ENDPOINT =
-  'https://script.google.com/macros/s/AKfycbyKLrTD7u4HglFPtxlyqxExlf3_T156NpfyzyPvHm_eHna8ZzzGdTlOUaYYTqHkG41n/exec';
+  'https://script.google.com/macros/s/AKfycbwQyEcDqKDbbO0CkupAs_D5XKRS0tnmwaKbjcTiPWpgLgl6EvGHy6VngPHkHqbksSdi/exec';
