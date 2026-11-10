@@ -235,9 +235,20 @@ function testsCell(s) {
 }
 
 function renderList() {
+  // ⚠️ **שני תלמידים בשם "רועי" הם שתי שורות זהות.** נצפה בפועל: אי
+  //    אפשר היה לדעת איזו שורה של מי. כשהשם חוזר, מוצג לצידו המזהה
+  //    מגיליון ה-roster — **לא קוד הכניסה**, שאינו מוצג כאן לעולם.
+  const seen = {};
+  DATA.students.forEach((s) => {
+    const key = String(s.name || '').trim();
+    seen[key] = (seen[key] || 0) + 1;
+  });
+  const twin = (s) => (seen[String(s.name || '').trim()] > 1
+    ? ` <span class="pill dim" title="מזהה בגיליון">${esc(s.id)}</span>` : '');
+
   const rows = DATA.students.map((s) => `
     <tr class="row" data-id="${esc(s.id)}">
-      <td><b>${esc(s.name)}</b>${s.override ? ` <span class="pill dim">שבוע ${s.override}</span>` : ''}</td>
+      <td><b>${esc(s.name)}</b>${twin(s)}${s.override ? ` <span class="pill dim">שבוע ${s.override}</span>` : ''}</td>
       <td>${submitCell(s)}</td>
       <td>${testsCell(s)}</td>
       <td>${scoreCell(s)}</td>
@@ -346,7 +357,7 @@ async function openStudent(id) {
 
   $('detail').innerHTML = `
     <div class="card">
-      <h2>${esc(d.name)}</h2>
+      <h2>${esc(d.name)} <span class="pill dim" title="מזהה בגיליון">${esc(d.id)}</span></h2>
       <p class="muted">רואה כרגע שבוע ${d.week}${d.override ? ' (חריגה אישית)' : ''}
         · ${d.submissions.length} הגשות · ${d.chat.filter((t) => t.role === 'student').length} שאלות לאלעד</p>
 
