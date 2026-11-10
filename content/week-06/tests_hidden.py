@@ -84,7 +84,8 @@ def test_simple_total_consistent():
 
 def test_compound_total_value():
     _close("compound_total", 13770.28,
-           "הקרן כפול (1 ועוד השיעור) בחזקת מספר השנים.")
+           "הבסיס הוא 1 ועוד הריבית השנתית, המעריך הוא מספר השנים, "
+           "והקרן מוכפלת בתוצאה.")
 
 
 def test_compound_interest_consistent():

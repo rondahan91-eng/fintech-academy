@@ -93,7 +93,7 @@ def test_second_compound():
     _close("compound_total2", p * pow(1 + r, y),
            "אותו חישוב של חלק ב', על הנתונים שלו.")
     assert _get("compound_total2") > p, (
-        "compound_total2 אינו גדול מהקרן. בדוק שהעלית בחזקה את 1 ועוד השיעור."
+        "compound_total2 אינו גדול מהקרן. הבסיס הוא 1 ועוד הריבית השנתית."
     )
     _close("compound_interest2", _get("compound_total2") - p,
            "הריבית היא מה שנוסף לקרן שלו.")
