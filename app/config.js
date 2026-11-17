@@ -3,7 +3,7 @@
 //
 // נוצר מ-config.example.js. אם החלפת פריסה, החלף רק את המחרוזת.
 //
-// עודכן 2026-11-10 · פריסה 34 — זהות אלעד ותדריך שבוע 6.
+// עודכן 2026-11-17 · פריסה 35 — תדריך שבוע 7.
 // לוודא שהכתובת נכונה: פתח אותה בדפדפן — היא מחזירה version ו-hasKey.
 //
 // ⚠️ **הפריסה הקודמת מתה ברגע שנוצרה החדשה** — שתי פעמים ברציפות,
@@ -11,4 +11,4 @@
 //    הכיתה מול שרת שאינו קיים.
 
 window.FINTECH_ENDPOINT =
-  'https://script.google.com/macros/s/AKfycbwQyEcDqKDbbO0CkupAs_D5XKRS0tnmwaKbjcTiPWpgLgl6EvGHy6VngPHkHqbksSdi/exec';
+  'https://script.google.com/macros/s/AKfycbwHwTrItVUca58duZoR-GAjLkqStA8N0-ag4Yh1tMs1r2MtlaMccWcYVTy2__laodya/exec';
