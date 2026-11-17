@@ -37,7 +37,8 @@ const el = {
   eladFace: $('elad-face'),
   code: $('code'), gutter: $('gutter'), saved: $('saved'),
   handle: $('handle'), results: $('results'),
-  rbTests: $('rb-tests'), rbOut: $('rb-out'), rhint: $('rhint'),
+  rbTests: $('rb-tests'), rbOut: $('rb-out'), rbIn: $('rb-in'),
+  rtabIn: $('rtab-in'), stdinBox: $('stdin-box'), rhint: $('rhint'),
   testsCount: $('tests-count'),
   btnRun: $('btn-run'), btnTests: $('btn-tests'),
   btnReset: $('btn-reset'), btnSubmit: $('btn-submit'),
@@ -1269,6 +1270,7 @@ function showTab(which) {
     b.classList.toggle('is-active', b.dataset.rtab === which));
   el.rbTests.hidden = which !== 'tests';
   el.rbOut.hidden = which !== 'out';
+  if (el.rbIn) el.rbIn.hidden = which !== 'in';
 }
 document.querySelectorAll('.rtab').forEach((b) =>
   b.addEventListener('click', () => {
@@ -1563,7 +1565,11 @@ async function boot() {
     // ‏חייב להסתיים בלוכסן.
     py = await loadPyodide({
       indexURL: new URL('vendor/pyodide/', document.baseURI).href,
-      stdin: () => '',
+      // ⚠️ **‏input() היה מחזיר מחרוזת ריקה תמיד.** משבוע 7 המשימה
+      //    קוראת קלט, ובלי זה אי אפשר ללמד אותו בכלל. השורות מגיעות
+      //    מהתיבה שבטאב "קלט", או מהקלט הרשמי של המשימה כשרצות
+      //    הבדיקות — ראה execute().
+      stdin: () => (STDIN.length ? STDIN.shift() : ''),
     });
     py.runPython(HARNESS);
   } catch (err) {
@@ -1595,7 +1601,21 @@ async function boot() {
   probe();
 }
 
+// השורות שהריצה הבאה תקרא. ‏Pyodide שואב מכאן שורה-שורה.
+let STDIN = [];
+
+/** הקלט הרשמי של המשימה — מה שהבדיקות מריצות עליו. */
+const fixtureStdin = () => (WEEK.stdin || []).map(String);
+
 function execute(withTests) {
+  // ⚠️ **הבדיקות רצות על הקלט של המשימה ולא על מה שהתלמיד הקליד.**
+  //    אחרת כל שינוי בתיבת הקלט היה מפיל אותן, והתלמיד היה מחפש
+  //    את הבאג בקוד שלו.
+  STDIN = withTests
+    ? fixtureStdin()
+    : (el.stdinBox && el.stdinBox.value.trim()
+        ? el.stdinBox.value.split('\n').map((s) => s.replace(/\r$/, ''))
+        : fixtureStdin());
   const fn = py.globals.get('_fintech_run');
   // ⚠️ **תמיד מחרוזות, לעולם לא null.** ‏null של JS אינו None של פייתון
   //    מאז Pyodide 314 — ראה ההערה ליד _fintech_run.
@@ -1609,6 +1629,15 @@ function execute(withTests) {
   const raw = fn(el.code.value, tests, WEEK.inject || '');
   fn.destroy();
   return JSON.parse(raw);
+}
+
+// ⚠️ **הטאב מופיע רק כשהמשימה קוראת קלט.** בשבועות שאין בהם input
+//    הוא היה טאב ריק שמזמין בלבול.
+if (el.rtabIn && (WEEK.stdin || []).length) {
+  el.rtabIn.hidden = false;
+  // נפתח עם הקלט של המשימה, כדי שהריצה הראשונה תעבוד בלי שאיש
+  // ימלא כלום — ומשם התלמיד משנה ומנסה ערכים משלו.
+  el.stdinBox.value = fixtureStdin().join('\n');
 }
 
 // ══ הרצה ══════════════════════════════════════════════════════════════

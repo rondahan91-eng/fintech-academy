@@ -48,10 +48,39 @@ def injects_of(week_dir: Path) -> str:
     return src
 
 
+def stdin_of(week_dir: Path) -> list:
+    """הקלט הרשמי של המשימה, מ-meta.yml. ⚠️ **בלעדיו input() זורק
+    EOFError**, ומשבוע 7 המשימה קוראת קלט."""
+    meta = week_dir / "meta.yml"
+    if not meta.exists():
+        return []
+    lines, inside, out = meta.read_text(encoding="utf-8").splitlines(), False, []
+    for ln in lines:
+        if ln.rstrip() == "stdin:":
+            inside = True
+            continue
+        if inside:
+            if ln.lstrip().startswith("-"):
+                out.append(ln.strip().lstrip("-").strip().strip("\"'"))
+            elif ln.strip() and not ln.startswith((" ", "\t")):
+                break
+    return out
+
+
 def run(src_path: Path) -> dict:
     """מריץ את התוכנית ומחזיר את אותם שלושה שמות שהדפדפן מספק."""
     ns = {"__name__": "__main__"}
     buf = io.StringIO()
+    feed = iter(stdin_of(src_path.parent))
+
+    def _input(prompt=""):
+        try:
+            return next(feed)
+        except StopIteration:
+            raise EOFError("נגמר הקלט: ב-meta.yml יש פחות שורות stdin "
+                           "ממספר הקריאות ל-input()")
+
+    ns["input"] = _input
     with redirect_stdout(buf):
         inject = injects_of(src_path.parent)
         if inject:

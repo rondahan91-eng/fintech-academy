@@ -492,6 +492,22 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
   background: var(--surface); border: 1px solid var(--line); border-top: 0;
   display: flex; flex-direction: column; overflow: hidden;
 }
+/* ══ תיבת הקלט · טאב "קלט" ══════════════════════════════════════════
+   שורה לכל input(). ⚠️ **‏dir=ltr** — הקלט הוא מספרים ושמות שנכנסים
+   לתוכנית, והיא קוראת אותם שורה-שורה משמאל לימין. */
+.rbody.in { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; }
+.rbody.in[hidden] { display: none; }
+.rbody.in label { font: 500 12px var(--ui); color: var(--slate); }
+.rbody.in code { font: 500 11.5px var(--mono); background: #F1F3F8;
+  padding: 1px 5px; border-radius: 4px; direction: ltr; display: inline-block; }
+.rbody.in textarea {
+  flex: 1; min-height: 0; resize: none; width: 100%;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 8px 10px; font: 400 12.5px/1.6 var(--mono); color: var(--navy);
+  background: var(--surface);
+}
+.rbody.in textarea:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
+
 .rtabs { height: 36px; flex: none; display: flex; align-items: center; gap: 4px;
   padding: 0 12px; border-bottom: 1px solid var(--line); }
 .rtab { border: 0; background: transparent; cursor: pointer;
@@ -611,6 +627,24 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
   font: 400 12px/1.6 var(--mono); text-align: left;
   white-space: pre-wrap; overflow-wrap: anywhere;
 }
+/* ══ "לכתוב בסקריפט" ═════════════════════════════════════════════════
+   ⚠️ **התלונה שהולידה את זה:** "לא מובן מתי צריך לעשות משהו בסקריפט
+      ומתי זו כרטיסיית הסבר". כל מה שבתוך הגוש הזה הוא פעולה; כל
+      השאר הוא קריאה. */
+.task-body .do {
+  position: relative; margin: 0 0 12px; padding: 24px 11px 7px;
+  border: 1px solid #CFE0FF; border-radius: var(--radius-sm);
+  background: #F5F9FF;
+}
+.task-body .do-tag {
+  position: absolute; top: 0; inset-inline-start: 0;
+  background: var(--primary); color: #fff;
+  font: 600 10.5px var(--ui); letter-spacing: 0;
+  padding: 2px 9px; border-radius: 0 var(--radius-sm) 0 8px;
+}
+.task-body .do > *:last-child { margin-bottom: 0; }
+.task-body .do table { margin-bottom: 0; }
+
 .task-body blockquote {
   margin: 0 0 10px; padding: 7px 10px; background: #F7F9FD;
   border-inline-start: 3px solid var(--primary); border-radius: 0 6px 6px 0;

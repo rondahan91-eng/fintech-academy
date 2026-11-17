@@ -76,10 +76,19 @@
       <div class="rtabs">
         <button class="rtab is-active" data-rtab="tests">בדיקות גלויות · <span id="tests-count">—</span></button>
         <button class="rtab" data-rtab="out">פלט</button>
+        <!-- מופיע רק בשבוע שהמשימה בו קוראת קלט. ראה WEEK.stdin. -->
+        <button class="rtab" data-rtab="in" id="rtab-in" hidden>קלט</button>
         <span class="rhint" id="rhint">הרצה → פלט · בדיקות → בדיקות</span>
       </div>
       <div class="rbody" id="rb-tests"></div>
       <pre class="rbody out" id="rb-out" dir="ltr"></pre>
+      <!-- ⚠️ **שורה אחת לכל input().** זה מה שהתוכנית תקרא כשתלחץ
+           "הרצה". הבדיקות מתעלמות מכאן ומזינות את הקלט הרשמי של
+           המשימה, אחרת כל שינוי כאן היה מפיל אותן. -->
+      <div class="rbody in" id="rb-in" hidden>
+        <label for="stdin-box">מה התוכנית תקרא — שורה לכל <code>input()</code></label>
+        <textarea id="stdin-box" spellcheck="false" dir="ltr"></textarea>
+      </div>
     </div>
 
     <div class="actions">

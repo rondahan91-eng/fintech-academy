@@ -6,6 +6,7 @@
 export const WEEKS = {
   "1": {
     "week": 1,
+    "stdin": [],
     "slides": "",
     "title": "יום ראשון בבנק",
     "xp": "500",
@@ -170,6 +171,7 @@ export const WEEKS = {
   },
   "2": {
     "week": 2,
+    "stdin": [],
     "slides": "",
     "title": "מודול הליבה",
     "xp": "500",
@@ -315,6 +317,7 @@ export const WEEKS = {
   },
   "3": {
     "week": 3,
+    "stdin": [],
     "slides": "slides/week-03.html",
     "title": "תיק לקוח",
     "xp": "500",
@@ -579,6 +582,7 @@ export const WEEKS = {
   },
   "4": {
     "week": 4,
+    "stdin": [],
     "slides": "slides/week-04.html",
     "title": "מחשבון המשכורת — גרסה ראשונה",
     "xp": "500",
@@ -865,6 +869,7 @@ export const WEEKS = {
   },
   "5": {
     "week": 5,
+    "stdin": [],
     "slides": "slides/week-05.html",
     "title": "מחשבון הפריסה",
     "xp": "500",
@@ -1136,6 +1141,7 @@ export const WEEKS = {
   },
   "6": {
     "week": 6,
+    "stdin": [],
     "slides": "slides/week-06.html",
     "title": "מחשבון הריבית",
     "xp": "500",
@@ -1486,6 +1492,237 @@ export const WEEKS = {
       {
         "kind": "goal",
         "text": "לקוח הפקיד אצלנו כסף וארבע שנים לא נגע בו. השבוע תחשב כמה יש לו עכשיו — ותגלה שיש לזה שתי תשובות שונות. ההפרש ביניהן הוא כל העניין. בדף המשימה יש דוגמה קטנה להריץ לפני שמתחילים."
+      }
+    ],
+    "avatars": [
+      {
+        "id": "concerned",
+        "file": "elad-concerned.png"
+      },
+      {
+        "id": "neutral",
+        "file": "elad-neutral.png",
+        "default": true
+      },
+      {
+        "id": "explaining",
+        "file": "elad-explaining.png"
+      },
+      {
+        "id": "thinking",
+        "file": "elad-thinking.png"
+      },
+      {
+        "id": "presenting",
+        "file": "elad-presenting.png"
+      },
+      {
+        "id": "approve",
+        "file": "elad-approve.png"
+      },
+      {
+        "id": "impressed",
+        "file": "elad-impressed.png"
+      },
+      {
+        "id": "disapprove",
+        "file": "elad-disapprove.png"
+      },
+      {
+        "id": "waiting",
+        "file": "elad-waiting.png"
+      }
+    ]
+  },
+  "7": {
+    "week": 7,
+    "stdin": [
+      "דנה לוי",
+      "4200",
+      "15000",
+      "10",
+      "1",
+      "12000",
+      "21000",
+      "12"
+    ],
+    "slides": "",
+    "title": "טופס בקשת הלוואה",
+    "xp": "500",
+    "requirements": [],
+    "taskHtml": "<p>עד היום כל הנתונים היו כתובים בקוד שלך. <b>מהיום התוכנית מקבלת אותם מבחוץ</b> — ואותה תוכנית בדיוק תיתן תשובה אחרת לכל לקוח.</p>\n<p>זה ההבדל בין מחשבון שכתבת לעצמך לבין כלי שאפשר לתת לפקיד בסניף.</p>\n<h2>איך קלט עובד כאן</h2>\n<p>הפונקציה <code>input()</code> קוראת <b>שורה אחת</b> ממה שהוקלד. בלוח התוצאות למטה יש טאב <b>קלט</b> — שם יושבות השורות שהתוכנית שלך תקרא, אחת לכל <code>input()</code>, לפי הסדר.</p>\n<p>הקלט של הבקשה שלפניך:</p>\n<pre dir=\"ltr\">דנה לוי\n4200\n15000\n10\n1</pre>\n<p><b>תוכל לשנות אותו ולהריץ שוב.</b> זה בדיוק מה שהופך את זה לכלי: לקוח אחר, אותה תוכנית, תשובה אחרת. ⚠️ <b>הבדיקות תמיד רצות על הקלט שלמעלה</b>, גם אם שינית — אחרת כל ניסוי שלך היה מפיל אותן.</p>\n<h2>המלכודת של השבוע</h2>\n<p><code>input()</code> מחזיר <b>תמיד מחרוזת</b>. גם כשהוקלד מספר.</p>\n<p>תריץ את שתי השורות האלה לבד, עם <code>5</code> בקלט, ותראה מה יוצא:</p>\n<pre dir=\"ltr\">x = input()\nprint(x + x)</pre>\n<p>קיבלת <code>55</code> ולא <code>10</code>. ‏<code>+</code> על שתי מחרוזות <b>מדביק</b> אותן; הוא לא מחבר. כדי לחשב צריך להמיר:</p>\n<table><tr><th>הפונקציה</th><th>ממירה ל</th><th>דוגמה</th></tr>\n<tr><td><code>int()</code></td><td>מספר שלם</td><td><code>int(\"15000\")</code></td></tr>\n<tr><td><code>float()</code></td><td>מספר עשרוני</td><td><code>float(\"3.5\")</code></td></tr>\n<tr><td><code>str()</code></td><td>מחרוזת</td><td><code>str(1400)</code></td></tr>\n<tr><td><code>bool()</code></td><td>אמת או שקר</td><td><code>bool(0)</code></td></tr>\n</table>\n<p>⚠️ <b>‏<code>bool</code> של מחרוזת כמעט תמיד <code>True</code>.</b> ‏<code>bool(\"לא\")</code> הוא <code>True</code>, ו-<code>bool(\"0\")</code> גם הוא <code>True</code> — כי שתיהן מחרוזות שאינן ריקות. רק <code>bool(0)</code> על <b>המספר</b> אפס הוא <code>False</code>. זו הסיבה שממירים קודם ל-<code>int</code>.</p>\n<h2>חלק א' — קליטת הבקשה</h2>\n<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<p>חמש שורות קלט, לפי הסדר. <b>כל אחת נכנסת למשתנה, ושלוש מהן צריכות המרה.</b></p>\n<table><tr><th>שם המשתנה</th><th>מה הוא מייצג</th><th>הטיפוס שהוא צריך להיות</th></tr>\n<tr><td><b>1 ·</b> <code>name</code></td><td>שם הלקוחה</td><td>מחרוזת, כפי שהתקבלה</td></tr>\n<tr><td><b>2 ·</b> <code>income</code></td><td>ההכנסה החודשית</td><td>מספר שלם</td></tr>\n<tr><td><b>3 ·</b> <code>amount</code></td><td>הסכום המבוקש</td><td>מספר שלם</td></tr>\n<tr><td><b>4 ·</b> <code>months</code></td><td>מספר התשלומים המבוקש</td><td>מספר שלם</td></tr>\n<tr><td><b>5 ·</b> <code>has_account</code></td><td>האם היא כבר לקוחה שלנו</td><td>אמת או שקר</td></tr>\n</table>\n<p>ואז <b>שורת פתיחה אחת</b>, שמדביקה טקסט לשם:</p>\n<pre dir=\"ltr\">שלום דנה לוי, קיבלנו את הבקשה.</pre>\n</div>\n<p>⚠️ <b>‏<code>has_account</code> מגיע כ-<code>\"1\"</code> או <code>\"0\"</code>.</b> שתי המרות, לא אחת — קודם למספר, ואז לאמת או שקר. אם תמיר ישירות למחרוזת תקבל <code>True</code> בשני המקרים, ולקוח חדש יירשם כוותיק.</p>\n<h2>חלק ב' — ההחזר המבוקש</h2>\n<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<table><tr><th>שם המשתנה</th><th>מה הוא מייצג</th><th>איך מחשבים</th></tr>\n<tr><td><code>monthly</code></td><td>כמה הלקוחה מבקשת לשלם בחודש</td><td>הסכום חלקי מספר התשלומים</td></tr>\n</table>\n</div>\n<h2>חלק ג' — הכלל של הבנק ⭐</h2>\n<p><b>הבנק לא מאשר החזר חודשי שגדול משליש מההכנסה.</b> זה לא קפריזה: לקוח שמחזיר יותר מזה נקלע לחובות, וזו גם דרישה של הרגולטור.</p>\n<p>ההכנסה כאן היא 4,200. <b>תחשב בראש כמה זה שליש, ותשווה למה שהיא ביקשה לשלם.</b> הבקשה לא תאושר כפי שהיא.</p>\n<p>מה שקורה בבנק אמיתי הוא לא דחייה — <b>אלא פריסה ארוכה יותר.</b> אם היא יכולה לשלם רק את המקסימום המותר, פשוט צריך יותר תשלומים.</p>\n<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<table><tr><th>שם המשתנה</th><th>מה הוא מייצג</th><th>איך מחשבים</th></tr>\n<tr><td><b>1 ·</b> <code>max_monthly</code></td><td>ההחזר הגבוה ביותר שמותר לה</td><td>שליש מההכנסה, <b>בשקלים שלמים</b></td></tr>\n<tr><td><b>2 ·</b> <code>approved_monthly</code></td><td>ההחזר שייקבע בפועל</td><td>הקטן מבין <code>monthly</code> ל-<code>max_monthly</code></td></tr>\n<tr><td><b>3 ·</b> <code>real_months</code></td><td>כמה תשלומים מלאים יידרשו</td><td>הסכום <b>מנה שלמה</b> <code>approved_monthly</code></td></tr>\n<tr><td><b>4 ·</b> <code>last_payment</code></td><td>מה יישאר לתשלום האחרון</td><td>הסכום <b>שארית</b> <code>approved_monthly</code></td></tr>\n</table>\n</div>\n<p>⚠️ <b>אין <code>if</code> השבוע.</b> \"אם ההחזר גדול מהמותר אז…\" הוא בדיוק מה ש-<code>min</code> עושה בשורה אחת — ראה שבוע 6.</p>\n<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<p><b>שלוש שורות פלט, בסדר הזה:</b></p>\n<table><tr><th>מה מדפיסים</th><th>התווית</th></tr>\n<tr><td><code>monthly</code></td><td><code>החזר מבוקש:</code></td></tr>\n<tr><td><code>approved_monthly</code></td><td><code>החזר מאושר:</code></td></tr>\n<tr><td><code>real_months</code> ו-<code>last_payment</code></td><td><code>פריסה:</code> ואחריהם שני המספרים</td></tr>\n</table>\n</div>\n<p><b>שורת הפריסה נראית כך:</b></p>\n<pre dir=\"ltr\">פריסה: 10 תשלומים ועוד 1000</pre>\n<h2>מה נבדק</h2>\n<ul>\n<li>עשרת המשתנים קיימים, בשמות המדויקים</li>\n<li><b>הטיפוסים נכונים</b> — ‏<code>income</code>, <code>amount</code> ו-<code>months</code> הם מספרים שלמים, ‏<code>has_account</code> הוא אמת או שקר, ו-<code>name</code> נשאר מחרוזת</li>\n<li><code>approved_monthly</code> אינו גדול מ-<code>max_monthly</code></li>\n<li><code>real_months</code> כפול <code>approved_monthly</code>, ועוד <code>last_payment</code>, מחזירים בדיוק את הסכום המבוקש</li>\n<li>ארבע שורות הפלט מודפסות</li>\n</ul>\n<h2>מותר להיעזר</h2>\n<ul>\n<li><b>באלעד</b> — במיוחד על מה שחוזר ממנו <code>input()</code>, ועל למה יש כלל כזה בבנק</li>\n<li><b>בשינוי הקלט והרצה חוזרת.</b> נסה הכנסה של 9,000 במקום 4,200 ותראה מה קורה לפריסה. זו הדרך הכי מהירה להבין מה בדיוק <code>min</code> עושה כאן</li>\n</ul>\n<p><b>אין תנאים ואין לולאות השבוע.</b></p>",
+    "taskBlocks": [
+      {
+        "sec": "לפני שמתחילים",
+        "html": "<p>עד היום כל הנתונים היו כתובים בקוד שלך. <b>מהיום התוכנית מקבלת אותם מבחוץ</b> — ואותה תוכנית בדיוק תיתן תשובה אחרת לכל לקוח.</p>"
+      },
+      {
+        "sec": "לפני שמתחילים",
+        "html": "<p>זה ההבדל בין מחשבון שכתבת לעצמך לבין כלי שאפשר לתת לפקיד בסניף.</p>"
+      },
+      {
+        "sec": "איך קלט עובד כאן",
+        "html": "<p>הפונקציה <code>input()</code> קוראת <b>שורה אחת</b> ממה שהוקלד. בלוח התוצאות למטה יש טאב <b>קלט</b> — שם יושבות השורות שהתוכנית שלך תקרא, אחת לכל <code>input()</code>, לפי הסדר.</p>"
+      },
+      {
+        "sec": "איך קלט עובד כאן",
+        "html": "<p>הקלט של הבקשה שלפניך:</p>"
+      },
+      {
+        "sec": "איך קלט עובד כאן",
+        "html": "<pre dir=\"ltr\">דנה לוי\n4200\n15000\n10\n1</pre>",
+        "glue": true
+      },
+      {
+        "sec": "איך קלט עובד כאן",
+        "html": "<p><b>תוכל לשנות אותו ולהריץ שוב.</b> זה בדיוק מה שהופך את זה לכלי: לקוח אחר, אותה תוכנית, תשובה אחרת. ⚠️ <b>הבדיקות תמיד רצות על הקלט שלמעלה</b>, גם אם שינית — אחרת כל ניסוי שלך היה מפיל אותן.</p>"
+      },
+      {
+        "sec": "המלכודת של השבוע",
+        "html": "<p><code>input()</code> מחזיר <b>תמיד מחרוזת</b>. גם כשהוקלד מספר.</p>"
+      },
+      {
+        "sec": "המלכודת של השבוע",
+        "html": "<p>תריץ את שתי השורות האלה לבד, עם <code>5</code> בקלט, ותראה מה יוצא:</p>"
+      },
+      {
+        "sec": "המלכודת של השבוע",
+        "html": "<pre dir=\"ltr\">x = input()\nprint(x + x)</pre>",
+        "glue": true
+      },
+      {
+        "sec": "המלכודת של השבוע",
+        "html": "<p>קיבלת <code>55</code> ולא <code>10</code>. ‏<code>+</code> על שתי מחרוזות <b>מדביק</b> אותן; הוא לא מחבר. כדי לחשב צריך להמיר:</p>"
+      },
+      {
+        "sec": "המלכודת של השבוע",
+        "html": "<table><tr><th>הפונקציה</th><th>ממירה ל</th><th>דוגמה</th></tr>\n<tr><td><code>int()</code></td><td>מספר שלם</td><td><code>int(\"15000\")</code></td></tr>\n<tr><td><code>float()</code></td><td>מספר עשרוני</td><td><code>float(\"3.5\")</code></td></tr>\n<tr><td><code>str()</code></td><td>מחרוזת</td><td><code>str(1400)</code></td></tr>\n<tr><td><code>bool()</code></td><td>אמת או שקר</td><td><code>bool(0)</code></td></tr>\n</table>",
+        "glue": true
+      },
+      {
+        "sec": "המלכודת של השבוע",
+        "html": "<p>⚠️ <b>‏<code>bool</code> של מחרוזת כמעט תמיד <code>True</code>.</b> ‏<code>bool(\"לא\")</code> הוא <code>True</code>, ו-<code>bool(\"0\")</code> גם הוא <code>True</code> — כי שתיהן מחרוזות שאינן ריקות. רק <code>bool(0)</code> על <b>המספר</b> אפס הוא <code>False</code>. זו הסיבה שממירים קודם ל-<code>int</code>.</p>"
+      },
+      {
+        "sec": "חלק א' — קליטת הבקשה",
+        "html": "<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<p>חמש שורות קלט, לפי הסדר. <b>כל אחת נכנסת למשתנה, ושלוש מהן צריכות המרה.</b></p>\n<table><tr><th>שם המשתנה</th><th>מה הוא מייצג</th><th>הטיפוס שהוא צריך להיות</th></tr>\n<tr><td><b>1 ·</b> <code>name</code></td><td>שם הלקוחה</td><td>מחרוזת, כפי שהתקבלה</td></tr>\n<tr><td><b>2 ·</b> <code>income</code></td><td>ההכנסה החודשית</td><td>מספר שלם</td></tr>\n<tr><td><b>3 ·</b> <code>amount</code></td><td>הסכום המבוקש</td><td>מספר שלם</td></tr>\n<tr><td><b>4 ·</b> <code>months</code></td><td>מספר התשלומים המבוקש</td><td>מספר שלם</td></tr>\n<tr><td><b>5 ·</b> <code>has_account</code></td><td>האם היא כבר לקוחה שלנו</td><td>אמת או שקר</td></tr>\n</table>\n<p>ואז <b>שורת פתיחה אחת</b>, שמדביקה טקסט לשם:</p>\n<pre dir=\"ltr\">שלום דנה לוי, קיבלנו את הבקשה.</pre>\n</div>"
+      },
+      {
+        "sec": "חלק א' — קליטת הבקשה",
+        "html": "<p>⚠️ <b>‏<code>has_account</code> מגיע כ-<code>\"1\"</code> או <code>\"0\"</code>.</b> שתי המרות, לא אחת — קודם למספר, ואז לאמת או שקר. אם תמיר ישירות למחרוזת תקבל <code>True</code> בשני המקרים, ולקוח חדש יירשם כוותיק.</p>"
+      },
+      {
+        "sec": "חלק ב' — ההחזר המבוקש",
+        "html": "<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<table><tr><th>שם המשתנה</th><th>מה הוא מייצג</th><th>איך מחשבים</th></tr>\n<tr><td><code>monthly</code></td><td>כמה הלקוחה מבקשת לשלם בחודש</td><td>הסכום חלקי מספר התשלומים</td></tr>\n</table>\n</div>"
+      },
+      {
+        "sec": "חלק ג' — הכלל של הבנק ⭐",
+        "html": "<p><b>הבנק לא מאשר החזר חודשי שגדול משליש מההכנסה.</b> זה לא קפריזה: לקוח שמחזיר יותר מזה נקלע לחובות, וזו גם דרישה של הרגולטור.</p>"
+      },
+      {
+        "sec": "חלק ג' — הכלל של הבנק ⭐",
+        "html": "<p>ההכנסה כאן היא 4,200. <b>תחשב בראש כמה זה שליש, ותשווה למה שהיא ביקשה לשלם.</b> הבקשה לא תאושר כפי שהיא.</p>"
+      },
+      {
+        "sec": "חלק ג' — הכלל של הבנק ⭐",
+        "html": "<p>מה שקורה בבנק אמיתי הוא לא דחייה — <b>אלא פריסה ארוכה יותר.</b> אם היא יכולה לשלם רק את המקסימום המותר, פשוט צריך יותר תשלומים.</p>"
+      },
+      {
+        "sec": "חלק ג' — הכלל של הבנק ⭐",
+        "html": "<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<table><tr><th>שם המשתנה</th><th>מה הוא מייצג</th><th>איך מחשבים</th></tr>\n<tr><td><b>1 ·</b> <code>max_monthly</code></td><td>ההחזר הגבוה ביותר שמותר לה</td><td>שליש מההכנסה, <b>בשקלים שלמים</b></td></tr>\n<tr><td><b>2 ·</b> <code>approved_monthly</code></td><td>ההחזר שייקבע בפועל</td><td>הקטן מבין <code>monthly</code> ל-<code>max_monthly</code></td></tr>\n<tr><td><b>3 ·</b> <code>real_months</code></td><td>כמה תשלומים מלאים יידרשו</td><td>הסכום <b>מנה שלמה</b> <code>approved_monthly</code></td></tr>\n<tr><td><b>4 ·</b> <code>last_payment</code></td><td>מה יישאר לתשלום האחרון</td><td>הסכום <b>שארית</b> <code>approved_monthly</code></td></tr>\n</table>\n</div>"
+      },
+      {
+        "sec": "חלק ג' — הכלל של הבנק ⭐",
+        "html": "<p>⚠️ <b>אין <code>if</code> השבוע.</b> \"אם ההחזר גדול מהמותר אז…\" הוא בדיוק מה ש-<code>min</code> עושה בשורה אחת — ראה שבוע 6.</p>"
+      },
+      {
+        "sec": "חלק ג' — הכלל של הבנק ⭐",
+        "html": "<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<p><b>שלוש שורות פלט, בסדר הזה:</b></p>\n<table><tr><th>מה מדפיסים</th><th>התווית</th></tr>\n<tr><td><code>monthly</code></td><td><code>החזר מבוקש:</code></td></tr>\n<tr><td><code>approved_monthly</code></td><td><code>החזר מאושר:</code></td></tr>\n<tr><td><code>real_months</code> ו-<code>last_payment</code></td><td><code>פריסה:</code> ואחריהם שני המספרים</td></tr>\n</table>\n</div>"
+      },
+      {
+        "sec": "חלק ג' — הכלל של הבנק ⭐",
+        "html": "<p><b>שורת הפריסה נראית כך:</b></p>"
+      },
+      {
+        "sec": "חלק ג' — הכלל של הבנק ⭐",
+        "html": "<pre dir=\"ltr\">פריסה: 10 תשלומים ועוד 1000</pre>",
+        "glue": true
+      },
+      {
+        "sec": "מה נבדק",
+        "html": "<ul>\n<li>עשרת המשתנים קיימים, בשמות המדויקים</li>\n<li><b>הטיפוסים נכונים</b> — ‏<code>income</code>, <code>amount</code> ו-<code>months</code> הם מספרים שלמים, ‏<code>has_account</code> הוא אמת או שקר, ו-<code>name</code> נשאר מחרוזת</li>\n<li><code>approved_monthly</code> אינו גדול מ-<code>max_monthly</code></li>\n<li><code>real_months</code> כפול <code>approved_monthly</code>, ועוד <code>last_payment</code>, מחזירים בדיוק את הסכום המבוקש</li>\n<li>ארבע שורות הפלט מודפסות</li>\n</ul>"
+      },
+      {
+        "sec": "מותר להיעזר",
+        "html": "<ul>\n<li><b>באלעד</b> — במיוחד על מה שחוזר ממנו <code>input()</code>, ועל למה יש כלל כזה בבנק</li>\n<li><b>בשינוי הקלט והרצה חוזרת.</b> נסה הכנסה של 9,000 במקום 4,200 ותראה מה קורה לפריסה. זו הדרך הכי מהירה להבין מה בדיוק <code>min</code> עושה כאן</li>\n</ul>"
+      },
+      {
+        "sec": "מותר להיעזר",
+        "html": "<p><b>אין תנאים ואין לולאות השבוע.</b></p>"
+      }
+    ],
+    "starter": "# ============================================\n#  טופס בקשת הלוואה\n#  מערכות ליבה · הבנק\n# ============================================\n#\n# הנתונים מגיעים מטאב \"קלט\" שלמטה, שורה לכל input().\n\n# --- חלק א': קליטת הבקשה ---\n\n# קלוט כאן את חמשת הנתונים, והמר את מי שצריך.\n\n\nprint(\"=== בקשת הלוואה ===\")\n\n\n# --- חלק ב': ההחזר המבוקש ---\n\n\n# --- חלק ג': הכלל של הבנק ---\n\n# max_monthly, approved_monthly, real_months, last_payment\n\n\nprint()\nprint(\"=== ההחלטה ===\")\n",
+    "testsVisible": "# בדיקות גלויות — שבוע 7\n#\n# ⛔ **שורה לכל חלק של המשימה.** מד ההתקדמות שהתלמיד רואה הוא מספר\n#    הבדיקות שעברו, ולכן כיסוי חלקי משדר \"סיימת\" למי שסיים שליש.\n#\n# ⚠️ **השבוע הציר הוא הטיפוס, לא הערך.** ‏input() מחזיר מחרוזת, ותלמיד\n#    שלא המיר יקבל \"15000\" במקום 15000 — ועל מחרוזות גם // עובד אחרת\n#    וגם min משווה לפי סדר אלפביתי. כל בדיקה על נתון קלוט שואלת גם\n#    מאיזה טיפוס הוא.\n#\n# ⚠️ **הבדיקות רצות על הקלט הרשמי של המשימה**, גם אם התלמיד שינה את\n#    תיבת הקלט. ראה execute() ב-app.js.\n#\n# זמין: OUTPUT · LINES · VARS\n\nCENT = 0.01\n\n\ndef _get(name):\n    assert name in VARS, (\n        f\"לא מצאתי משתנה בשם {name}. \"\n        \"שמות המשתנים חייבים להיות בדיוק כפי שרשום במשימה.\"\n    )\n    return VARS[name]\n\n\ndef _whole(name):\n    value = _get(name)\n    assert isinstance(value, int) and not isinstance(value, bool), (\n        f\"{name} הוא {type(value).__name__} ולא מספר שלם. \"\n        \"‏input() מחזיר מחרוזת תמיד — צריך להמיר ב-int().\"\n    )\n    return value\n\n\ndef test_something_printed():\n    \"\"\"התוכנית מדפיסה משהו\"\"\"\n    assert OUTPUT.strip(), \"התוכנית לא הדפיסה כלום.\"\n\n\n# ── חלק א': הקליטה ────────────────────────────────────────────────────\n\ndef test_name_is_text():\n    \"\"\"חלק א': השם נקלט כמחרוזת\"\"\"\n    value = _get(\"name\")\n    assert isinstance(value, str), f\"name הוא {type(value).__name__} ולא מחרוזת.\"\n    assert value.strip() == \"דנה לוי\", (\n        f\"name הוא {value!r}. הוא אמור להיות השורה הראשונה של הקלט, כפי שהיא.\"\n    )\n\n\ndef test_numbers_converted():\n    \"\"\"חלק א': שלושת המספרים הומרו למספרים שלמים\"\"\"\n    assert _whole(\"income\") == 4200, \"income אינו ההכנסה שבקלט.\"\n    assert _whole(\"amount\") == 15000, \"amount אינו הסכום שבקלט.\"\n    assert _whole(\"months\") == 10, \"months אינו מספר התשלומים שבקלט.\"\n\n\ndef test_has_account_is_boolean():\n    \"\"\"חלק א': הלקוחה הקיימת נקלטה כאמת או שקר\"\"\"\n    value = _get(\"has_account\")\n    assert isinstance(value, bool), (\n        f\"has_account הוא {type(value).__name__} ולא אמת או שקר. \"\n        \"שתי המרות: קודם int, ואז bool.\"\n    )\n    assert value is True, (\n        \"has_account יצא False. בקלט יש 1, כלומר לקוחה קיימת.\"\n    )\n\n\ndef test_greeting_line():\n    \"\"\"חלק א': שורת הפתיחה מדביקה את השם\"\"\"\n    assert \"דנה לוי\" in OUTPUT, (\n        \"השם לא מופיע בפלט. שורת הפתיחה מדביקה טקסט לשם שנקלט.\"\n    )\n    assert \"שלום\" in OUTPUT, \"חסרה שורת הפתיחה.\"\n\n\n# ── חלק ב' ────────────────────────────────────────────────────────────\n\ndef test_monthly_requested():\n    \"\"\"חלק ב': ההחזר המבוקש הוא הסכום חלקי מספר התשלומים\"\"\"\n    expected = _get(\"amount\") / _get(\"months\")\n    value = _get(\"monthly\")\n    assert abs(value - expected) < CENT, (\n        f\"monthly יצא {value}, והחישוב נותן {expected}.\"\n    )\n\n\n# ── חלק ג' ────────────────────────────────────────────────────────────\n\ndef test_max_monthly_is_a_third():\n    \"\"\"חלק ג': התקרה היא שליש מההכנסה, בשקלים שלמים\"\"\"\n    value = _get(\"max_monthly\")\n    assert isinstance(value, int) and not isinstance(value, bool), (\n        f\"max_monthly הוא {type(value).__name__} ולא מספר שלם. \"\n        \"שקלים שלמים — ראה שבוע 5.\"\n    )\n    assert value == _get(\"income\") // 3, (\n        f\"max_monthly יצא {value}, ושליש מ-{_get('income')} בשקלים שלמים \"\n        f\"הוא {_get('income') // 3}.\"\n    )\n\n\ndef test_approved_is_the_smaller():\n    \"\"\"חלק ג': ההחזר המאושר הוא הקטן מבין השניים\"\"\"\n    expected = min(_get(\"monthly\"), _get(\"max_monthly\"))\n    value = _get(\"approved_monthly\")\n    assert abs(value - expected) < CENT, (\n        f\"approved_monthly יצא {value}. הקטן מבין {_get('monthly')} \"\n        f\"ל-{_get('max_monthly')} הוא {expected}.\"\n    )\n    assert value <= _get(\"max_monthly\") + CENT, (\n        \"approved_monthly גדול מהתקרה. זה בדיוק מה שהכלל אוסר.\"\n    )\n\n\ndef test_split_adds_up():\n    \"\"\"חלק ג': הפריסה מחזירה את הסכום במדויק\"\"\"\n    # ⚠️ **זו הבדיקה שבאמת שווה משהו כאן.** היא לא משווה למספר קבוע\n    #    אלא שואלת אם הפריסה של התלמיד **סוגרת** — וזה מה שבנק בודק.\n    months = _get(\"real_months\")\n    last = _get(\"last_payment\")\n    approved = _get(\"approved_monthly\")\n    total = months * approved + last\n    assert abs(total - _get(\"amount\")) < CENT, (\n        f\"‏{months} תשלומים של {approved} ועוד {last} הם {total}, \"\n        f\"והסכום המבוקש הוא {_get('amount')}. הפריסה מאבדת או ממציאה כסף.\"\n    )\n    assert last < approved + CENT, (\n        f\"last_payment יצא {last}, והוא אינו קטן מתשלום מלא. \"\n        \"אם נשאר תשלום שלם — הוא היה צריך להיספר ב-real_months.\"\n    )\n\n\ndef test_decision_printed():\n    \"\"\"חלק ג': שלוש שורות ההחלטה מודפסות\"\"\"\n    missing = [lbl for lbl in [\"החזר מבוקש:\", \"החזר מאושר:\", \"פריסה:\"]\n               if lbl not in OUTPUT]\n    assert not missing, f\"חסרות שורות: {', '.join(missing)}\"\n",
+    "inject": "",
+    "extension": {
+      "html": "<p>בקשה נוספת הגיעה לתור, ואותו טופס צריך לטפל גם בה. <b>הפעם ההכנסה גבוהה.</b></p>\n<p><b>אין כאן מושג חדש.</b> אותה תוכנית, קלט אחר — וזה כל מה שהשבוע הזה מנסה להראות.</p>\n<h2>חלק א' — שלוש שורות קלט נוספות</h2>\n<p>הקלט של השבוע מתארך בשלוש שורות, אחרי החמש הקיימות:</p>\n<pre dir=\"ltr\">12000\n21000\n12</pre>\n<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<table><tr><th>שם המשתנה</th><th>מה הוא מייצג</th><th>הטיפוס</th></tr>\n<tr><td><b>6 ·</b> <code>income2</code></td><td>ההכנסה החודשית של המבקש השני</td><td>מספר שלם</td></tr>\n<tr><td><b>7 ·</b> <code>amount2</code></td><td>הסכום שהוא מבקש</td><td>מספר שלם</td></tr>\n<tr><td><b>8 ·</b> <code>months2</code></td><td>מספר התשלומים שהוא מבקש</td><td>מספר שלם</td></tr>\n</table>\n</div>\n<p>⚠️ <b>הסדר קובע.</b> ‏<code>input()</code> קורא את השורה הבאה בתור, ולכן שלוש הקריאות האלה חייבות לבוא <b>אחרי</b> החמש של המשימה — לא לפניהן ולא במקומן.</p>\n<h2>חלק ב' — אותו חישוב, תוצאה אחרת</h2>\n<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<table><tr><th>שם המשתנה</th><th>מה הוא מייצג</th><th>איך מחשבים</th></tr>\n<tr><td><b>1 ·</b> <code>monthly2</code></td><td>ההחזר שהוא ביקש</td><td><code>amount2</code> חלקי <code>months2</code></td></tr>\n<tr><td><b>2 ·</b> <code>max_monthly2</code></td><td>התקרה שלו</td><td>שליש מ-<code>income2</code>, בשקלים שלמים</td></tr>\n<tr><td><b>3 ·</b> <code>approved_monthly2</code></td><td>ההחזר שייקבע</td><td>הקטן מבין השניים</td></tr>\n<tr><td><b>4 ·</b> <code>real_months2</code></td><td>כמה תשלומים</td><td><code>amount2</code> מנה שלמה <code>approved_monthly2</code></td></tr>\n<tr><td><b>5 ·</b> <code>last_payment2</code></td><td>התשלום האחרון</td><td><code>amount2</code> שארית <code>approved_monthly2</code></td></tr>\n</table>\n</div>\n<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<p><b>הדפס שתי שורות</b>, עם התוויות <code>החזר מאושר · שני:</code> ו-<code>פריסה · שני:</code>.</p>\n</div>\n<h2>חלק ג' — מה השתנה, ולמה</h2>\n<blockquote><b>תסתכל על שתי התוצאות זו לצד זו לפני שאתה ממשיך.</b></blockquote>\n<p>&gt;</p>\n<blockquote>אצל הלקוחה הראשונה ההחזר המאושר <b>קטן</b> ממה שביקשה, והתשלום האחרון אינו אפס. אצל השני ההחזר המאושר הוא <b>בדיוק</b> מה שביקש, והתשלום האחרון הוא אפס.</blockquote>\n<p>&gt;</p>\n<blockquote><b>אותה שורת קוד נתנה את שתי התשובות.</b> תחשוב למה — ואם זה לא ברור, זו שאלה טובה לאלעד.</blockquote>\n<p>⚠️ <b>ושים לב לטיפוס שיצא לך ב-<code>real_months2</code>.</b> הוא אינו מספר שלם, והוא גם לא אמור להיות: <code>approved_monthly2</code> הגיע מחלוקה רגילה, וכל פעולה עליו מחזירה עשרוני. זה לא באג.</p>\n<h2>מה נבדק</h2>\n<ul>\n<li>שלושת נתוני המבקש השני נקלטו <b>אחרי</b> החמישה הראשונים, והומרו למספרים שלמים</li>\n<li>חמשת המשתנים שלו נכונים</li>\n<li><code>approved_monthly2</code> אינו גדול מהתקרה שלו</li>\n<li>הפריסה שלו מחזירה בדיוק את הסכום שביקש</li>\n<li>שתי השורות מודפסות</li>\n<li><b>הבקשה הראשונה לא השתנתה</b></li>\n</ul>",
+      "blocks": [
+        {
+          "sec": "לפני שמתחילים",
+          "html": ""
+        },
+        {
+          "sec": "לפני שמתחילים",
+          "html": "<p>בקשה נוספת הגיעה לתור, ואותו טופס צריך לטפל גם בה. <b>הפעם ההכנסה גבוהה.</b></p>"
+        },
+        {
+          "sec": "לפני שמתחילים",
+          "html": "<p><b>אין כאן מושג חדש.</b> אותה תוכנית, קלט אחר — וזה כל מה שהשבוע הזה מנסה להראות.</p>"
+        },
+        {
+          "sec": "חלק א' — שלוש שורות קלט נוספות",
+          "html": "<p>הקלט של השבוע מתארך בשלוש שורות, אחרי החמש הקיימות:</p>"
+        },
+        {
+          "sec": "חלק א' — שלוש שורות קלט נוספות",
+          "html": "<pre dir=\"ltr\">12000\n21000\n12</pre>",
+          "glue": true
+        },
+        {
+          "sec": "חלק א' — שלוש שורות קלט נוספות",
+          "html": "<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<table><tr><th>שם המשתנה</th><th>מה הוא מייצג</th><th>הטיפוס</th></tr>\n<tr><td><b>6 ·</b> <code>income2</code></td><td>ההכנסה החודשית של המבקש השני</td><td>מספר שלם</td></tr>\n<tr><td><b>7 ·</b> <code>amount2</code></td><td>הסכום שהוא מבקש</td><td>מספר שלם</td></tr>\n<tr><td><b>8 ·</b> <code>months2</code></td><td>מספר התשלומים שהוא מבקש</td><td>מספר שלם</td></tr>\n</table>\n</div>"
+        },
+        {
+          "sec": "חלק א' — שלוש שורות קלט נוספות",
+          "html": "<p>⚠️ <b>הסדר קובע.</b> ‏<code>input()</code> קורא את השורה הבאה בתור, ולכן שלוש הקריאות האלה חייבות לבוא <b>אחרי</b> החמש של המשימה — לא לפניהן ולא במקומן.</p>"
+        },
+        {
+          "sec": "חלק ב' — אותו חישוב, תוצאה אחרת",
+          "html": "<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<table><tr><th>שם המשתנה</th><th>מה הוא מייצג</th><th>איך מחשבים</th></tr>\n<tr><td><b>1 ·</b> <code>monthly2</code></td><td>ההחזר שהוא ביקש</td><td><code>amount2</code> חלקי <code>months2</code></td></tr>\n<tr><td><b>2 ·</b> <code>max_monthly2</code></td><td>התקרה שלו</td><td>שליש מ-<code>income2</code>, בשקלים שלמים</td></tr>\n<tr><td><b>3 ·</b> <code>approved_monthly2</code></td><td>ההחזר שייקבע</td><td>הקטן מבין השניים</td></tr>\n<tr><td><b>4 ·</b> <code>real_months2</code></td><td>כמה תשלומים</td><td><code>amount2</code> מנה שלמה <code>approved_monthly2</code></td></tr>\n<tr><td><b>5 ·</b> <code>last_payment2</code></td><td>התשלום האחרון</td><td><code>amount2</code> שארית <code>approved_monthly2</code></td></tr>\n</table>\n</div>"
+        },
+        {
+          "sec": "חלק ב' — אותו חישוב, תוצאה אחרת",
+          "html": "<div class=\"do\"><span class=\"do-tag\">לכתוב בסקריפט</span>\n<p><b>הדפס שתי שורות</b>, עם התוויות <code>החזר מאושר · שני:</code> ו-<code>פריסה · שני:</code>.</p>\n</div>"
+        },
+        {
+          "sec": "חלק ג' — מה השתנה, ולמה",
+          "html": "<blockquote><b>תסתכל על שתי התוצאות זו לצד זו לפני שאתה ממשיך.</b></blockquote>\n<p>&gt;</p>\n<blockquote>אצל הלקוחה הראשונה ההחזר המאושר <b>קטן</b> ממה שביקשה, והתשלום האחרון אינו אפס. אצל השני ההחזר המאושר הוא <b>בדיוק</b> מה שביקש, והתשלום האחרון הוא אפס.</blockquote>\n<p>&gt;</p>\n<blockquote><b>אותה שורת קוד נתנה את שתי התשובות.</b> תחשוב למה — ואם זה לא ברור, זו שאלה טובה לאלעד.</blockquote>"
+        },
+        {
+          "sec": "חלק ג' — מה השתנה, ולמה",
+          "html": "<p>⚠️ <b>ושים לב לטיפוס שיצא לך ב-<code>real_months2</code>.</b> הוא אינו מספר שלם, והוא גם לא אמור להיות: <code>approved_monthly2</code> הגיע מחלוקה רגילה, וכל פעולה עליו מחזירה עשרוני. זה לא באג.</p>"
+        },
+        {
+          "sec": "מה נבדק",
+          "html": "<ul>\n<li>שלושת נתוני המבקש השני נקלטו <b>אחרי</b> החמישה הראשונים, והומרו למספרים שלמים</li>\n<li>חמשת המשתנים שלו נכונים</li>\n<li><code>approved_monthly2</code> אינו גדול מהתקרה שלו</li>\n<li>הפריסה שלו מחזירה בדיוק את הסכום שביקש</li>\n<li>שתי השורות מודפסות</li>\n<li><b>הבקשה הראשונה לא השתנתה</b></li>\n</ul>"
+        }
+      ],
+      "tests": "# בדיקות ההרחבה — שבוע 7\n#\n# ⚠️ **גלויות לתלמיד שקיבל את ההרחבה**, ורצות לצד הבדיקות השבועיות\n#    על אותה תוכנית — ראה tools/check_extension.py.\n#\n# זמין: OUTPUT · LINES · VARS\n\nCENT = 0.01\n\nSECOND = [\"income2\", \"amount2\", \"months2\",\n          \"monthly2\", \"max_monthly2\", \"approved_monthly2\",\n          \"real_months2\", \"last_payment2\"]\n\n\ndef _get(name):\n    assert name in VARS, f\"לא מצאתי משתנה בשם {name}.\"\n    return VARS[name]\n\n\ndef test_second_variables():\n    \"\"\"שמונת משתני הבקשה השנייה קיימים\"\"\"\n    missing = [n for n in SECOND if n not in VARS]\n    assert not missing, f\"חסרים משתנים: {', '.join(missing)}\"\n\n\ndef test_second_input_converted():\n    \"\"\"שלושת נתוני הקלט הומרו למספרים שלמים\"\"\"\n    for name, value in ((\"income2\", 12000), (\"amount2\", 21000), (\"months2\", 12)):\n        got = _get(name)\n        assert isinstance(got, int) and not isinstance(got, bool), (\n            f\"{name} הוא {type(got).__name__} ולא מספר שלם.\"\n        )\n        assert got == value, (\n            f\"{name} יצא {got}. ⚠️ אם קיבלת כאן ערך של הבקשה הראשונה — \"\n            \"שלוש הקריאות ל-input של ההרחבה חייבות לבוא אחרי החמש שלה.\"\n        )\n\n\ndef test_second_monthly():\n    \"\"\"ההחזר המבוקש של השני\"\"\"\n    expected = _get(\"amount2\") / _get(\"months2\")\n    assert abs(_get(\"monthly2\") - expected) < CENT, (\n        f\"monthly2 יצא {_get('monthly2')}, והחישוב נותן {expected}.\"\n    )\n\n\ndef test_second_cap():\n    \"\"\"התקרה שלו היא שליש מההכנסה שלו, בשקלים שלמים\"\"\"\n    value = _get(\"max_monthly2\")\n    assert isinstance(value, int) and not isinstance(value, bool), (\n        f\"max_monthly2 הוא {type(value).__name__} ולא מספר שלם.\"\n    )\n    assert value == _get(\"income2\") // 3, (\n        f\"max_monthly2 יצא {value}, ושליש מ-{_get('income2')} בשקלים שלמים \"\n        f\"הוא {_get('income2') // 3}.\"\n    )\n\n\ndef test_second_approved_is_the_request():\n    \"\"\"אצלו התקרה אינה נוגעת, ולכן מאושר מה שביקש\"\"\"\n    # ⚠️ **זה הלב של ההרחבה.** אותה שורת min נתנה כאן את הצד השני,\n    #    בלי שום תנאי ובלי שורה נוספת.\n    expected = min(_get(\"monthly2\"), _get(\"max_monthly2\"))\n    assert abs(_get(\"approved_monthly2\") - expected) < CENT, (\n        f\"approved_monthly2 יצא {_get('approved_monthly2')}, \"\n        f\"והקטן מבין השניים הוא {expected}.\"\n    )\n    assert abs(_get(\"approved_monthly2\") - _get(\"monthly2\")) < CENT, (\n        \"אצל המבקש השני ההכנסה גבוהה והתקרה אינה נוגעת — \"\n        \"ההחזר המאושר אמור להיות בדיוק מה שביקש.\"\n    )\n\n\ndef test_second_split_adds_up():\n    \"\"\"הפריסה שלו מחזירה את הסכום במדויק\"\"\"\n    total = _get(\"real_months2\") * _get(\"approved_monthly2\") + _get(\"last_payment2\")\n    assert abs(total - _get(\"amount2\")) < CENT, (\n        f\"הפריסה נותנת {total} והסכום המבוקש הוא {_get('amount2')}.\"\n    )\n\n\ndef test_second_printed():\n    \"\"\"שתי שורות הבקשה השנייה מודפסות\"\"\"\n    missing = [lbl for lbl in [\"החזר מאושר · שני:\", \"פריסה · שני:\"]\n               if lbl not in OUTPUT]\n    assert not missing, f\"חסרות שורות: {', '.join(missing)}\"\n\n\ndef test_first_request_untouched():\n    \"\"\"הבקשה הראשונה נשארה כפי שהמשימה קבעה\"\"\"\n    assert _get(\"income\") == 4200 and _get(\"amount\") == 15000, (\n        \"הנתונים של הבקשה הראשונה השתנו. ההרחבה מוסיפה בקשה שנייה \"\n        \"ואינה נוגעת בראשונה.\"\n    )\n"
+    },
+    "manager": [
+      {
+        "kind": "goal",
+        "text": "הגיעה בקשת הלוואה, ואני צריך שתבנה את הטופס שמטפל בה. ההבדל מהשבועות הקודמים: הנתונים לא כתובים בקוד — התוכנית מקבלת אותם. יש כלל אחד של הבנק שתצטרך ליישם, והוא בדף המשימה. תתחיל, נדבר תוך כדי."
       }
     ],
     "avatars": [

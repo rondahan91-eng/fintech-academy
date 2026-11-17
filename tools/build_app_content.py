@@ -55,7 +55,26 @@ def _blocks(md: str) -> list:
     """מפריד markdown לגושים אטומיים, ושומר גוש קוד שלם."""
     nl = chr(10)
     out, cur, fence = [], [], False
+    # ⚠️ **גוש "לכתוב בסקריפט" נשאר שלם.** הוא נפתח ב-:::do ונסגר
+    #    ב-:::, ואם האריזה תחתוך באמצעו — התג ייפתח במנה אחת וייסגר
+    #    במנה אחרת, כלומר HTML שבור על המסך.
+    doing = False
     for line in md.split(nl):
+        if line.strip() == ":::do":
+            if cur:
+                out.append(nl.join(cur))
+            cur = [line]
+            doing = True
+            continue
+        if line.strip() == ":::" and doing:
+            cur.append(line)
+            out.append(nl.join(cur))
+            cur = []
+            doing = False
+            continue
+        if doing:
+            cur.append(line)
+            continue
         if line.lstrip().startswith("```"):
             fence = not fence
             cur.append(line)
@@ -189,6 +208,11 @@ def md_to_html(md: str) -> str:
         return s
 
     out, rows, lst, code = [], [], None, None
+    # ⚠️ **"מתי אני כותב ומתי אני קורא" הייתה התלונה החוזרת של
+    #    התלמידים.** ‏:::do פותח גוש "לכתוב בסקריפט" ו-::: סוגר אותו;
+    #    כל מה שמחוץ לגוש הוא הסבר. הסימון הוא ויזואלי בלוח המשימה
+    #    ואינו משנה את תוכן ההוראה.
+    doing = False
 
     def flush_table():
         if not rows:
@@ -220,6 +244,17 @@ def md_to_html(md: str) -> str:
             continue
         if code is not None:
             code.append(raw)
+            continue
+
+        if line.strip() == ":::do":
+            flush_table(); flush_list()
+            out.append('<div class="do"><span class="do-tag">לכתוב בסקריפט</span>')
+            doing = True
+            continue
+        if line.strip() == ":::" and doing:
+            flush_table(); flush_list()
+            out.append("</div>")
+            doing = False
             continue
 
         if line.startswith("|"):
@@ -269,6 +304,31 @@ def parse_meta(yml: str) -> dict:
         if m:
             out[key] = m.group(1).strip()
     out["week"] = int(out.get("week", 0))
+    return out
+
+
+def parse_stdin(yml: str) -> list:
+    """‏meta.yml → stdin: הקלט הרשמי של המשימה, שורה לכל input().
+
+    ⚠️ **ריק בשבועות שאין בהם קלט**, ואז טאב "קלט" כלל אינו מופיע.
+       ⚠️ **ההערות בתוך הרשימה מדולגות** — ב-week-07 יושבת שם הערה
+       שמסבירה למה שורות ההרחבה נשלחות לכולם, והיא אינה קלט.
+    """
+    lines, inside, out = yml.splitlines(), False, []
+    for ln in lines:
+        if ln.rstrip() == "stdin:":
+            inside = True
+            continue
+        if not inside:
+            continue
+        bare = ln.strip()
+        if bare.startswith("#"):
+            continue
+        if bare.startswith("-"):
+            out.append(bare.lstrip("-").strip().strip("\"'"))
+            continue
+        if bare and not ln.startswith((" ", "	")):
+            break
     return out
 
 
@@ -367,6 +427,8 @@ def build_week(week: int):
 
     payload = {
         "week": meta["week"],
+        # הקלט הרשמי של המשימה. ריק בשבועות שאין בהם input().
+        "stdin": parse_stdin(meta_src),
         "slides": slides_rel if has_slides else "",
         "title": meta.get("title", task["title"]),
         "xp": meta.get("xp"),
