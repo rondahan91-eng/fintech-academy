@@ -1546,7 +1546,7 @@ export const WEEKS = {
       "21000",
       "12"
     ],
-    "slides": "",
+    "slides": "slides/week-07.html",
     "title": "טופס בקשת הלוואה",
     "xp": "500",
     "requirements": [],
