@@ -407,19 +407,13 @@ body.focus .task { display: none; }
   background: transparent; color: #DDE6F7; caret-color: #8B5CF6;
   font: 400 13px/1.6 var(--mono);
   padding: 8px 14px 8px 0; direction: ltr; text-align: left;
-  /* ⚠️⚠️ **‏isolate ולא plaintext, ולא להחזיר.** ‏plaintext קובע את
-     כיוון כל שורה לפי **התו החזק הראשון בה** — ולכן שורה שמתחילה
-     בעברית נפרסת כולה מימין לשמאל, והסוגריים, הפסיקים והגרשיים
-     נגררים איתה. **נצפה אצל תלמיד:**
-     ‏print("ריבית דריבית:", compound_interest) הוצג כ-
-     ‏print‏חתיריבד תיביר")":,compound_interest( — כלומר אי אפשר
-     לכתוב את השורה בכלל, וכל ניסיון לתקן לפי מה שרואים שובר אותה.
-     ‏isolate נותן לכל שורה כיוון LTR קבוע: מחרוזת עברית בתוכה
-     עדיין נקראת נכון בתוך עצמה, והשלד של הקוד נשאר במקומו.
-     **המחיר:** נקודה בסוף הערה בעברית נוחתת בצד השמאלי. זה מחיר
-     קוסמטי מול שורת קוד שאי אפשר לכתוב, ולכן ההערות בקובצי
-     ההתחלה נכתבות בלי נקודה מסיימת. */
-  unicode-bidi: isolate;
+  /* ⚠️ **נבדק, אל תחליף ל-isolate.** שורה שהוצגה הפוכה אצל תלמיד
+     ‏(שבוע 6, ‏print עם תווית בעברית) נראתה כמו באג דו-כיווניות,
+     והוחלף כאן plaintext ב-isolate. **מדידה בדפדפן הראתה ששתי
+     הערכים מציגים את אותה שורה בדיוק אותו דבר, ונכון.** הסיבה
+     האמיתית הייתה תו כיווניות בלתי נראה בתוך המחרוזת — ראה scrub
+     ב-app.js. ‏isolate רק פגע בהערות העבריות, ולכן הוחזר plaintext. */
+  unicode-bidi: plaintext;
   overflow-y: auto;
 }
 
@@ -440,7 +434,7 @@ body.focus .task { display: none; }
   padding: 8px 14px 8px 0;
   direction: ltr; text-align: left;
   /* שכבת הצבע חייבת להיות זהה לעורך שמתחתיה — ראה #code. */
-  unicode-bidi: isolate;
+  unicode-bidi: plaintext;
   white-space: pre-wrap; overflow-wrap: break-word;
   color: #DDE6F7;
 }
@@ -485,7 +479,7 @@ body.hl #code::selection { background: #3D6FE5; color: #FFFFFF; }
   font: 400 13px/1.6 var(--mono);
   padding: 8px 14px 8px 52px;
   direction: ltr; text-align: left; white-space: pre-wrap;
-  unicode-bidi: isolate;          /* כמו ב-#code — ראה ההערה שם */
+  unicode-bidi: plaintext;        /* כמו ב-#code — ראה ההערה שם */
 }
 .starter-view[hidden] { display: none; }
 

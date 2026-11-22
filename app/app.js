@@ -999,8 +999,9 @@ function applyState(state, { force = false } = {}) {
   showExtension(state.extension);
   const localCode = store.get(STORE);
   if (state.code && (force || !localCode)) {
-    el.code.value = state.code;
-    store.set(STORE, state.code);
+    const clean = scrub(state.code);      // ראה ההערה ליד scrub
+    el.code.value = clean;
+    store.set(STORE, clean);
     drawGutter();
   }
   if (state.chat && state.chat.length && !el.chat.children.length) {
@@ -1012,12 +1013,33 @@ function applyState(state, { force = false } = {}) {
 
 if (bootState) { showWallet(bootState.wallet); showExtension(bootState.extension); }
 
+// ══ תווים בלתי נראים ══════════════════════════════════════════════════
+// ⚠️ **נצפה בכיתה · רועי, שבוע 6.** השורה
+//    ‏print("ריבית דריבית:", compound_interest) הוצגה כשהסוגר הפותח
+//    בקצה הימני, ובמקביל הבדיקה דיווחה שהתווית **חסרה** — כשהיא על
+//    המסך מול העיניים. שתי התופעות הן אותו דבר אחד: בתוך המחרוזת ישב
+//    תו כיווניות בלתי נראה (‏RLE/RLM ודומיהם) שהגיע בהדבקה מטקסט
+//    עברי. התו הופך את פריסת השורה כולה — וזה **לא** עניין של
+//    ‏unicode-bidi ב-CSS, שורה כזו נפרסת הפוך גם עם isolate וגם עם
+//    ‏plaintext — והוא גם חלק מהמחרוזת, ולכן `"תווית:" in OUTPUT`
+//    יוצא False. **התלמיד אינו יכול לראות את התו ואינו יכול למחוק
+//    אותו**, והוא מקליד את השורה שוב ושוב.
+//
+// ⚠️ ‏U+00A0 מגיע מאותה הדבקה ושובר אחרת: פייתון זורק עליו
+//    ‏SyntaxError: invalid non-printable character, והתלמיד מחפש
+//    שגיאת תחביר בשורה שנראית תקינה לגמרי.
+const INVISIBLE = /[​-‏‪-‮⁦-⁩؜﻿]/g;
+const scrub = (s) => s.replace(INVISIBLE, '').replace(/ /g, ' ');
+
 // ‏bootState נקרא למעלה, לפני בחירת השבוע — ראה chooseWeek
 //
 // ⚠️ **|| ולא ??** — השרת מחזיר מחרוזת ריקה כשאין עבודה שמורה לשבוע
 //    הפעיל, ומחרוזת ריקה אינה null. עם ?? היא הייתה "מנצחת" את קוד
 //    ההתחלה, והתלמיד היה פותח שבוע חדש מול עורך ריק לגמרי.
-el.code.value = store.get(STORE) || (bootState && bootState.code) || WEEK.starter;
+//
+// ‏scrub כאן מרפא טיוטה שכבר נשמרה עם תו כזה — בלעדיו התלמיד שנתקע
+// נשאר תקוע גם אחרי התיקון.
+el.code.value = scrub(store.get(STORE) || (bootState && bootState.code) || WEEK.starter);
 
 const student = session.student;
 if (student && student.name) {
@@ -1179,6 +1201,18 @@ el.code.addEventListener('input', () => {
 });
 el.code.addEventListener('blur', () => { if (saveTimer) saveNow(); });
 addEventListener('pagehide', () => { if (saveTimer) saveNow(); });
+
+// ההדבקה היא הדרך שבה תווי הכיווניות נכנסים לעורך — ראה ההערה ליד
+// ‏scrub. ‏execCommand ולא השמה ל-value, מאותה סיבה כמו ב-Tab: השמה
+// מוחקת את מחסנית הביטול של הדפדפן.
+el.code.addEventListener('paste', (e) => {
+  const text = e.clipboardData && e.clipboardData.getData('text/plain');
+  if (!text) return;
+  const clean = scrub(text);
+  if (clean === text) return;      // נקי — שההדבקה תתנהג כרגיל
+  e.preventDefault();
+  document.execCommand('insertText', false, clean);
+});
 
 el.code.addEventListener('scroll', () => {
   el.gutter.scrollTop = el.code.scrollTop;
@@ -1626,7 +1660,19 @@ function execute(withTests) {
   if (withTests && WEEK.extension && extensionState === 'accepted') {
     tests += '\n\n' + (WEEK.extension.tests || '');
   }
-  const raw = fn(el.code.value, tests, WEEK.inject || '');
+  // ⚠️ **קו ההגנה האחרון.** ההדבקה אינה הדרך היחידה להכניס תו כיווניות
+  //    בלתי נראה, והטיוטה עשויה להגיע מהשרת. מה שרץ חייב להיות מה
+  //    שכתוב על המסך — ולכן מתקנים גם את העורך עצמו, לא רק את הקלט.
+  const source = scrub(el.code.value);
+  if (source !== el.code.value) {
+    const at = el.code.selectionStart;
+    el.code.value = source;
+    el.code.setSelectionRange(at, at);
+    drawGutter();
+    paintCode();
+    saveNow();
+  }
+  const raw = fn(source, tests, WEEK.inject || '');
   fn.destroy();
   return JSON.parse(raw);
 }
