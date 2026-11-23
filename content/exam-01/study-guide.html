@@ -1,0 +1,250 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>חוברת הכנה · בחינה מסכמת</title><style>
+:root { --ink:#1a1a1a; --muted:#5a5a5a; --line:#d8d8d8; --accent:#1e5aa8;
+        --soft:#f4f6f9; --warn:#fff8e6; --warn-line:#e0a800; }
+* { box-sizing:border-box; }
+body { direction:rtl; font-family:"Segoe UI","Arial",sans-serif;
+       color:var(--ink); line-height:1.65; max-width:19cm;
+       margin:0 auto; padding:1.5cm 1.2cm; font-size:11.5pt; }
+h1 { font-size:22pt; border-bottom:3px solid var(--accent); padding-bottom:.3em;
+     margin:0 0 .6em; }
+h2 { font-size:15pt; color:var(--accent); margin:1.6em 0 .5em;
+     border-bottom:1px solid var(--line); padding-bottom:.2em; }
+h3 { font-size:12.5pt; margin:1.2em 0 .4em; }
+h4 { font-size:11.5pt; color:var(--muted); margin:1em 0 .3em; }
+p { margin:.5em 0; }
+ul,ol { margin:.5em 0; padding-inline-start:1.5em; }
+li { margin:.25em 0; }
+code { direction:ltr; unicode-bidi:embed; font-family:Consolas,monospace;
+       background:var(--soft); padding:.1em .35em; border-radius:3px;
+       font-size:.9em; }
+pre { direction:ltr; text-align:left; background:var(--soft);
+      border:1px solid var(--line); border-inline-start:3px solid var(--accent);
+      padding:.7em .9em; border-radius:4px; overflow-x:auto; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; width:100%; margin:.8em 0; font-size:10.5pt; }
+th,td { border:1px solid var(--line); padding:.45em .6em; text-align:right;
+        vertical-align:top; }
+th { background:var(--soft); font-weight:600; }
+tr:nth-child(even) td { background:#fafbfc; }
+blockquote { background:var(--warn); border-inline-start:4px solid var(--warn-line);
+             margin:.9em 0; padding:.6em .9em; border-radius:0 4px 4px 0; }
+blockquote p { margin:.3em 0; }
+hr { border:none; border-top:1px solid var(--line); margin:1.6em 0; }
+a { color:var(--accent); }
+.box { display:inline-block; width:.95em; height:.95em; border:1.5px solid var(--muted);
+       border-radius:2px; margin-inline-end:.5em; vertical-align:-2px;
+       text-align:center; line-height:.9em; font-size:.8em; }
+.checklist { list-style:none; padding-inline-start:.2em; }
+.doc-head { color:var(--muted); font-size:10pt; margin-bottom:1.5em;
+            padding-bottom:.6em; border-bottom:1px solid var(--line); }
+.section-label { background:var(--accent); color:#fff; display:inline-block;
+                 padding:.25em .9em; border-radius:3px; font-size:10pt;
+                 margin:2.5em 0 .8em; }
+@media print {
+  body { padding:0; max-width:none; font-size:10.5pt; }
+  @page { margin:1.6cm 1.4cm; }
+  h1,h2,h3 { break-after:avoid; }
+  table,blockquote,pre { break-inside:avoid; }
+  .page-break { break-before:page; }
+  a { color:var(--ink); text-decoration:none; }
+}
+</style></head><body><div class="doc-head">FinTech Academy · חוברת הכנה</div><h1>חוברת הכנה · בחינה מסכמת</h1>
+<p><strong>FinTech Academy · פרקים 1–7</strong></p>
+<p>החוברת הזאת היא כל מה שצריך כדי להגיע מוכן. לכל שבוע יש כאן ארבעה חלקים: <strong>מה למדנו</strong>, <strong>איך זה נראה בקוד</strong>, <strong>המלכודות</strong> — הטעויות שבאמת קרו בכיתה — ו<strong>בדיקה עצמית</strong> קצרה. התשובות לבדיקות העצמיות נמצאות בסוף החוברת.</p>
+<p><strong>איך ללמוד מהחוברת:</strong> אל תקרא אותה כמו ספר. פתח את העורך לידך, הקלד כל דוגמה והרץ אותה. מה שתראה במו עיניך תזכור; מה שתקרא בלבד — לא.</p>
+<hr>
+<h2>מה יש בבחינה</h2>
+<table><thead><tr><th>חלק</th><th>מה יש בו</th><th>ניקוד</th></tr></thead><tbody><tr><td>חלק א&#x27;</td><td>35 שאלות אמריקאיות — 5 לכל שבוע</td><td>2 נק&#x27; לשאלה · 70</td></tr><tr><td>חלק ב&#x27;</td><td>14 שאלות פתוחות — 2 לכל שבוע</td><td>2–3 נק&#x27; לשאלה · 35</td></tr></tbody></table>
+<p>סך הכול 105 נקודות. חמש מהן בונוס — הציון המרבי הוא 100.</p>
+<p><strong>בכל שבוע השאלות מסודרות מהקלה לקשה.</strong> שאלה 1 בודקת שאתה מזהה מושג; שאלה 5 דורשת לקרוא קוד ולחשב תוצאה.</p>
+<blockquote><p><strong>מה שלא ייבדק:</strong> תנאים (<code>if</code>), לולאות, רשימות וכתיבת מחלקות. אלה לא נלמדו. אם פתרון שלך דורש <code>if</code> — יש דרך אחרת, ולמדנו אותה.</p></blockquote>
+<hr>
+<h2>שבוע 1 · יום ראשון בבנק</h2>
+<h3>מה למדנו</h3>
+<p>התוכנית הראשונה. המחשב לא מנחש ולא מבין — הוא מבצע <strong>רצף פקודות מדויק</strong>, לפי הסדר, מלמעלה למטה.</p>
+<ul><li><strong>אלגוריתם מילולי</strong> — רצף השלבים לפתרון בעיה, כתוב בשפה אנושית, <strong>לפני</strong> שנוגעים בקוד. זה השלב שבו חושבים.</li><li><strong>שפת תכנות</strong> — האמצעי לנסח את האלגוריתם כך שהמחשב יוכל לבצע אותו.</li><li><strong>מחזור חיי תוכנית</strong> — כותבים, מריצים, בודקים, מתקנים. ושוב. התיקון הוא חלק מהעבודה, לא סימן לכישלון.</li><li><strong><code>print</code></strong> — הפקודה שמוציאה טקסט למסך.</li></ul>
+<p>בצד הפיננסי: <strong>ברוטו</strong> הוא השכר לפני ניכויים, <strong>נטו</strong> הוא מה שמגיע לחשבון בפועל, ו<strong>ניכויי החובה</strong> הם מס הכנסה וביטוח לאומי.</p>
+<h3>איך זה נראה בקוד</h3>
+<pre dir="ltr"><code>print(&quot;=== כרטיס עובד ===&quot;)
+print(&quot;שם: דן כהן&quot;)
+print(&quot;מספר עובד: 10427&quot;)
+
+print()
+
+print(&quot;ברוטו: 6000&quot;)
+print(&quot;נטו: 4890&quot;)</code></pre>
+<p><code>print()</code> בלי כלום בתוך הסוגריים מדפיס <strong>שורה ריקה</strong>. זו הדרך להפריד בין חלקים בפלט.</p>
+<h3>המלכודות</h3>
+<blockquote><p>⚠️ <strong>מה שבתוך המרכאות מודפס בדיוק כמו שהוא.</strong> <code>print(&quot;6000 - 900&quot;)</code> ידפיס את הטקסט <code>6000 - 900</code>, ולא 5100. בשבוע 1 המחשב עוד לא מחשב כלום — אתה מקליד את התוצאה שחישבת בראש.</p></blockquote>
+<blockquote><p>⚠️ <strong>שכחת מרכאות או סוגר — התוכנית לא תרוץ בכלל.</strong> <code>print(נטו: 4890)</code> אינו מדפיס שורה שגויה; הוא נעצר בשגיאת תחביר לפני שהודפס משהו. זה לא אסון, זה השלב ה&quot;בודקים&quot; במחזור החיים.</p></blockquote>
+<h3>בדיקה עצמית</h3>
+<ol><li>מה ידפיס <code>print(&quot;ברוטו: 6000&quot;)</code>?</li><li>מה ההבדל בין <code>print()</code> לבין <code>print(&quot; &quot;)</code>?</li><li>ברוטו 8,000, מס הכנסה 1,200, ביטוח לאומי 280. מה הנטו?</li></ol>
+<hr>
+<h2>שבוע 2 · מודול הליבה</h2>
+<h3>מה למדנו</h3>
+<p>השבוע שבו נגענו במערכת שמישהו אחר כתב. <strong>מחלקה</strong> היא התבנית; <strong>עצם</strong> (מופע) הוא דבר קונקרטי אחד שנוצר ממנה. מחלקת <code>Account</code> היא התבנית של &quot;חשבון בנק&quot; — והחשבון של דנה והחשבון של יואב הם שני עצמים נפרדים, כל אחד עם <strong>יתרה והיסטוריה משלו</strong>.</p>
+<p>ההבחנה המרכזית של השבוע:</p>
+<table><thead><tr><th>סוג</th><th>מה עושה</th><th>דוגמה</th><th>אפשר להדפיס?</th></tr></thead><tbody><tr><td>פעולה ששואלת</td><td>מחזירה ערך, לא משנה כלום</td><td><code>acc.balance()</code></td><td>כן</td></tr><tr><td>פעולה שמשנה</td><td>משנה את מצב העצם, לא מחזירה ערך</td><td><code>acc.deposit(500)</code></td><td>לא</td></tr></tbody></table>
+<p>הממשק של <code>Account</code>: <code>owner()</code>, <code>balance()</code>, <code>is_overdrawn()</code>, <code>statement()</code> — שואלות. <code>deposit(amount)</code>, <code>withdraw(amount)</code>, <code>transfer_to(other, amount)</code> — משנות.</p>
+<h3>איך זה נראה בקוד</h3>
+<pre dir="ltr"><code>dana = Account(owner=&quot;דנה כהן&quot;, balance=2500)
+yoav = Account(owner=&quot;יואב לוי&quot;, balance=100)
+
+dana.deposit(400)
+dana.withdraw(120)
+dana.transfer_to(yoav, 50)
+
+print(&quot;יתרת דנה:&quot;, dana.balance())
+print(&quot;יתרת יואב:&quot;, yoav.balance())</code></pre>
+<h3>המלכודות</h3>
+<blockquote><p>⚠️ <strong><code>print(dana.deposit(400))</code> הוא שגיאה מושגית.</strong> הפקדה היא פעולה שמשנה — אין לה ערך להדפיס. קוראים לה בשורה נפרדת, ואם רוצים לראות את התוצאה — מדפיסים אחריה את <code>dana.balance()</code>.</p></blockquote>
+<blockquote><p>⚠️ <strong>אל תחשב את היתרה בראש ותדפיס מספר.</strong> המשימה נותנת פעולות ולא תוצאות בכוונה. התוכנית אמורה לגלות כמה יש בחשבון — זה כל ההבדל בין תוכנית לבין דף נייר.</p></blockquote>
+<blockquote><p>⚠️ <strong><code>transfer_to</code> מעדכנת את שני החשבונות.</strong> אחת מורידה ואחת מוסיפה, בקריאה אחת.</p></blockquote>
+<h3>בדיקה עצמית</h3>
+<ol><li><code>dana = Account(owner=&quot;דנה כהן&quot;, balance=2500)</code> — מה <code>dana</code>, ומה <code>Account</code>?</li><li>ליואב 150 ש&quot;ח והוא מושך 3,000. מה תחזיר <code>yoav.balance()</code> ומה תחזיר <code>yoav.is_overdrawn()</code>?</li><li>שני חשבונות נוצרו מאותה מחלקה. איך ייתכן שלכל אחד יתרה אחרת?</li></ol>
+<hr>
+<h2>שבוע 3 · תיק לקוח</h2>
+<h3>מה למדנו</h3>
+<p><strong>משתנה</strong> הוא שם שמצביע על ערך בזיכרון. <strong>השמה</strong> (<code>=</code>) נותנת לשם ערך — ואפשר להשתמש בשם הזה אחר כך במקום בערך עצמו.</p>
+<p>ארבעת הטיפוסים הבסיסיים:</p>
+<table><thead><tr><th>טיפוס</th><th>מה שומר</th><th>דוגמה</th></tr></thead><tbody><tr><td><code>int</code></td><td>מספר שלם</td><td><code>age = 34</code></td></tr><tr><td><code>float</code></td><td>מספר עם נקודה עשרונית</td><td><code>gross_salary = 12500.5</code></td></tr><tr><td><code>str</code></td><td>טקסט (מחרוזת)</td><td><code>customer_name = &quot;רותם אזולאי&quot;</code></td></tr><tr><td><code>bool</code></td><td>אמת או שקר</td><td><code>is_active = False</code></td></tr></tbody></table>
+<p><code>type(x)</code> מגלה את הטיפוס של ערך. <strong>השמה מחדש</strong> פשוט מחליפה את הערך — המשתנה מחזיק תמיד את הערך האחרון שהושם בו.</p>
+<h3>איך זה נראה בקוד</h3>
+<pre dir="ltr"><code>account_number = &quot;0521147&quot;     # מחרוזת, לא מספר
+age = 34
+is_active = False
+
+print(&quot;מספר חשבון:&quot;, account_number)
+print(type(age))               # &lt;class &#x27;int&#x27;&gt;
+
+is_active = True               # השמה מחדש — הערך הישן נעלם
+print(&quot;חשבון פעיל:&quot;, is_active)</code></pre>
+<h3>המלכודות</h3>
+<blockquote><p>⚠️ <strong>מספר חשבון הוא מזהה, לא כמות.</strong> <code>&quot;0521147&quot;</code> כמחרוזת נשמר במלואו. כמספר — <code>0521147</code> הופך ל-<code>521147</code>, והאפס המוביל נעלם. השאלה שקובעת: <strong>האם הייתי רוצה לחבר או לחסר את זה פעם?</strong> מספר חשבון — לא. גיל — כן.</p></blockquote>
+<blockquote><p>⚠️ <strong><code>&quot;34&quot;</code> ו-<code>34</code> אינם אותו דבר.</strong> הראשון מחרוזת, השני מספר שלם.</p></blockquote>
+<blockquote><p>⚠️ <strong>אין חישובים השבוע.</strong> אריתמטיקה מגיעה בשבוע 4. כאן מגדירים, מדפיסים, בודקים טיפוס ומעדכנים.</p></blockquote>
+<h3>בדיקה עצמית</h3>
+<ol><li>מה הטיפוס של <code>12500.5</code>? ומה של <code>False</code>?</li><li>מה יודפס?</li></ol>
+<p><code>x = 100</code> <code>x = 250</code> <code>print(x)</code></p>
+<ol><li>למה <code>&quot;0043219&quot;</code> חייב להישמר כמחרוזת, ומה בדיוק יקרה אם לא?</li></ol>
+<hr>
+<h2>שבוע 4 · מחשבון המשכורת</h2>
+<h3>מה למדנו</h3>
+<p>הפעם הראשונה שהמחשב מחשב במקומנו. ארבעת האופרטורים — <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> — ו<strong>סדר הקדימויות</strong>: כפל וחילוק לפני חיבור וחיסור, וסוגריים גוברים על הכול.</p>
+<p><strong>אחוז הוא פעולת כפל.</strong> 15% מסכום הם הסכום כפול 0.15. אין בפייתון סימן אחוז לחישוב — ממירים לשבר עשרוני ומכפילים.</p>
+<p><code>round(x, 2)</code> מעגל לשתי ספרות אחרי הנקודה.</p>
+<h3>איך זה נראה בקוד</h3>
+<pre dir="ltr"><code>gross_salary = 6000
+tax_rate = 0.15
+national_insurance_rate = 0.035
+
+income_tax = gross_salary * tax_rate
+national_insurance = gross_salary * national_insurance_rate
+net_salary = gross_salary - income_tax - national_insurance
+
+print(&quot;נטו:&quot;, round(net_salary, 2))
+
+effective_rate = round((income_tax + national_insurance) / gross_salary * 100, 1)
+print(&quot;שיעור ניכוי אפקטיבי:&quot;, effective_rate)      # 18.5</code></pre>
+<h3>המלכודות</h3>
+<blockquote><p>⚠️ <strong>הסוגריים בשיעור האפקטיבי אינם קישוט.</strong> בלעדיהם — <code>income_tax + national_insurance / gross_salary * 100</code> — החילוק יתבצע <strong>לפני</strong> החיבור, ויתקבל מספר אחר לגמרי. כשיש חיבור וחילוק באותה שורה, הסוגריים קובעים מה מחולק במה.</p></blockquote>
+<blockquote><p>⚠️ <strong>התוצאה 210.00000000000003 אינה טעות שלך.</strong> זה מה שמודפס מהמכפלה <code>6000 * 0.035</code>. כך המחשב שומר שברים עשרוניים, ויש לזה סיבה אמיתית שנלמד בהמשך. <code>round(x, 2)</code> מראה 210.0.</p></blockquote>
+<blockquote><p>⚠️ <strong>חלוקה מחזירה תמיד מספר עם נקודה.</strong> <code>6000 / 2</code> הוא <code>3000.0</code> ולא <code>3000</code>.</p></blockquote>
+<h3>בדיקה עצמית</h3>
+<ol><li>כמה הם <code>10 + 5 <em> 2</code>? וכמה <code>(10 + 5) </em> 2</code>?</li><li>כתוב את החישוב של עמלה בשיעור 0.4% על העברה של 2,500.</li><li>למה <code>round</code> לא פותר את העניין של 210.00000000000003 אלא רק מסתיר אותו?</li></ol>
+<hr>
+<h2>שבוע 5 · מחשבון הפריסה</h2>
+<h3>מה למדנו</h3>
+<p>שני אופרטורים שעובדים יחד:</p>
+<table><thead><tr><th>אופרטור</th><th>מה מחזיר</th><th><code>4850</code> ו-<code>6</code></th><th>טיפוס התוצאה</th></tr></thead><tbody><tr><td><code>/</code></td><td>חילוק רגיל</td><td><code>808.3333...</code></td><td><code>float</code></td></tr><tr><td><code>//</code></td><td><strong>מנה שלמה</strong> — כמה פעמים נכנס</td><td><code>808</code></td><td><code>int</code></td></tr><tr><td><code>%</code></td><td><strong>שארית</strong> — מה נשאר</td><td><code>2</code></td><td><code>int</code></td></tr></tbody></table>
+<p>ולצדם רעיון שחשוב לא פחות: <strong>אימות בהרכבה חוזרת.</strong> אחרי שפירקת — תרכיב בחזרה ותבדוק שקיבלת את המספר המקורי. פתרון בודקים, לא מניחים.</p>
+<h3>איך זה נראה בקוד</h3>
+<pre dir="ltr"><code>purchase_amount = 4850
+payments_count = 6
+
+payment = purchase_amount // payments_count      # 808
+remainder = purchase_amount % payments_count     # 2
+first_payment = payment + remainder              # 810
+
+check_total = payment * (payments_count - 1) + first_payment
+print(&quot;בדיקה:&quot;, check_total)                     # 4850</code></pre>
+<p>ואותם אופרטורים בשימוש הפוך — הרכבה במקום פירוק:</p>
+<pre dir="ltr"><code>total_agorot = 128745
+shekels = total_agorot // 100        # 1287
+agorot = total_agorot % 100          # 45</code></pre>
+<h3>המלכודות</h3>
+<blockquote><p>⚠️ <strong><code>/</code> במקום <code>//</code> היא הטעות המרכזית של השבוע, והיא קשה לזיהוי.</strong> <code>808.3333</code> נראה כמו תשובה, אבל אי אפשר לחייב לקוח בשליש שקל. הבדיקות שואלות גם <strong>מה הטיפוס</strong>, ו-<code>/</code> מחזיר <code>float</code> — ונופל.</p></blockquote>
+<blockquote><p>⚠️ <strong><code>round(x / y)</code> אינו <code>x // y</code>.</strong> על 4850 חלקי 6 שניהם נותנים 808, ולכן הטעות מתחבאת. על <strong>4853 חלקי 6</strong> הם נפרדים: <code>//</code> נותן 808, ו-<code>round</code> נותן 809 — כי הוא מעגל כלפי מעלה. <code>//</code> תמיד <strong>חותך כלפי מטה</strong>.</p></blockquote>
+<blockquote><p>⚠️ <strong>אין תנאים השבוע.</strong> אין &quot;אם השארית גדולה מאפס אז...&quot;. השארית פשוט מתווספת לתשלום הראשון, תמיד. כשהיא אפס — התשלום הראשון שווה לשאר, וזה עובד מעצמו.</p></blockquote>
+<h3>בדיקה עצמית</h3>
+<ol><li>כמה הם <code>7230 // 7</code> וכמה <code>7230 % 7</code>?</li><li>איך מוודאים שהפריסה נכונה, ומה המספר שצריך לצאת?</li><li>תלמיד כתב <code>payment = int(purchase_amount / payments_count)</code>. התוצאה יצאה נכונה והבדיקות עברו. למה זה בכל זאת לא הפתרון הנכון?</li></ol>
+<hr>
+<h2>שבוע 6 · מחשבון הריבית</h2>
+<h3>מה למדנו</h3>
+<p>חמש פונקציות מובנות — קוד מוכן שהשפה נותנת לנו:</p>
+<table><thead><tr><th>פונקציה</th><th>מה עושה</th><th>דוגמה</th></tr></thead><tbody><tr><td><code>pow(base, exp)</code></td><td>העלאה בחזקה</td><td><code>pow(2, 10)</code> → <code>1024</code></td></tr><tr><td><code>abs(x)</code></td><td>ערך מוחלט — הפרש בלי סימן</td><td><code>abs(-90.28)</code> → <code>90.28</code></td></tr><tr><td><code>min(a, b)</code></td><td>הקטן מבין השניים — <strong>תקרה</strong></td><td><code>min(1770, 1500)</code> → <code>1500</code></td></tr><tr><td><code>max(a, b)</code></td><td>הגדול מבין השניים — <strong>רצפה</strong></td><td><code>max(-50, 0)</code> → <code>0</code></td></tr><tr><td><code>divmod(a, b)</code></td><td>מנה ושארית יחד</td><td><code>divmod(27028, 100)</code> → <code>(270, 28)</code></td></tr></tbody></table>
+<p>והמושג הפיננסי: <strong>ריבית פשוטה</strong> מחושבת תמיד על הקרן המקורית. <strong>ריבית דריבית</strong> מחושבת בכל שנה על הסכום שכבר כולל את ריבית השנים הקודמות — ולכן היא גדולה יותר.</p>
+<h3>איך זה נראה בקוד</h3>
+<pre dir="ltr"><code>principal = 12000
+annual_rate = 0.035
+years = 4
+
+simple_interest = principal * annual_rate * years        # 1680.0
+
+compound_total = pow(1 + annual_rate, years) * principal  # 13770.28
+compound_interest = compound_total - principal            # 1770.28
+gap = abs(compound_interest - simple_interest)            # 90.28
+
+cap = 1500
+paid_now = min(compound_interest, cap)                    # 1500</code></pre>
+<h3>המלכודות</h3>
+<blockquote><p>⚠️ <strong><code>1 + annual_rate</code> ולא <code>annual_rate</code> לבדו.</strong> אחרי שנה יש ללקוח את כל הכסף שלו <strong>ועוד</strong> הריבית — כלומר פי 1.035. <code>pow(0.035, 4)</code> נותן מספר זעיר, כי זה 3.5% מ-3.5% מ-3.5%.</p></blockquote>
+<blockquote><p>⚠️ <strong><code>min</code> ו-<code>max</code> הם תנאי שנכתב בלי <code>if</code>.</strong> &quot;לא יותר מ-1,500&quot; הוא <code>min(x, 1500)</code>. &quot;לא פחות מאפס&quot; הוא <code>max(x, 0)</code>. כך זה נכתב גם בקוד אמיתי — זו לא עקיפה.</p></blockquote>
+<blockquote><p>⚠️ <strong>יש הבדל בין <code>round</code> שנכנס למשתנה לבין <code>round</code> בהדפסה.</strong> <code>round(x, 2)</code> בתוך <code>print</code> משנה רק את התצוגה; המשתנה נשאר ארוך. כשהסכום ייכנס לחישוב הבא — מעגלים את <strong>המשתנה עצמו</strong>.</p></blockquote>
+<blockquote><p>⚠️ <strong><code>simple_interest</code> יוצא 1680.0000000000002.</strong> אותו סיפור של שבוע 4, ולכן כל בדיקה על כסף מרשה סטייה של אגורה.</p></blockquote>
+<h3>בדיקה עצמית</h3>
+<ol><li>מה מחזיר <code>pow(3, 2)</code>? ומה <code>abs(5 - 12)</code>?</li><li>הריבית יצאה 2,240 ש&quot;ח והתקרה היא 1,500. כתוב שורה אחת שמחזירה את מה שישולם עכשיו.</li><li>למה הריבית דריבית גדולה מהפשוטה, אם זה אותו אחוז ואותה קרן?</li></ol>
+<hr>
+<h2>שבוע 7 · טופס בקשת הלוואה</h2>
+<h3>מה למדנו</h3>
+<p>השבוע שבו התוכנית מפסיקה להיות מחשבון של עצמה. <code>input()</code> קולט נתון מהמשתמש — ואותה תוכנית נותנת תשובה אחרת לכל לקוח.</p>
+<p><strong>הכלל היחיד שחייבים לזכור: <code>input()</code> מחזיר תמיד מחרוזת.</strong> גם אם הוקלד <code>4200</code>, מה שהתקבל הוא <code>&quot;4200&quot;</code> — טקסט. כדי לחשב איתו צריך להמיר.</p>
+<table><thead><tr><th>המרה</th><th>ממה למה</th><th>דוגמה</th></tr></thead><tbody><tr><td><code>int(x)</code></td><td>למספר שלם</td><td><code>int(&quot;4200&quot;)</code> → <code>4200</code></td></tr><tr><td><code>float(x)</code></td><td>למספר עשרוני</td><td><code>float(&quot;12500.5&quot;)</code> → <code>12500.5</code></td></tr><tr><td><code>str(x)</code></td><td>למחרוזת</td><td><code>str(34)</code> → <code>&quot;34&quot;</code></td></tr><tr><td><code>bool(x)</code></td><td>לאמת/שקר</td><td><code>bool(0)</code> → <code>False</code></td></tr></tbody></table>
+<h3>איך זה נראה בקוד</h3>
+<pre dir="ltr"><code>name = input()
+income = int(input())
+amount = int(input())
+months = int(input())
+has_account = bool(int(input()))      # שתי המרות — ראה למטה
+
+print(&quot;שלום &quot; + name + &quot;, קיבלנו את הבקשה.&quot;)
+
+monthly = amount / months             # 1500.0
+max_monthly = income // 3             # 1400  — שליש ההכנסה, בשקלים שלמים
+approved_monthly = min(monthly, max_monthly)   # 1400
+
+real_months = amount // approved_monthly       # 10
+last_payment = amount % approved_monthly       # 1000</code></pre>
+<h3>המלכודות</h3>
+<blockquote><p>⚠️ <strong><code>&quot;5&quot; + &quot;5&quot;</code> הוא <code>&quot;55&quot;</code>, לא 10.</strong> הפלוס מחבר מספרים, אבל <strong>משרשר</strong> מחרוזות. זו הסיבה שממירים — ולכן <code>int(&quot;5&quot;) + int(&quot;5&quot;)</code> הוא 10.</p></blockquote>
+<blockquote><p>⚠️ <strong><code>bool(&quot;0&quot;)</code> הוא <code>True</code>.</strong> כל מחרוזת שאינה ריקה היא אמת — גם <code>&quot;0&quot;</code>, גם <code>&quot;False&quot;</code>. רק <code>bool(int(&quot;0&quot;))</code> נותן <code>False</code>. לכן צריך <strong>שתי המרות</strong>: קודם למספר, ואז לאמת/שקר.</p></blockquote>
+<blockquote><p>⚠️ <strong>אי אפשר לשרשר מספר למחרוזת.</strong> <code>&quot;שלום &quot; + 34</code> נופל בשגיאה; צריך <code>&quot;שלום &quot; + str(34)</code>, או להפריד בפסיק בתוך <code>print</code>.</p></blockquote>
+<blockquote><p>⚠️ <strong>שליש ההכנסה הוא <code>//</code> ולא <code>/</code>.</strong> <code>4200 / 3</code> נותן <code>1400.0</code> — נכון בערך, שגוי בטיפוס. ההחזר המאושר נמדד בשקלים שלמים.</p></blockquote>
+<h3>בדיקה עצמית</h3>
+<ol><li>תלמיד כתב <code>income = input()</code> ואז <code>income * 2</code>. מה יקרה?</li><li>מה יחזיר <code>min(1500.0, 1400)</code>?</li><li>לקוח מבקש 21,000 ל-12 חודשים, והכנסתו 12,000. מה ההחזר המבוקש, מה המותר, ומה יאושר?</li></ol>
+<hr>
+<h2>תשובות לבדיקות העצמיות</h2>
+<p><strong>שבוע 1</strong></p>
+<ol><li>את הטקסט <code>ברוטו: 6000</code> בדיוק כפי שהוא, בלי המרכאות.</li><li><code>print()</code> מדפיס שורה ריקה לגמרי; <code>print(&quot; &quot;)</code> מדפיס שורה שיש בה תו רווח אחד.</li><li>8000 − 1200 − 280 = <strong>6,520</strong>.</li></ol>
+<p><strong>שבוע 2</strong></p>
+<ol><li><code>dana</code> הוא עצם — חשבון אחד קונקרטי. <code>Account</code> היא המחלקה, התבנית שממנה הוא נוצר.</li><li><code>yoav.balance()</code> תחזיר <strong>−2850</strong>, ו-<code>is_overdrawn()</code> תחזיר <strong>True</strong>.</li><li>כי המחלקה היא רק התבנית. כל עצם שנוצר ממנה מחזיק <strong>מצב משלו</strong> — יתרה והיסטוריה נפרדות.</li></ol>
+<p><strong>שבוע 3</strong></p>
+<ol><li><code>float</code> ו-<code>bool</code>.</li><li><strong>250.</strong> ההשמה השנייה מחליפה את הראשונה.</li><li>כמחרוזת הוא נשמר במלואו. כמספר האפס המוביל נעלם והוא הופך ל-<code>43219</code> — מספר חשבון אחר לגמרי, שאינו קיים בבנק.</li></ol>
+<p><strong>שבוע 4</strong></p>
+<ol><li><code>10 + 5 <em> 2</code> הוא <strong>20</strong> (הכפל קודם); <code>(10 + 5) </em> 2</code> הוא <strong>30</strong>.</li><li><code>commission = 2500 * 0.004</code> — התוצאה היא <strong>10.0</strong>.</li><li>כי <code>round</code> משנה רק את הערך שמוצג או נשמר באותו רגע. הסיבה — אופן שמירת השברים במחשב — נשארת, ולכן בבנק אמיתי שומרים כסף באגורות שלמות.</li></ol>
+<p><strong>שבוע 5</strong></p>
+<ol><li><code>7230 // 7</code> הוא <strong>1032</strong>, ו-<code>7230 % 7</code> הוא <strong>6</strong>.</li><li>מרכיבים בחזרה: <code>1032 * 6 + 1038</code> וצריך לצאת <strong>7230</strong>.</li><li>כי הוא עובד <strong>במקרה הזה בלבד</strong>. <code>int(x / y)</code> עובר דרך חילוק עשרוני ורק אחר כך חותך; <code>//</code> הוא האופרטור שמבטא את הכוונה — &quot;כמה פעמים נכנס&quot; — והוא הנכון בכל קלט.</li></ol>
+<p><strong>שבוע 6</strong></p>
+<ol><li><code>pow(3, 2)</code> הוא <strong>9</strong>; <code>abs(5 - 12)</code> הוא <strong>7</strong>.</li><li><code>paid_now = min(2240, 1500)</code> — התוצאה <strong>1500</strong>.</li><li>כי בריבית פשוטה האחוז מחושב כל שנה על הקרן המקורית בלבד, ובדריבית הוא מחושב על הסכום שכבר כולל את ריבית השנים הקודמות — ריבית על ריבית.</li></ol>
+<p><strong>שבוע 7</strong></p>
+<ol><li><code>input()</code> מחזיר מחרוזת, ולכן <code>&quot;4200&quot; * 2</code> ייתן <code>&quot;42004200&quot;</code> — המחרוזת פעמיים, ולא כפל.</li><li><strong>1400.</strong> <code>min</code> מחזיר את הקטן מבין השניים.</li><li>מבוקש <code>21000 / 12</code> = <strong>1750.0</strong>; מותר <code>12000 // 3</code> = <strong>4000</strong>; מאושר <code>min(1750.0, 4000)</code> = <strong>1750.0</strong> — הבקשה מאושרת במלואה, כי היא מתחת לשליש ההכנסה.</li></ol></body></html>

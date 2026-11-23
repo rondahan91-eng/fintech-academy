@@ -9,6 +9,11 @@
     py tools/make_handout.py 4          # -> content/week-04/handout.html
     py tools/make_handout.py 1 2 3 4    # כמה שבועות
     py tools/make_handout.py all
+    py tools/make_handout.py exam       # -> content/exam-01/*.html
+
+⚠️ **כל מסמך בחינה נבנה לקובץ נפרד, והמחוון בכללם.** אסור שהמחוון
+יישב באותו קובץ עם הבחינה — מורה שמדפיס את הבחינה היה מחלק איתה גם
+את התשובות.
 
 הפלט נפתח בכל דפדפן. להדפסה או ל-PDF: Ctrl+P.
 ללא תלויות — ספרייה סטנדרטית בלבד.
@@ -27,6 +32,18 @@ SECTIONS = [
     ("task.md", "המשימה כפי שהתלמיד רואה אותה"),
     ("rubric.md", "רובריקת איכות קוד"),
 ]
+
+# מסמכים שאינם שייכים לשבוע אחד. כל אחד לקובץ נפרד — ראה האזהרה למעלה.
+DOC_SETS = {
+    "exam": (
+        "content/exam-01",
+        [
+            ("study-guide.md", "חוברת הכנה"),
+            ("exam.md", "בחינה"),
+            ("exam-answers.md", "מחוון · מסמך מורה"),
+        ],
+    ),
+}
 
 
 # ---------------------------------------------------------------- inline
@@ -199,6 +216,33 @@ a { color:var(--accent); }
 """
 
 
+def _page(title: str, head: str, body: str) -> str:
+    return (
+        '<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
+        f"<title>{html.escape(title)}</title><style>{CSS}</style></head><body>"
+        f'<div class="doc-head">{html.escape(head)}</div>'
+        f"{body}</body></html>"
+    )
+
+
+def build_doc(md_path: Path, label: str) -> Path | None:
+    """ממיר קובץ Markdown בודד לדף HTML לידו."""
+    if not md_path.is_file():
+        print(f"{md_path}: לא נמצא")
+        return None
+
+    md = md_path.read_text(encoding="utf-8")
+    m = re.search(r"^#\s+(.+)$", md, re.M)
+    title = m.group(1).strip() if m else md_path.stem
+
+    out = md_path.with_suffix(".html")
+    out.write_text(
+        _page(title, f"FinTech Academy · {label}", md_to_html(md)),
+        encoding="utf-8",
+    )
+    return out
+
+
 def build_week(week: int) -> Path | None:
     week_dir = ROOT / "content" / f"week-{week:02d}"
     if not week_dir.is_dir():
@@ -227,16 +271,11 @@ def build_week(week: int) -> Path | None:
         print(f"שבוע {week}: אין קבצי Markdown להמרה")
         return None
 
-    page = (
-        '<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">'
-        f"<title>{html.escape(title)}</title><style>{CSS}</style></head><body>"
-        f'<div class="doc-head">FinTech Academy · חומרי מורה</div>'
-        + "\n".join(parts)
-        + "</body></html>"
-    )
-
     out = week_dir / "handout.html"
-    out.write_text(page, encoding="utf-8")
+    out.write_text(
+        _page(title, "FinTech Academy · חומרי מורה", "\n".join(parts)),
+        encoding="utf-8",
+    )
     return out
 
 
@@ -248,6 +287,14 @@ def main() -> int:
     if not args:
         print(__doc__)
         return 2
+
+    if args[0] in DOC_SETS:
+        folder, files = DOC_SETS[args[0]]
+        made = [p for name, label in files
+                if (p := build_doc(ROOT / folder / name, label))]
+        for p in made:
+            print(f"נוצר: {p.relative_to(ROOT)}")
+        return 0 if made else 1
 
     if args == ["all"]:
         weeks = sorted(

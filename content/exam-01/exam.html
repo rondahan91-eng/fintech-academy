@@ -1,0 +1,180 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>בחינה מסכמת · פרקים 1–7</title><style>
+:root { --ink:#1a1a1a; --muted:#5a5a5a; --line:#d8d8d8; --accent:#1e5aa8;
+        --soft:#f4f6f9; --warn:#fff8e6; --warn-line:#e0a800; }
+* { box-sizing:border-box; }
+body { direction:rtl; font-family:"Segoe UI","Arial",sans-serif;
+       color:var(--ink); line-height:1.65; max-width:19cm;
+       margin:0 auto; padding:1.5cm 1.2cm; font-size:11.5pt; }
+h1 { font-size:22pt; border-bottom:3px solid var(--accent); padding-bottom:.3em;
+     margin:0 0 .6em; }
+h2 { font-size:15pt; color:var(--accent); margin:1.6em 0 .5em;
+     border-bottom:1px solid var(--line); padding-bottom:.2em; }
+h3 { font-size:12.5pt; margin:1.2em 0 .4em; }
+h4 { font-size:11.5pt; color:var(--muted); margin:1em 0 .3em; }
+p { margin:.5em 0; }
+ul,ol { margin:.5em 0; padding-inline-start:1.5em; }
+li { margin:.25em 0; }
+code { direction:ltr; unicode-bidi:embed; font-family:Consolas,monospace;
+       background:var(--soft); padding:.1em .35em; border-radius:3px;
+       font-size:.9em; }
+pre { direction:ltr; text-align:left; background:var(--soft);
+      border:1px solid var(--line); border-inline-start:3px solid var(--accent);
+      padding:.7em .9em; border-radius:4px; overflow-x:auto; }
+pre code { background:none; padding:0; }
+table { border-collapse:collapse; width:100%; margin:.8em 0; font-size:10.5pt; }
+th,td { border:1px solid var(--line); padding:.45em .6em; text-align:right;
+        vertical-align:top; }
+th { background:var(--soft); font-weight:600; }
+tr:nth-child(even) td { background:#fafbfc; }
+blockquote { background:var(--warn); border-inline-start:4px solid var(--warn-line);
+             margin:.9em 0; padding:.6em .9em; border-radius:0 4px 4px 0; }
+blockquote p { margin:.3em 0; }
+hr { border:none; border-top:1px solid var(--line); margin:1.6em 0; }
+a { color:var(--accent); }
+.box { display:inline-block; width:.95em; height:.95em; border:1.5px solid var(--muted);
+       border-radius:2px; margin-inline-end:.5em; vertical-align:-2px;
+       text-align:center; line-height:.9em; font-size:.8em; }
+.checklist { list-style:none; padding-inline-start:.2em; }
+.doc-head { color:var(--muted); font-size:10pt; margin-bottom:1.5em;
+            padding-bottom:.6em; border-bottom:1px solid var(--line); }
+.section-label { background:var(--accent); color:#fff; display:inline-block;
+                 padding:.25em .9em; border-radius:3px; font-size:10pt;
+                 margin:2.5em 0 .8em; }
+@media print {
+  body { padding:0; max-width:none; font-size:10.5pt; }
+  @page { margin:1.6cm 1.4cm; }
+  h1,h2,h3 { break-after:avoid; }
+  table,blockquote,pre { break-inside:avoid; }
+  .page-break { break-before:page; }
+  a { color:var(--ink); text-decoration:none; }
+}
+</style></head><body><div class="doc-head">FinTech Academy · בחינה</div><h1>בחינה מסכמת · פרקים 1–7</h1>
+<p><strong>FinTech Academy · תכנות פייתון · כיתה י&#x27;</strong></p>
+<p>שם: ____________________    כיתה: ______    תאריך: ____________</p>
+<hr>
+<h2>הוראות</h2>
+<ul><li>משך הבחינה: <strong>90 דקות</strong>.</li><li>הבחינה בשני חלקים: <strong>חלק א&#x27;</strong> — 35 שאלות אמריקאיות, 2 נקודות לשאלה. <strong>חלק ב&#x27;</strong> — 14 שאלות פתוחות, 2 או 3 נקודות לשאלה כמצוין ליד כל שאלה.</li><li>סך הכול 105 נקודות. חמש מהן בונוס — הציון המרבי הוא 100.</li><li>בשאלות האמריקאיות יש <strong>תשובה נכונה אחת בלבד</strong>. סמן אותה בטבלת התשובות שבסוף.</li><li>בשאלות הפתוחות <strong>כתוב קוד תקין</strong> — שמות משתנים באנגלית, כמו בעבודה בבנק. שגיאת כתיב קטנה לא תוריד נקודות; חישוב שגוי כן.</li><li>אין צורך ב-<code>if</code>, בלולאות וברשימות. לא למדנו אותם, ואין שאלה שדורשת אותם.</li><li>מותר להשתמש במחשבון.</li></ul>
+<hr>
+<h1>חלק א&#x27; · שאלות אמריקאיות</h1>
+<h2>פרק 1 · יום ראשון בבנק</h2>
+<p><strong>1.</strong> מה תדפיס השורה <code>print(&quot;מס הכנסה: 900&quot;)</code>?</p>
+<ul><li><strong>א.</strong> ‎900</li><li><strong>ב.</strong> מס הכנסה: 900</li><li><strong>ג.</strong> &quot;מס הכנסה: 900&quot;</li><li><strong>ד.</strong> מס הכנסה</li></ul>
+<p><strong>2.</strong> מהו אלגוריתם מילולי?</p>
+<ul><li><strong>א.</strong> פקודה בשפת פייתון</li><li><strong>ב.</strong> הודעת שגיאה שהמחשב מציג כשהתוכנית נכשלת</li><li><strong>ג.</strong> רצף שלבים מדויק לפתרון בעיה, כתוב בשפה אנושית</li><li><strong>ד.</strong> שם אחר לתוכנית מוכנה שאפשר להוריד</li></ul>
+<p><strong>3.</strong> מהו הנטו בתלוש משכורת?</p>
+<ul><li><strong>א.</strong> השכר לפני ניכויים</li><li><strong>ב.</strong> סכום ניכויי החובה</li><li><strong>ג.</strong> מס ההכנסה בלבד</li><li><strong>ד.</strong> מה שנשאר מהברוטו אחרי ניכויי החובה</li></ul>
+<p><strong>4.</strong> מה עושה השורה <code>print()</code> — בלי שום דבר בתוך הסוגריים?</p>
+<ul><li><strong>א.</strong> גורמת לשגיאה</li><li><strong>ב.</strong> מדפיסה שורה ריקה</li><li><strong>ג.</strong> מוחקת את מה שהודפס עד כה</li><li><strong>ד.</strong> מדפיסה את המילה <code>print</code></li></ul>
+<p><strong>5.</strong> תלמיד כתב שורה שבה שכח לסגור את המרכאות ואת הסוגר: <code>print(&quot;נטו: 4890</code>. מה יקרה כשהוא ילחץ &quot;הרצה&quot;?</p>
+<ul><li><strong>א.</strong> השורה תודפס בלי המרכאות</li><li><strong>ב.</strong> יודפס <code>נטו:</code> והשאר יושמט</li><li><strong>ג.</strong> התוכנית תדלג על השורה הזאת ותמשיך לשורה הבאה</li><li><strong>ד.</strong> התוכנית כולה לא תרוץ, ותוצג שגיאת תחביר</li></ul>
+<hr>
+<h2>פרק 2 · מודול הליבה</h2>
+<p><strong>6.</strong> בשורה <code>dana = Account(owner=&quot;דנה כהן&quot;, balance=2500)</code> — מהו <code>dana</code>?</p>
+<ul><li><strong>א.</strong> מחלקה</li><li><strong>ב.</strong> עצם — חשבון אחד קונקרטי שנוצר מהמחלקה <code>Account</code></li><li><strong>ג.</strong> פעולה של המחלקה</li><li><strong>ד.</strong> מחרוזת שבה כתוב שם הלקוחה</li></ul>
+<p><strong>7.</strong> איזו מהפעולות הבאות <strong>מחזירה ערך</strong> שאפשר להדפיס?</p>
+<ul><li><strong>א.</strong> <code>dana.deposit(400)</code></li><li><strong>ב.</strong> <code>dana.withdraw(120)</code></li><li><strong>ג.</strong> <code>dana.transfer_to(yoav, 50)</code></li><li><strong>ד.</strong> <code>dana.balance()</code></li></ul>
+<p><strong>8.</strong> מה הבעיה בשורה <code>print(dana.deposit(400))</code>?</p>
+<ul><li><strong>א.</strong> חסרים מרכאות סביב המספר</li><li><strong>ב.</strong> <code>deposit</code> היא פעולה שמשנה את החשבון, ואין לה ערך להדפיס</li><li><strong>ג.</strong> אסור לקרוא לפעולה בתוך <code>print</code> בשום מקרה</li><li><strong>ד.</strong> הסכום חייב להיות מחרוזת ולא מספר</li></ul>
+<p><strong>9.</strong> חשבונה של דנה נפתח ביתרה 2500. היא הפקידה 400 ואחר כך משכה 120. מה תחזיר <code>dana.balance()</code>?</p>
+<ul><li><strong>א.</strong> ‎2500</li><li><strong>ב.</strong> ‎2780</li><li><strong>ג.</strong> ‎2900</li><li><strong>ד.</strong> ‎3020</li></ul>
+<p><strong>10.</strong> חשבונו של יואב נפתח ביתרה 100. דנה העבירה אליו 50, ואחר כך הוא משך 3000. מה יחזירו <code>yoav.balance()</code> ו-<code>yoav.is_overdrawn()</code>?</p>
+<ul><li><strong>א.</strong> ‎150 ו-<code>False</code></li><li><strong>ב.</strong> ‎-2850 ו-<code>False</code></li><li><strong>ג.</strong> ‎-2850 ו-<code>True</code></li><li><strong>ד.</strong> ‎-2900 ו-<code>True</code></li></ul>
+<hr>
+<h2>פרק 3 · תיק לקוח</h2>
+<p><strong>11.</strong> מה טיפוס הנתונים של המשתנה בשורה <code>is_active = False</code>?</p>
+<ul><li><strong>א.</strong> <code>str</code></li><li><strong>ב.</strong> <code>int</code></li><li><strong>ג.</strong> <code>bool</code></li><li><strong>ד.</strong> <code>float</code></li></ul>
+<p><strong>12.</strong> מה טיפוס הנתונים של הערך <code>12500.5</code>?</p>
+<ul><li><strong>א.</strong> <code>int</code></li><li><strong>ב.</strong> <code>float</code></li><li><strong>ג.</strong> <code>str</code></li><li><strong>ד.</strong> <code>bool</code></li></ul>
+<p><strong>13.</strong> מה יודפס בסוף הקוד הבא?</p>
+<pre dir="ltr"><code>balance = 100
+balance = 250
+print(balance)</code></pre>
+<ul><li><strong>א.</strong> ‎100</li><li><strong>ב.</strong> ‎250</li><li><strong>ג.</strong> ‎350</li><li><strong>ד.</strong> ‎100 250</li></ul>
+<p><strong>14.</strong> מספר החשבון של לקוח הוא <code>0521147</code>. למה הוא נשמר כמחרוזת ולא כמספר?</p>
+<ul><li><strong>א.</strong> כי מחרוזות תופסות פחות מקום בזיכרון</li><li><strong>ב.</strong> כי מספר חשבון ארוך מדי בשביל <code>int</code></li><li><strong>ג.</strong> כי כמספר האפס המוביל נעלם, ומתקבל מזהה אחר לגמרי</li><li><strong>ד.</strong> כי אסור בפייתון לשמור מספר שמתחיל באפס</li></ul>
+<p><strong>15.</strong> מה <strong>בדיוק</strong> יודפס בקוד הבא?</p>
+<pre dir="ltr"><code>gross_salary = 12500.5
+print(type(gross_salary))</code></pre>
+<ul><li><strong>א.</strong> ‎12500.5</li><li><strong>ב.</strong> <code>float</code></li><li><strong>ג.</strong> <code>&lt;class &#x27;float&#x27;&gt;</code></li><li><strong>ד.</strong> <code>&lt;class &#x27;int&#x27;&gt;</code></li></ul>
+<hr>
+<h2>פרק 4 · מחשבון המשכורת</h2>
+<p><strong>16.</strong> איך מחשבים בפייתון 15% מהברוטו, כשהברוטו שמור במשתנה <code>gross_salary</code>?</p>
+<ul><li><strong>א.</strong> <code>gross_salary % 15</code></li><li><strong>ב.</strong> <code>gross_salary * 0.15</code></li><li><strong>ג.</strong> <code>gross_salary / 15</code></li><li><strong>ד.</strong> <code>gross_salary * 15</code></li></ul>
+<p><strong>17.</strong> כמה הם <code>10 + 5 * 2</code>?</p>
+<ul><li><strong>א.</strong> ‎20</li><li><strong>ב.</strong> ‎30</li><li><strong>ג.</strong> ‎17</li><li><strong>ד.</strong> ‎25</li></ul>
+<p><strong>18.</strong> מה מחזירה השורה <code>print(6000 / 2)</code>?</p>
+<ul><li><strong>א.</strong> ‎3000</li><li><strong>ב.</strong> ‎3000.0</li><li><strong>ג.</strong> <code>&quot;3000&quot;</code></li><li><strong>ד.</strong> שגיאה, כי התוצאה אינה שלמה</li></ul>
+<p><strong>19.</strong> תלמיד הדפיס את <code>6000 * 0.035</code> וקיבל <code>210.00000000000003</code>. מה ההסבר הנכון?</p>
+<ul><li><strong>א.</strong> יש באג בקוד שהוא כתב</li><li><strong>ב.</strong> המחשב טעה בחשבון</li><li><strong>ג.</strong> כך המחשב שומר שברים עשרוניים — זו אינה טעות של התוכנית</li><li><strong>ד.</strong> חסר <code>int</code> בהגדרת המשתנה</li></ul>
+<p><strong>20.</strong> שיעור הניכוי האפקטיבי הוא סך הניכויים חלקי הברוטו, באחוזים. איזה ביטוי מחשב אותו <strong>נכון</strong>?</p>
+<ul><li><strong>א.</strong> <code>income_tax + national_insurance / gross_salary * 100</code></li><li><strong>ב.</strong> <code>(income_tax + national_insurance) / (gross_salary * 100)</code></li><li><strong>ג.</strong> <code>income_tax + national_insurance / (gross_salary * 100)</code></li><li><strong>ד.</strong> <code>(income_tax + national_insurance) / gross_salary * 100</code></li></ul>
+<hr>
+<h2>פרק 5 · מחשבון הפריסה</h2>
+<p><strong>21.</strong> כמה הם <code>4850 // 6</code>?</p>
+<ul><li><strong>א.</strong> ‎808</li><li><strong>ב.</strong> ‎808.33</li><li><strong>ג.</strong> ‎809</li><li><strong>ד.</strong> ‎2</li></ul>
+<p><strong>22.</strong> כמה הם <code>4850 % 6</code>?</p>
+<ul><li><strong>א.</strong> ‎808</li><li><strong>ב.</strong> ‎6</li><li><strong>ג.</strong> ‎2</li><li><strong>ד.</strong> ‎0.33</li></ul>
+<p><strong>23.</strong> מה טיפוס התוצאה של <code>4850 / 6</code>, ומה טיפוס התוצאה של <code>4850 // 6</code>?</p>
+<ul><li><strong>א.</strong> שניהם <code>int</code></li><li><strong>ב.</strong> שניהם <code>float</code></li><li><strong>ג.</strong> <code>float</code> ואחריו <code>int</code></li><li><strong>ד.</strong> <code>int</code> ואחריו <code>float</code></li></ul>
+<p><strong>24.</strong> רכישה של 4,850 ש&quot;ח נפרסה לשישה תשלומים: חמישה תשלומים של 808 ותשלום ראשון של 810. איזה חישוב מוודא שהפריסה נכונה, ומה צריך לצאת?</p>
+<ul><li><strong>א.</strong> <code>808 * 6</code> — וצריך לצאת 4850</li><li><strong>ב.</strong> <code>808 * 5 + 810</code> — וצריך לצאת 4850</li><li><strong>ג.</strong> <code>810 * 6</code> — וצריך לצאת 4850</li><li><strong>ד.</strong> <code>808 * 5 + 808</code> — וצריך לצאת 4850</li></ul>
+<p><strong>25.</strong> מהן התוצאות של <code>4853 // 6</code> ושל <code>round(4853 / 6)</code>?</p>
+<ul><li><strong>א.</strong> שניהם 808</li><li><strong>ב.</strong> שניהם 809</li><li><strong>ג.</strong> ‎808 ו-809</li><li><strong>ד.</strong> ‎809 ו-808</li></ul>
+<hr>
+<h2>פרק 6 · מחשבון הריבית</h2>
+<p><strong>26.</strong> מה מחזירה <code>pow(2, 10)</code>?</p>
+<ul><li><strong>א.</strong> ‎20</li><li><strong>ב.</strong> ‎100</li><li><strong>ג.</strong> ‎1024</li><li><strong>ד.</strong> ‎12</li></ul>
+<p><strong>27.</strong> מה מחזירה <code>abs(-90.28)</code>?</p>
+<ul><li><strong>א.</strong> ‎-90.28</li><li><strong>ב.</strong> ‎90.28</li><li><strong>ג.</strong> ‎90</li><li><strong>ד.</strong> ‎0</li></ul>
+<p><strong>28.</strong> הקרן שמורה ב-<code>principal</code>, הריבית השנתית ב-<code>annual_rate</code> ומספר השנים ב-<code>years</code>. איזו שורה מחשבת את <strong>הסכום הכולל בריבית דריבית</strong>?</p>
+<ul><li><strong>א.</strong> <code>principal <em> annual_rate </em> years</code></li><li><strong>ב.</strong> <code>pow(annual_rate, years) * principal</code></li><li><strong>ג.</strong> <code>pow(1 + annual_rate, years) * principal</code></li><li><strong>ד.</strong> <code>principal + pow(annual_rate, years)</code></li></ul>
+<p><strong>29.</strong> הריבית שהצטברה היא 1,770.28 ש&quot;ח, אבל הבנק מעביר בפעם אחת לכל היותר 1,500 ש&quot;ח. איזו שורה נותנת את הסכום שישולם עכשיו?</p>
+<ul><li><strong>א.</strong> <code>max(1770.28, 1500)</code></li><li><strong>ב.</strong> <code>min(1770.28, 1500)</code></li><li><strong>ג.</strong> <code>abs(1770.28 - 1500)</code></li><li><strong>ד.</strong> <code>round(1770.28, 1500)</code></li></ul>
+<p><strong>30.</strong> מה מחזירה <code>divmod(27028, 100)</code>?</p>
+<ul><li><strong>א.</strong> ‎270.28</li><li><strong>ב.</strong> ‎(270, 28)</li><li><strong>ג.</strong> ‎(28, 270)</li><li><strong>ד.</strong> ‎(270.28, 0)</li></ul>
+<hr>
+<h2>פרק 7 · טופס בקשת הלוואה</h2>
+<p><strong>31.</strong> מה מחזירה הפקודה <code>input()</code>?</p>
+<ul><li><strong>א.</strong> תמיד מחרוזת</li><li><strong>ב.</strong> מספר שלם אם הוקלדו ספרות, ומחרוזת אחרת</li><li><strong>ג.</strong> תמיד מספר</li><li><strong>ד.</strong> ערך מטיפוס <code>bool</code></li></ul>
+<p><strong>32.</strong> מה תהיה התוצאה של <code>&quot;5&quot; + &quot;5&quot;</code>?</p>
+<ul><li><strong>א.</strong> ‎10 — המספר עשר</li><li><strong>ב.</strong> ‎55 — המספר חמישים וחמש</li><li><strong>ג.</strong> <code>&quot;55&quot;</code> — המחרוזת חמש-חמש</li><li><strong>ד.</strong> שגיאה, כי אי אפשר לחבר מחרוזות</li></ul>
+<p><strong>33.</strong> הלקוח הקליד <code>0</code>, והקוד הוא <code>has_account = bool(input())</code>. מה יהיה הערך של <code>has_account</code>?</p>
+<ul><li><strong>א.</strong> <code>False</code>, כי הוקלד אפס</li><li><strong>ב.</strong> <code>True</code>, כי <code>&quot;0&quot;</code> היא מחרוזת שאינה ריקה</li><li><strong>ג.</strong> ‎0</li><li><strong>ד.</strong> שגיאה</li></ul>
+<p><strong>34.</strong> הלקוחה הקלידה הכנסה <code>4200</code>, והקוד הוא <code>income = int(input())</code>. מה מחזירה השורה <code>income // 3</code>?</p>
+<ul><li><strong>א.</strong> ‎1400</li><li><strong>ב.</strong> ‎1400.0</li><li><strong>ג.</strong> ‎1</li><li><strong>ד.</strong> <code>&quot;1400&quot;</code></li></ul>
+<p><strong>35.</strong> לקוחה מבקשת הלוואה של 15,000 ש&quot;ח לעשרה חודשים, והכנסתה 4,200 ש&quot;ח. הבנק מאשר החזר חודשי של עד שליש מההכנסה, בשקלים שלמים. לפי הקוד שלמדנו — מה יהיו ההחזר המאושר, מספר התשלומים המלאים והתשלום האחרון?</p>
+<ul><li><strong>א.</strong> ‎1500, ‎10 תשלומים ועוד 0</li><li><strong>ב.</strong> ‎1400, ‎10 תשלומים ועוד 1000</li><li><strong>ג.</strong> ‎1400, ‎11 תשלומים ועוד 0</li><li><strong>ד.</strong> ‎1400.0, ‎10 תשלומים ועוד 1000</li></ul>
+<hr>
+<h1>חלק ב&#x27; · שאלות פתוחות</h1>
+<h2>פרק 1 · יום ראשון בבנק</h2>
+<p><strong>36.</strong> <em>(2 נק&#x27;)</em> כתוב שלוש שורות <code>print</code> שמדפיסות כרטיס עובד: השם <code>דן כהן</code>, מספר העובד <code>10427</code> והתפקיד <code>מפתח זוטר</code>. כל פרט בשורה משלו, עם תווית בעברית לפניו.</p>
+<p><strong>37.</strong> <em>(3 נק&#x27;)</em> נסח <strong>אלגוריתם מילולי</strong> בן ארבעה שלבים לחישוב הנטו של עובד, כשנתונים הברוטו, שיעור מס ההכנסה ושיעור הביטוח הלאומי. הסבר במשפט אחד מה ההבדל בין מה שעשינו בשבוע 1 לבין מה שהתוכנית עושה היום.</p>
+<hr>
+<h2>פרק 2 · מודול הליבה</h2>
+<p><strong>38.</strong> <em>(2 נק&#x27;)</em> הסבר במילים שלך את ההבדל בין <strong>פעולה ששואלת</strong> לבין <strong>פעולה שמשנה</strong>, ותן דוגמה אחת לכל סוג מתוך הממשק של <code>Account</code>.</p>
+<p><strong>39.</strong> <em>(3 נק&#x27;)</em> כתוב את הקוד שפותח חשבון על שם <code>דנה כהן</code> ביתרה 2500 וחשבון על שם <code>יואב לוי</code> ביתרה 100, מעביר 50 ש&quot;ח מדנה ליואב, ומדפיס את היתרה של שניהם. הסבר במשפט אחד למה <strong>לא</strong> נכון פשוט להדפיס <code>print(&quot;יתרת דנה: 2450&quot;)</code>.</p>
+<hr>
+<h2>פרק 3 · תיק לקוח</h2>
+<p><strong>40.</strong> <em>(2 נק&#x27;)</em> הגדר ארבעה משתנים לתיק לקוח חדש: שם הלקוח, מספר החשבון <code>0043219</code>, הגיל 17 והאם החשבון פעיל (לא). ציין ליד כל משתנה את טיפוס הנתונים שלו.</p>
+<p><strong>41.</strong> <em>(3 נק&#x27;)</em> הסבר מה בדיוק יקרה למספר החשבון <code>0043219</code> אם יישמר כמספר ולא כמחרוזת, ולמה זו בעיה בבנק. בנוסף — מה ההבדל בין <code>&quot;34&quot;</code> לבין <code>34</code>?</p>
+<hr>
+<h2>פרק 4 · מחשבון המשכורת</h2>
+<p><strong>42.</strong> <em>(2 נק&#x27;)</em> כתוב את הקוד שמחשב עמלת העברה בשיעור 0.4% על העברה של 2,500 ש&quot;ח, ורשום מה תהיה התוצאה.</p>
+<p><strong>43.</strong> <em>(3 נק&#x27;)</em> ברוטו 8,000 ש&quot;ח, מס הכנסה 15%, ביטוח לאומי 3.5%. כתוב את הקוד שמחשב את שני הניכויים ואת הנטו, ורשום את שלוש התוצאות. הסבר למה בחישוב שיעור הניכוי האפקטיבי חייבים סוגריים סביב סכום הניכויים.</p>
+<hr>
+<h2>פרק 5 · מחשבון הפריסה</h2>
+<p><strong>44.</strong> <em>(2 נק&#x27;)</em> רכישה של 7,230 ש&quot;ח נפרסת לשבעה תשלומים. כתוב את הקוד שמחשב את התשלום הקבוע, את השארית ואת התשלום הראשון, ורשום את שלוש התוצאות.</p>
+<p><strong>45.</strong> <em>(3 נק&#x27;)</em> תלמיד כתב <code>payment = round(purchase_amount / payments_count)</code> במקום <code>//</code>, והבדיקות עברו. הסבר למה הפתרון שלו בכל זאת שגוי, והדגם זאת במספרים על רכישה של 4,853 ש&quot;ח בשישה תשלומים.</p>
+<hr>
+<h2>פרק 6 · מחשבון הריבית</h2>
+<p><strong>46.</strong> <em>(2 נק&#x27;)</em> קרן של 12,000 ש&quot;ח, ריבית שנתית 3.5%, ארבע שנים. כתוב את החישוב של הריבית הפשוטה ואת החישוב של הסכום הכולל בריבית דריבית, ורשום את שתי התוצאות.</p>
+<p><strong>47.</strong> <em>(3 נק&#x27;)</em> למה החישוב הוא <code>pow(1 + annual_rate, years)</code> ולא <code>pow(annual_rate, years)</code>? הסבר את המשמעות הפיננסית של ה-1, ותאר מה היה מתקבל בלעדיו.</p>
+<hr>
+<h2>פרק 7 · טופס בקשת הלוואה</h2>
+<p><strong>48.</strong> <em>(2 נק&#x27;)</em> כתוב שלוש שורות שקולטות מהלקוח את שמו, את הכנסתו החודשית ואת סכום ההלוואה המבוקש. הקפד על ההמרות הנכונות, והסבר במשפט אחד למה הן נחוצות.</p>
+<p><strong>49.</strong> <em>(3 נק&#x27;)</em> הקוד <code>has_account = bool(input())</code> נראה הגיוני, אבל הוא שגוי: הלקוח מקליד <code>0</code> ומתקבל <code>True</code>. הסבר למה זה קורה ואיך מתקנים. בנוסף — הסבר איך השורה <code>approved_monthly = min(monthly, max_monthly)</code> ממלאת את תפקידו של תנאי, בלי להשתמש ב-<code>if</code>.</p>
+<hr>
+<h1>טבלת תשובות · חלק א&#x27;</h1>
+<p>מלא כאן את האות של התשובה הנכונה.</p>
+<table><thead><tr><th>שאלה</th><th>תשובה</th><th>שאלה</th><th>תשובה</th><th>שאלה</th><th>תשובה</th><th>שאלה</th><th>תשובה</th></tr></thead><tbody><tr><td>1</td><td></td><td>10</td><td></td><td>19</td><td></td><td>28</td><td></td></tr><tr><td>2</td><td></td><td>11</td><td></td><td>20</td><td></td><td>29</td><td></td></tr><tr><td>3</td><td></td><td>12</td><td></td><td>21</td><td></td><td>30</td><td></td></tr><tr><td>4</td><td></td><td>13</td><td></td><td>22</td><td></td><td>31</td><td></td></tr><tr><td>5</td><td></td><td>14</td><td></td><td>23</td><td></td><td>32</td><td></td></tr><tr><td>6</td><td></td><td>15</td><td></td><td>24</td><td></td><td>33</td><td></td></tr><tr><td>7</td><td></td><td>16</td><td></td><td>25</td><td></td><td>34</td><td></td></tr><tr><td>8</td><td></td><td>17</td><td></td><td>26</td><td></td><td>35</td><td></td></tr><tr><td>9</td><td></td><td>18</td><td></td><td>27</td><td></td><td></td><td></td></tr></tbody></table>
+<p><strong>בהצלחה.</strong></p></body></html>
